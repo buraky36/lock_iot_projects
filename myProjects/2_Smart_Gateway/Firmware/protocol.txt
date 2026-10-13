@@ -1,0 +1,1357 @@
+﻿
+
+
+
+
+Onloi Smart Lock Protocol v2.17
+
+  :root {
+    --blue:   #1e3a5f;
+    --blue-light: #2d5282;
+    --green:  #16a34a;
+    --orange: #d97706;
+    --red:    #dc2626;
+    --gray:   #6b7280;
+    --border: #e5e7eb;
+    --bg:     #f9fafb;
+    --code-bg:#1e293b;
+    --code-fg:#e2e8f0;
+    --radius: 6px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 15px; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    color: #111827;
+    line-height: 1.6;
+    background: #fff;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+
+  /* Cover */
+  .cover { text-align: center; padding: 60px 0 48px; border-bottom: 2px solid var(--border); margin-bottom: 40px; }
+  .cover h1 { font-size: 2rem; color: var(--blue); margin-bottom: 8px; }
+  .cover .version { font-size: 1rem; color: var(--gray); }
+
+  /* ToC */
+  .toc { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 40px; }
+  .toc h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: .05em; color: var(--gray); margin-bottom: 12px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin: 4px 0; }
+  .toc a { color: var(--blue-light); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* Sections */
+  section { margin-bottom: 48px; }
+  h2 { font-size: 1.35rem; color: var(--blue); border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-bottom: 20px; }
+
+  /* Step card */
+  .step { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 24px; overflow: hidden; }
+  .step-header {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--blue); color: #fff;
+    padding: 10px 16px;
+  }
+  .step-num {
+    background: rgba(255,255,255,.2); border-radius: 50%;
+    width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+  }
+  .step-title { font-weight: 600; font-size: 1rem; flex: 1; }
+  .badge {
+    font-size: 0.72rem; font-weight: 600; padding: 2px 8px;
+    border-radius: 999px; flex-shrink: 0; white-space: nowrap;
+  }
+  .badge-ble        { background: #7c3aed; color: #fff; }
+  .badge-bleframe   { background: #5b21b6; color: #fff; }
+  .badge-https      { background: #059669; color: #fff; }
+  .badge-mqtt       { background: #d97706; color: #fff; }
+  .badge-mqttframe  { background: #b45309; color: #fff; }
+
+  .step-desc { padding: 12px 16px 0; color: #374151; font-size: 0.95rem; }
+  .step-body { padding: 12px 16px 16px; }
+
+  /* HTTP block */
+  .http-block { margin-top: 8px; }
+  .http-req { margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+  .http-method {
+    font-size: 0.78rem; font-weight: 700; padding: 3px 8px; border-radius: 4px;
+    font-family: monospace; flex-shrink: 0;
+  }
+  .http-method.get    { background: #d1fae5; color: #065f46; }
+  .http-method.post   { background: #dbeafe; color: #1e40af; }
+  .http-method.put    { background: #fef3c7; color: #92400e; }
+  .http-method.delete { background: #fee2e2; color: #991b1b; }
+  .http-url { font-family: monospace; font-size: 0.9rem; color: var(--blue-light); }
+  .http-label { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--gray); margin: 10px 0 4px; }
+  .http-status { color: var(--green); font-weight: 600; }
+
+  /* Code blocks */
+  pre.code {
+    background: var(--code-bg); color: var(--code-fg);
+    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    font-size: 0.82rem; line-height: 1.55;
+    padding: 14px 16px; border-radius: var(--radius);
+    overflow-x: auto; white-space: pre-wrap; word-break: break-all;
+    margin: 4px 0 8px;
+  }
+  pre.code.json { color: #a5f3fc; }
+  pre.code.hex  { color: #fde68a; letter-spacing: .03em; }
+
+  /* Frame block */
+  .frame-block { margin-top: 8px; }
+  .frame-meta {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    background: #f1f5f9; border-radius: var(--radius); padding: 8px 12px; margin-bottom: 8px;
+  }
+  .frame-direction { font-weight: 600; color: var(--blue); font-size: 0.9rem; }
+  .frame-cmd  { font-size: 0.88rem; color: #374151; }
+  .frame-cmd code { background: #e0e7ff; color: #3730a3; padding: 1px 5px; border-radius: 3px; font-size: 0.83rem; }
+  .frame-type { font-size: 0.83rem; color: var(--gray); }
+  .frame-status { font-size: 0.83rem; font-weight: 600; color: var(--orange); }
+
+  .hex-label { font-size: 0.78rem; font-weight: 600; color: var(--gray); margin: 6px 0 2px; text-transform: uppercase; letter-spacing: .04em; }
+
+  .empty-payload { font-size: 0.87rem; color: var(--gray); font-style: italic; margin: 4px 0 8px; }
+
+  /* Payload table */
+  .payload-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 4px 0 8px; }
+  .payload-table th {
+    background: var(--blue); color: #fff; text-align: left;
+    padding: 6px 10px; font-weight: 600; font-size: 0.78rem;
+  }
+  .payload-table td { padding: 5px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .payload-table tr:last-child td { border-bottom: none; }
+  .payload-table tr:nth-child(even) td { background: var(--bg); }
+  .payload-table code { background: #f1f5f9; color: #1e3a5f; padding: 1px 4px; border-radius: 3px; font-size: 0.82rem; }
+
+  /* Misc */
+  .arrow-label {
+    font-size: 0.8rem; font-weight: 700; color: var(--blue-light);
+    text-transform: uppercase; letter-spacing: .04em;
+    margin: 14px 0 4px; padding-left: 2px;
+  }
+  .note {
+    background: #fefce8; border-left: 3px solid #facc15;
+    padding: 8px 12px; border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: 0.86rem; color: #713f12; margin: 6px 0 2px;
+  }
+  .ble-info-block { padding: 4px 0; }
+  .ble-info-block p { margin: 8px 0; font-size: 0.93rem; }
+
+  /* Annotated frame */
+  .annotated-frame { margin: 4px 0 10px; }
+
+  .byte-row {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 2px;
+    background: #0f172a; padding: 12px 14px; border-radius: 6px 6px 0 0;
+    font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+  }
+  .byte-chip {
+    display: inline-block;
+    padding: 3px 5px; border-radius: 3px;
+    font-size: 0.78rem; font-weight: 600; letter-spacing: .03em;
+    cursor: default; line-height: 1.3;
+    transition: transform .1s, box-shadow .1s;
+  }
+  .byte-chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,.5);
+    z-index: 1; position: relative;
+  }
+  .byte-gap {
+    display: inline-block; width: 8px;
+  }
+
+  .byte-legend {
+    display: flex; flex-wrap: wrap; gap: 6px 12px;
+    background: #1e293b; padding: 7px 14px;
+    border-bottom: 1px solid #334155;
+    font-size: 0.75rem; color: #94a3b8;
+  }
+  .leg-item { display: flex; align-items: center; gap: 4px; }
+  .leg-dot {
+    display: inline-block; width: 10px; height: 10px;
+    border-radius: 2px; flex-shrink: 0;
+  }
+
+  /* Decoded table (attached below chip row) */
+  .decoded-table {
+    width: 100%; border-collapse: collapse; font-size: 0.83rem;
+    border: 1px solid var(--border); border-top: none;
+    border-radius: 0 0 6px 6px; overflow: hidden;
+  }
+  .decoded-table th {
+    background: #1e293b; color: #94a3b8;
+    text-align: left; padding: 5px 10px;
+    font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em;
+  }
+  .decoded-table td { padding: 5px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .decoded-table tr:last-child td { border-bottom: none; }
+  .decoded-table tr:nth-child(even) td { background: #f8fafc; }
+  .decoded-table code {
+    background: #f1f5f9; color: #1e3a5f;
+    padding: 1px 5px; border-radius: 3px; font-size: 0.82rem;
+  }
+
+  /* Print */
+  @media print {
+    body { max-width: 100%; padding: 16px; font-size: 13px; }
+    .step { break-inside: avoid; }
+    pre.code { font-size: 0.75rem; }
+    h2 { break-after: avoid; }
+    .byte-row { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .byte-chip { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+
+
+
+  Onloi Smart Lock Protocol
+  Developer Referans DÃ¶kÃ¼mantasyonu &nbsp;Â·&nbsp; v2.17 &nbsp;Â·&nbsp; 03.08.2026
+
+Ä°Ã§indekilerBLE KeÅŸif â€” Cihaz EkleBLE KurulumClaim, MQTT ve KayÄ±tEriÅŸim (PIN, NFC, Buton, Parmak Ä°zi, QR)Uzaktan Kilit AÃ§maUzaktan KilitlemeParmak Ä°zi EklemeNFC Kart Ekleme (Cihaz Ãœzerinden)Telemetri ve Saat SenkronizasyonuCihaz YÃ¶netimi ve SÄ±fÄ±rlama (WIFI_RESET, SERVER_DISCONNECT, FACTORY_RESET)Offline EriÅŸim LoglarÄ±Firmware GÃ¼ncelleme (OTA) â€” MQTT kontrol + HTTPS indirme
+
+  SÃ¼rÃ¼m NotlarÄ±
+  v2.17 (03.08.2026)
+  
+    localId alanÄ± 3 byte oldu. Protokoldeki tÃ¼m localId alanlarÄ± (LOCK_OPENED, FINGERPRINT_SCANNED, FP_ENROLLED, PIN/FP/NFC/QR DELETE, QR_ENROLLED vb.) artÄ±k sabit 3 byte. Eski 2 byte (uint16 BE) formatÄ± desteklenmez.
+    localId anlamÄ± accessMethod'a baÄŸlÄ±. PIN â†’ girilen ÅŸifre; NFC â†’ karta yazÄ±lÄ± userID/personelID/customerID; Parmak Ä°zi â†’ cihaz slot id; QR â†’ otel modunda userID, genel modda QR metni (ilk 3 byte). SayÄ±sal deÄŸerler uint24 BE kodlanÄ±r.
+    OFFLINE_LOG_BATCH (0x35) v2.12 yapÄ±sÄ±na dÃ¶ndÃ¼. v2.13â€“v2.16'daki deÄŸiÅŸken valueLen + value formatÄ± kaldÄ±rÄ±ldÄ±. KayÄ±t: timestamp(8)+accessMethod(1)+localId(3)+result(1) = 13 byte sabit.
+    Otel / genel mod. Kilidin otel kilidi mi genel mod mu olduÄŸu sunucu katalog ayarÄ± (isHotelLock) ile belirlenir; QR localId yorumlamasÄ±nÄ± etkiler.
+    Uyumluluk. Backend, mobil uygulama, simÃ¼latÃ¶r ve firmware bu sÃ¼rÃ¼me gÃ¶re gÃ¼ncellenmelidir; geriye dÃ¶nÃ¼k uyumluluk yoktur.
+  
+
+
+
+  BLE KeÅŸif â€” Cihaz Ekle
+  
+
+  
+    1
+    BLE Tarama â€” CihazlarÄ± Listele
+    BLE
+  
+  KullanÄ±cÄ± "Cihaz Ekle"ye basar. Mobil Bluetooth taramasÄ± baÅŸlatÄ±r.
+  
+
+  Mobil uygulama standart BLE taramasÄ± baÅŸlatÄ±r. Bu aÅŸamada Onloi binary protokolÃ¼ henÃ¼z baÅŸlamaz â€” yalnÄ±zca BLE'nin yerleÅŸik reklam mekanizmasÄ± kullanÄ±lÄ±r. deviceCode bu reklam paketlerinden okunur; HANDSHAKE beklenmez.
+
+  NasÄ±l Ã§alÄ±ÅŸÄ±r?
+  Cihaz (peripheral) ve telefon (central) arasÄ±ndaki iletiÅŸim bu aÅŸamada tamamen standart BLE kurallarÄ±na gÃ¶re ilerler. Onloi uygulamasÄ± cihaza Ã¶zel bir istek gÃ¶ndermez; yalnÄ±zca startScan() ile taramayÄ± baÅŸlatÄ±r. Gerisini telefonun BLE stack'i halleder.
+
+    Kilit (firmware)                         Telefon (Onloi app)
+  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€                        â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+  [1] Advertising Packet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–º  SÃ¼rekli, kendi kendine yayÄ±nlanÄ±r.
+      (UUID: 6E400001-B5A3-F393-E0A9-E50E24DCCA9E)                  App olmasa bile yakÄ±ndaki tarayÄ±cÄ±lar alabilir.
+
+  [2]         â—„â”€â”€â”€â”€ SCAN_REQ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€  App tarama baÅŸlatÄ±nca OS otomatik gÃ¶nderir.
+              (BLE standart â€” Onloi frame deÄŸil)
+
+  [3] Scan Response Packet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–º  Firmware'de hazÄ±r tutulan cevap paketi.
+      (Local Name + Service Data)             App'in Ã¶zel isteÄŸine deÄŸil, SCAN_REQ'ye yanÄ±t.
+
+  BLE reklam alanÄ± en fazla 31 byte olduÄŸu iÃ§in firmware veriyi iki pakete bÃ¶ler: UUID ana reklamda, isim ve deviceCode Scan Response'ta. Bu yÃ¼zden mobil uygulama aktif tarama kullanmalÄ±dÄ±r â€” aksi halde deviceCode gelmeyebilir.
+
+  // iOS â€” aktif tarama (Scan Response almak iÃ§in gerekli)
+centralManager.scanForPeripherals(
+    withServices: [CBUUID(string: "6E400001-B5A3-F393-E0A9-E50E24DCCA9E")],
+    options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
+
+// Android
+scanner.startScan(listOf(ScanFilter.Builder()
+    .setServiceUuid(ParcelUuid.fromString("6E400001-B5A3-F393-E0A9-E50E24DCCA9E"))
+    .build()), settings, callback)
+
+  CihazÄ±n yayÄ±nladÄ±ÄŸÄ± paketler (firmware'de tanÄ±mlÄ±)
+  Her iki paket de firmware tarafÄ±ndan Ã¶nceden yapÄ±landÄ±rÄ±lÄ±r:
+
+  
+    PaketNe zaman?Ä°Ã§erik
+    
+      
+        Ana ReklamAdvertising Packet
+        SÃ¼rekli, otomatik
+        Flags + 128-bit Service UUID: 6E400001-B5A3-F393-E0A9-E50E24DCCA9E (Nordic UART)
+      
+      
+        Tarama YanÄ±tÄ±Scan Response Packet
+        OS SCAN_REQ gÃ¶nderince
+        Complete Local Name + Service Data UUID 0xFFF0 (deviceCode)
+      
+    
+  
+
+  Ã–rnek ham paket (OK0312 / suffix 6044)
+  Ana Reklam Paketi
+  02 01 06  11 07  9E CA DC 24 0E E5 A9 E0 93 F3 A3 B5 01 00 40 6E
+  
+    AD YapÄ±sÄ±AlanDeÄŸer
+    
+      02 01 06FlagsLE General Discoverable, BR/EDR Not Supported
+      11 07 â€¦ 6EComplete 128-bit UUID6E400001-B5A3-F393-E0A9-E50E24DCCA9E (little-endian)
+    
+  
+
+  Tarama YanÄ±tÄ± Paketi
+  0C 09 4F 4B 30 33 31 32 5F 36 30 34 34  09 16 F0 FF 4F 4B 30 33 31 32
+  
+    AD YapÄ±sÄ±AlanDeÄŸerAÃ§Ä±klama
+    
+      
+        0C 09 â€¦ 34
+        Complete Local Name
+        OK0312_6044
+        {deviceCode}_{suffix} â€” suffix cihazÄ± ayÄ±rt etmek iÃ§in (deviceId'nin kÄ±sa parÃ§asÄ±). UI'da gÃ¶sterilir.
+      
+      
+        09 16 F0 FF â€¦ 32
+        Service Data
+        UUID 0xFFF0 â†’ payload OK0312
+        deviceCode birincil kaynaÄŸÄ±. ASCII, null padding yok. Katalog sorgusu bu deÄŸerle yapÄ±lÄ±r.
+      
+    
+  
+
+  Mobil uygulama ScanResult'tan ne okur?
+  
+    AlanKaynakÃ–rnekNe zaman?
+    
+      deviceCodeService Data UUID 0xFFF0OK0312Tarama â€” birincil
+      localNameComplete Local Name (Scan Response)OK0312_6044Tarama â€” UI etiketi
+      rssiScan callback-47 dBmTarama
+      remoteId / MACOS BLE stackAA:BB:â€¦Tarama â€” baÄŸlantÄ± iÃ§in saklanÄ±r
+      deviceIdâ€”â€”HANDSHAKE'te gelir (AdÄ±m 3)
+    
+  
+
+  // deviceCode parse (Service Data 0xFFF0 â€” birincil)
+const svcData = scanResult.advertisementData.serviceData["0000fff0-0000-1000-8000-00805f9b34fb"];
+const deviceCode = String.fromCharCodes(svcData).trim();  // "OK0312"
+
+// UI etiketi (Local Name)
+const localName = scanResult.advertisementData.advName;   // "OK0312_6044"
+
+  Ekranda gÃ¶rÃ¼nen liste Ã¶rneÄŸi:
+  
+    Cihaz AdÄ± (Local Name)deviceCodeRSSINot
+    
+      OK0312_6044OK0312-47 dBmKatalog sorgusu taramada yapÄ±labilir
+      OK0312_7821OK0312-62 dBmAynÄ± model â€” suffix ile ayÄ±rt edilir
+    
+  
+
+  deviceCode taramada Service Data (0xFFF0) ile gelir; mobil uygulama baÄŸlanmadan katalog / cihaz tipi sorgusu yapabilir. deviceId yalnÄ±zca HANDSHAKE yanÄ±tÄ±nda gelir. Eski firmware (Onloi Lock adÄ±, Service Data yok) geriye dÃ¶nÃ¼k uyumluluk iÃ§in HANDSHAKE'e dÃ¼ÅŸer.
+
+
+
+  
+    2
+    BLE BaÄŸlantÄ± â€” GATT KeÅŸfi
+    BLE
+  
+  KullanÄ±cÄ± listeden bir cihaz seÃ§er. BLE baÄŸlantÄ±sÄ± kurulur. HenÃ¼z Onloi frame yok.
+  
+
+  KullanÄ±cÄ± listeden bir cihaz seÃ§er. Mobil BLE baÄŸlantÄ±sÄ± kurar ve GATT servisini keÅŸfeder.
+  // SÄ±rasÄ±yla yapÄ±lacaklar:
+1. connect(peripheralId)
+2. discoverService("6E400001-B5A3-F393-E0A9-E50E24DCCA9E")
+3. RX karakteristik: "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"  â†’ Mobil YAZAR (Onloi'ye giden veriler)
+4. TX karakteristik: "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"  â†’ Mobil OKUR (notify aÃ§, cihazdan gelen veriler)
+5. TX karakteristiÄŸine SUBSCRIBE (notify/indicate enable)
+  BaÄŸlantÄ± kurulunca bir sonraki adÄ±mda Onloi binary protokolÃ¼ baÅŸlar. Frame boyutu 20 byte'Ä± aÅŸÄ±yorsa 0x00 ayÄ±rÄ±cÄ± ile parÃ§alanÄ±r.
+
+
+
+
+  BLE Kurulum
+  
+
+  
+    3
+    HANDSHAKE â€” Cihaz KimliÄŸi Al
+    BLE Frame
+  
+  Ä°lk Onloi binary frame. Mobil deviceId alÄ±r (taramada yok). deviceCode taramada Service Data'dan okunmuÅŸ olabilir; HANDSHAKE yanÄ±tÄ± ile doÄŸrulanÄ±r.
+  Mobil â†’ Cihaz (RX karakteristik)Mobil â†’ CihazCMD: HANDSHAKE 0x01MSG_TYPE: REQUEST (0x01)Payload: boÅŸ (0 byte)Frame parse
+
+  4F0201010001000000000001954CD99EA95926
+  SOFVERTYPECMDSEQLENSTTSCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x01REQUESTCMD0x01HANDSHAKESEQ1SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN00 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirCRC160x59 26CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+Cihaz â†’ Mobil (TX notify)Cihaz â†’ MobilCMD: HANDSHAKE 0x01MSG_TYPE: RESPONSE (0x02)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0deviceIdASCII1678356203936Benzersiz kimlik, null ile doldurulmuÅŸ16deviceCodeASCII8OK0310Model kodu â€” kalÄ±cÄ±, deÄŸiÅŸmez. Taramada Service Data (0xFFF0) ile okunmuÅŸsa burada doÄŸrulanÄ±r.Frame parse
+
+  4F0202010001001800000001954CD99EA9373833353632303339333600000000004F4B3033313000009B5D
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x02RESPONSECMD0x01HANDSHAKESEQ1SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN2424 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD24 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x9B 5DCRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+Mobil deviceId'yi saklar. deviceCode taramada alÄ±nmadÄ±ysa buradan alÄ±nÄ±r; alÄ±ndÄ±ysa HANDSHAKE deÄŸeri ile eÅŸleÅŸmelidir. Sonraki REST isteklerinde deviceId + deviceCode kullanÄ±lÄ±r.
+
+
+  
+    4
+    Cihaz Tipi Sorgusu
+    HTTPS
+  
+  Mobil, deviceCode ile sunucudan cihaz Ã¶zelliklerini alÄ±r. Hangi Ã¶zelliklerin aktif olduÄŸu (PIN/NFC/FP/QR) buradan gelir â€” cihazdan deÄŸil.
+  GET https://api.onloi.com/v1/device-types/OK0310Response 200 OK{
+  "deviceCode": "OK0310",
+  "name": "Parmak Ä°zi Okuyucu",
+  "capabilities": [
+    "FINGERPRINT",
+    "PIN",
+    "BATTERY"
+  ],
+  "ui": {
+    "showPin": true,
+    "showFingerprint": true,
+    "showNfc": false
+  }
+}
+
+
+  
+    5
+    Provisioning Token Al
+    HTTPS
+  
+  Mobil, sunucudan tek kullanÄ±mlÄ±k token alÄ±r. Bu token 5 dakika geÃ§erlidir ve cihaza BLE ile iletilecektir. KullanÄ±cÄ± kimliÄŸi Authorization header'dan alÄ±nÄ±r; body'de sadece hangi cihazÄ±n provision edileceÄŸi belirtilir.
+  POST https://api.onloi.com/v1/devices/provision/startRequest Body{
+  "deviceId": "78356203936"
+}Response 200 OK{
+  "provisioningToken": "&lt;32 byte, base64url&gt;",
+  "expiresIn": 300
+}Header: Authorization: Bearer &lt;kullanÄ±cÄ± JWT&gt;
+
+
+  
+    6
+    PROVISION â€” Token Cihaza Yaz
+    BLE Frame
+  
+  Mobil, aldÄ±ÄŸÄ± token'Ä± BLE Ã¼zerinden cihaza iletir. Cihaz token'Ä± doÄŸrular ve Wi-Fi kurulumuna geÃ§ilebileceÄŸini bildirir.
+  Mobil â†’ Cihaz (RX)Mobil â†’ CihazCMD: PROVISION 0x02MSG_TYPE: REQUEST (0x01)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0provisioningTokenbytes32AB AB AB ... (32 byte)Sunucudan alÄ±nan token, raw byte olarak iletilirFrame parse
+
+  4F0201020002002000000001954CD99EA9ABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABE51C
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x01REQUESTCMD0x02PROVISIONSEQ2SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN3232 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD32 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160xE5 1CCRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+Cihaz â†’ Mobil (TX)Cihaz â†’ MobilCMD: PROVISION 0x02MSG_TYPE: RESPONSE (0x02)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0resultuint810x000x00 = baÅŸarÄ±lÄ±, 0x01 = baÅŸarÄ±sÄ±z (token sÃ¼resi dolmuÅŸ olabilir)Frame parse
+
+  4F0202020002000100000001954CD99EA900F158
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x02RESPONSECMD0x02PROVISIONSEQ2SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN11 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD1 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160xF1 58CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+result=0x01 ise AdÄ±m 5'e geri dÃ¶n ve yeni token al.
+
+
+  
+    7
+    GET_SSIDS â€” Wi-Fi AÄŸ Listesi
+    BLE Frame
+  
+  Mobil, cihazÄ±n gÃ¶rebildiÄŸi Wi-Fi aÄŸlarÄ±nÄ± listeler.
+  Mobil â†’ Cihaz (RX) â€” payload boÅŸMobil â†’ CihazCMD: GET_SSIDS 0x03MSG_TYPE: REQUEST (0x01)Payload: boÅŸ (0 byte)Frame parse
+
+  4F0201030003000000000001954CD99EA9A90E
+  SOFVERTYPECMDSEQLENSTTSCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x01REQUESTCMD0x03GET_SSIDSSEQ3SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN00 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirCRC160xA9 0ECRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+Cihaz â†’ Mobil (TX)Cihaz â†’ MobilCMD: GET_SSIDS 0x03MSG_TYPE: RESPONSE (0x02)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0countuint810x01Bulunan aÄŸ sayÄ±sÄ± (N). AÅŸaÄŸÄ±daki kayÄ±t N kez tekrar eder.1macAddressbytes6AA:BB:CC:DD:EE:01EriÅŸim noktasÄ± MAC adresi7rssiint810xC9 (-55 dBm)Sinyal gÃ¼cÃ¼8banduint810x010x01=2.4 GHz, 0x02=5 GHz9ssidLenuint810x06SSID uzunluÄŸu10ssidASCIIssidLenEvWiFiAÄŸ adÄ±Frame parse
+
+  4F0202030003001000000001954CD99EA901AABBCCDDEE01C901064576576946692B85
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x02RESPONSECMD0x03GET_SSIDSSEQ3SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN1616 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD16 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x2B 85CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+
+
+
+  
+    8
+    CONNECT_WIFI â€” AÄŸa BaÄŸlan
+    BLE Frame
+  
+  Mobil, kullanÄ±cÄ±nÄ±n seÃ§tiÄŸi Wi-Fi bilgilerini cihaza iletir. Cihaz aÄŸa baÄŸlanÄ±r.
+  Mobil â†’ Cihaz (RX)Mobil â†’ CihazCMD: CONNECT_WIFI 0x04MSG_TYPE: REQUEST (0x01)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0ssidLenuint810x06SSID uzunluÄŸu1ssidASCIIssidLenEvWiFiBaÄŸlanÄ±lacak aÄŸ7macAddressbytes6AA:BB:CC:DD:EE:01Hedef AP MAC13passLenuint810x0AÅifre uzunluÄŸu14passwordASCIIpassLensifre12345Wi-Fi ÅŸifresiFrame parse
+
+  4F0201040004001800000001954CD99EA906457657694669AABBCCDDEE010A7369667265313233343538AD
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x01REQUESTCMD0x04CONNECT_WIFISEQ4SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN2424 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD24 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x38 ADCRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+Cihaz â†’ Mobil (TX)Cihaz â†’ MobilCMD: CONNECT_WIFI 0x04MSG_TYPE: RESPONSE (0x02)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0resultuint810x000x00 = Wi-Fi baÄŸlantÄ±sÄ± baÅŸarÄ±lÄ±Frame parse
+
+  4F0202040004000100000001954CD99EA900A858
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x02RESPONSECMD0x04CONNECT_WIFISEQ4SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN11 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD1 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160xA8 58CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+BaÅŸarÄ± sonrasÄ± cihaz BLE baÄŸlantÄ±sÄ±nÄ± kapatabilir. Sonraki adÄ±m HTTPS Claim.
+
+
+
+  Claim, MQTT ve KayÄ±t
+  
+
+  
+    9
+    HTTPS Claim â€” MQTT Kimlik Bilgisi Al
+    HTTPS
+  
+  Cihaz, Wi-Fi Ã¼zerinden sunucuya baÄŸlanÄ±r ve MQTT eriÅŸim bilgilerini alÄ±r. Bu isteÄŸi cihaz (firmware) doÄŸrudan atar.
+  POST https://api.onloi.com/v1/devices/claimRequest Body{
+  "deviceId": "78356203936",
+  "deviceCode": "OK0310",
+  "provisioningToken": "&lt;AdÄ±m 6'da kullanÄ±lan token&gt;"
+}Response 200 OK{
+  "mqtt": {
+    "host": "mqtt.api.onloi.com",
+    "port": 8883,
+    "clientId": "onloi_d_78356203936",
+    "username": "78356203936",
+    "password": "&lt;secret&gt;"
+  },
+  "deviceSecret": "&lt;32 byte â€” HMAC hesaplamada kullanÄ±lÄ±r&gt;",
+  "sessionEpoch": 1
+}
+
+
+  
+    10
+    MQTT CONNECT
+    MQTT
+  
+  Cihaz TLS Ã¼zerinden MQTT broker'a baÄŸlanÄ±r.
+  
+
+  // MQTT CONNECT parametreleri
+host:         mqtt.api.onloi.com:8883  (TLS zorunlu)
+clientId:     onloi_d_78356203936
+username:     78356203936
+password:     &lt;claim yanÄ±tÄ±ndaki mqttPassword&gt;
+cleanSession: false
+keepAlive:    30 sn
+willTopic:    onloi/v1/d/78356203936/lifecycle  (retain=true)
+
+// BaÅŸarÄ±lÄ± baÄŸlantÄ±
+CONNACK returnCode: 0x00
+
+
+
+  
+    11
+    MQTT SUBSCRIBE
+    MQTT
+  
+  Cihaz, sunucudan gelen komut ve yanÄ±t topic'lerine abone olur.
+  
+
+  // Abone olunacak topic'ler
+onloi/v1/d/78356203936/cmd     QoS 1   â† Sunucu komutlarÄ±
+onloi/v1/d/78356203936/reply   QoS 1   â† EriÅŸim yanÄ±tlarÄ±
+onloi/v1/d/78356203936/config  QoS 1   â† YapÄ±landÄ±rma
+
+// YanÄ±t
+SUBACK: baÅŸarÄ±lÄ±
+
+
+
+  
+    12
+    REGISTRATION â€” KayÄ±t Bildirimi
+    MQTT Frame
+  
+  Cihaz baÄŸlantÄ±nÄ±n tamamlandÄ±ÄŸÄ±nÄ± bildirir. Sunucu bu mesajÄ± alÄ±nca cihazÄ± online olarak iÅŸaretler.
+  Cihaz â†’ Sunucu (publish, QoS 1, retain=true)Cihaz â†’ SunucuCMD: REGISTRATION 0x34MSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0sessionEpochuint16 BE20x0001Claim sonrasÄ± oturum numarasÄ±2statusuint810x000x00 = OKFrame parse
+
+  4F0203340001000300000001954CD99EA900010011A1
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x03EVENTCMD0x34REGISTRATIONSEQ1SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN33 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD3 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x11 A1CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+Topic: onloi/v1/d/78356203936/lifecycle
+
+
+
+  EriÅŸim (PIN, NFC, Buton, Parmak Ä°zi, QR)
+  
+
+  
+    13
+    PIN Girildi â€” DoÄŸrulama Ä°steÄŸi
+    MQTT Frame
+  
+  KullanÄ±cÄ± tuÅŸ takÄ±mÄ±ndan PIN girer. Cihaz PIN'i sunucuya iletir ve yanÄ±t bekler.
+  Cihaz â†’ Sunucu (publish, QoS 1) â€” Topic: onloi/v1/d/78356203936/eventCihaz â†’ SunucuCMD: PIN_ENTERED 0x12MSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0pinLenuint810x07PIN uzunluÄŸu (4â€“10 hane)1pinASCIIpinLen2838901Girilen PIN deÄŸeri8requestIduint32 BE40x00001000CihazÄ±n Ã¼rettiÄŸi eÅŸleÅŸtirme id â€” sunucu reply'de aynÄ± SEQ kullanÄ±rFrame parse
+
+  4F020312002A000C00000001954CD99EA90732383338393031000010004101
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x03EVENTCMD0x12PIN_ENTEREDSEQ42SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN1212 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD12 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x41 01CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+
+
+
+  
+    14
+    Sunucu YanÄ±tÄ± â€” PIN DoÄŸrulama
+    MQTT Frame
+  
+  Sunucu PIN'i veritabanÄ±nda doÄŸrular. Payload boÅŸtur; sonuÃ§ frame header'daki STATUS alanÄ±nda taÅŸÄ±nÄ±r.
+  Sunucu â†’ Cihaz (publish, QoS 1) â€” Topic: onloi/v1/d/78356203936/replySunucu â†’ CihazCMD: PIN_ENTERED 0x12MSG_TYPE: RESPONSE (0x02)STATUS: 0x00=AÃ§ / 0x01=ReddetPayload boÅŸ â€” sonuÃ§ STATUS field'Ä±nda taÅŸÄ±nÄ±r.Frame parse
+
+  4F020212002A000000000001954CD99EA981C0
+  SOFVERTYPECMDSEQLENSTTSCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x02RESPONSECMD0x12PIN_ENTEREDSEQ42SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN00 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirCRC160x81 C0CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+SEQ numarasÄ± AdÄ±m 13'teki event ile AYNI olmalÄ±. STATUS=0x00 â†’ cihaz kilidi aÃ§ar.
+
+
+  
+    15
+    Kilit AÃ§Ä±ldÄ± Bildirimi
+    MQTT Frame
+  
+  DoÄŸrulama baÅŸarÄ±lÄ±ysa cihaz kilidi aÃ§ar ve olayÄ± bildirir.
+  Cihaz â†’ Sunucu (publish, QoS 1) â€” Topic: onloi/v1/d/78356203936/eventCihaz â†’ SunucuCMD: LOCK_OPENED 0x10MSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0accessMethoduint810x010x01=PIN, 0x02=NFC, 0x03=FP, 0x04=QR, 0x05=Remote, 0x06=Buton1localIdbyte[3]301 37 26EriÅŸim kimliÄŸi (3 byte) â€” PIN: girilen ÅŸifre (Ã¶r. 79654â†’0x013726), NFC: karta yazÄ±lÄ± userID, FP: slot id, QR: otelde userID / genel modda QR metni (ilk 3 byte)4triggeruint810x010x01=yerel, 0x02=uzaktan komutFrame parse
+
+  4F020310002B000500000001954CD99EA90101372601A794
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x03EVENTCMD0x10LOCK_OPENEDSEQ43SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN55 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD5 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160xA7 94CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+
+
+
+  
+    16
+    NFC Okundu â€” DoÄŸrulama Ä°steÄŸi
+    MQTT Frame
+  
+  PIN akÄ±ÅŸÄ± ile aynÄ± model. CMD=0x13 NFC_SCANNED.
+  Cihaz â†’ Sunucu â€” Topic: onloi/v1/d/78356203936/eventCihaz â†’ SunucuCMD: NFC_SCANNED 0x13MSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0uidLenuint810x04Kart UID uzunluÄŸu1uidbytesuidLenA1 B2 C3 D4NFC kart UIDFrame parse
+
+  4F0203130032000500000001954CD99EA904A1B2C3D4----
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x03EVENTCMD0x13NFC_SCANNEDSEQ50SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN55 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD5 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x-- --CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+Sunucu â†’ Cihaz â€” Topic: onloi/v1/d/78356203936/replySunucu â†’ CihazCMD: NFC_SCANNED 0x13MSG_TYPE: RESPONSE (0x02)STATUS: 0x00=AÃ§ / 0x01=ReddetPayload boÅŸ â€” sonuÃ§ STATUS field'Ä±nda taÅŸÄ±nÄ±r.Frame parse
+
+  4F0202130032000000000001954CD99EA9----
+  SOFVERTYPECMDSEQLENSTTSCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x02RESPONSECMD0x13NFC_SCANNEDSEQ50SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN00 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirCRC160x-- --CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+STATUS=0x00 ise cihaz AdÄ±m 15'teki LOCK_OPENED event'ini gÃ¶nderir (accessMethod=0x02).
+
+
+  
+    17
+    BUTTON_UNLOCK_REQUEST â€” Buton ile Sunucu OnayÄ±
+    MQTT Frame
+  
+  KullanÄ±cÄ± kilitteki fiziksel bir butona veya tuÅŸ kombinasyonuna basar. Bu, PIN/NFC/FP gibi bir credential doÄŸrulamasÄ± deÄŸildir â€” cihaz sunucuya "aÃ§Ä±lmak istiyorum" talebini gÃ¶nderir, sunucu onaylar ya da reddeder.
+  Cihaz â†’ Sunucu (publish, QoS 1) â€” Topic: onloi/v1/d/78356203936/eventCihaz â†’ SunucuCMD: BUTTON_UNLOCK_REQ 0x16MSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0buttonCodeuint810x01Hangi buton/kombinasyon: 0x01=tek buton, 0x02=Ã§ift basÄ±ÅŸ, 0x03=uzun basÄ±ÅŸ â€” donanÄ±ma gÃ¶re tanÄ±mlanÄ±r1requestIduint32 BE40x00004001CihazÄ±n Ã¼rettiÄŸi eÅŸleÅŸtirme id â€” sunucu reply'de aynÄ± SEQ'u dÃ¶nerFrame parse
+
+  4F020316003300050000000000000000000100004001A5F6
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x03EVENTCMD0x16BUTTON_UNLOCK_REQSEQ51SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN55 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD5 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160xA5 F6CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+Sunucu â†’ Cihaz (publish, QoS 1) â€” Topic: onloi/v1/d/78356203936/reply
+      
+        Sunucu â†’ Cihaz
+        CMD: BUTTON_UNLOCK_REQ 0x16
+        MSG_TYPE: RESPONSE (0x02)
+        STATUS alanÄ±nda karar taÅŸÄ±nÄ±r â€” payload boÅŸ
+      
+      
+        
+          Onayla (STATUS=0x00)
+
+  4F02021600330000000000000000000000D619
+  SOFVERTYPECMDSEQLENSTTSCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x02RESPONSECMD0x16BUTTON_UNLOCK_REQSEQ51SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN00 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirCRC160xD6 19CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+
+        
+          Reddet (STATUS=0x01)
+
+  4F020216003300000100000000000000003D3A
+  SOFVERTYPECMDSEQLENSTTSCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x02RESPONSECMD0x16BUTTON_UNLOCK_REQSEQ51SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN00 byte payloadSTATUS0x010x01 = HATATIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirCRC160x3D 3ACRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+
+      
+    Sunucu zaman dilimi, kullanÄ±cÄ± yetki kurallarÄ± veya alarm durumuna gÃ¶re onay/ret kararÄ± verir. Ret durumunda cihaz sesli/gÃ¶rsel uyarÄ± verebilir.STATUS=0x00 ise cihaz kilidi aÃ§ar â†’ LOCK_OPENED gÃ¶nderirCihaz â†’ SunucuCMD: LOCK_OPENED 0x10MSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0accessMethoduint810x060x06=BUTTON_REQUEST â€” buton ile sunucu onaylÄ± aÃ§ma1localIdbyte[3]300 00 00Buton bazlÄ± aÃ§mada 0 (3 byte sÄ±fÄ±r)4triggeruint810x010x01=yerel tetik (buton)Frame parse
+
+  4F0203100034000500000000000000000006000000015940
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x03EVENTCMD0x10LOCK_OPENEDSEQ52SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN55 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD5 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x59 40CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+
+
+
+  
+    19
+    Parmak Ä°zi / QR EriÅŸimi
+    MQTT Frame
+  
+  AynÄ± request-reply modeli. CMD ve payload farklÄ±.
+  
+      
+        YÃ¶ntemCMDHexPayload
+        
+          Parmak iziFINGERPRINT_SCANNED0x15localId[3] â€” cihaz slot id
+          QRQR_SCANNED0x14qrLen[2 BE] + qrData[]
+        
+      
+      Her ikisi de event â†’ reply â†’ LOCK_OPENED akÄ±ÅŸÄ±nÄ± izler. Reply payload boÅŸ, STATUS header'da.
+    
+
+
+
+  Uzaktan Kilit AÃ§ma
+  
+
+  
+    19
+    Uzaktan AÃ§ma â€” Mobil Ä°steÄŸi
+    HTTPS
+  
+  KullanÄ±cÄ± mobil uygulamadan kilit aÃ§ma isteÄŸi gÃ¶nderir.
+  POST https://api.onloi.com/v1/devices/78356203936/unlockResponse 202 Accepted{
+  "requestId": 4660,
+  "state": "QUEUED",
+  "message": "Cihaza ulaÅŸmak iÃ§in cihazdaki butona basÄ±n"
+}Cihaz uykudaysa state=QUEUED olur. KullanÄ±cÄ± butona basÄ±nca cihaz uyandÄ±ÄŸÄ±nda komut iletilir.
+
+
+  
+    20
+    Cihaz UyandÄ± â€” SESSION_START
+    MQTT Frame
+  
+  KullanÄ±cÄ± butona basar. Cihaz MQTT'e baÄŸlanÄ±r. Sunucu bunu gÃ¶rÃ¼nce kuyruktaki REMOTE_OPEN komutunu gÃ¶nderir.
+  Cihaz â†’ Sunucu (publish, QoS 1, retain=true) â€” Topic: onloi/v1/d/78356203936/lifecycleCihaz â†’ SunucuCMD: SESSION_START 0x30MSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0wakeReasonuint810x010x01=fiziksel buton, 0x02=zamanlayÄ±cÄ±1batteryPctuint810x57Pil yÃ¼zdesi 0â€“100 (Ã¶rn. 0x57=87%)Frame parse
+
+  4F020330000A000300000001954CD99EA9010BB86861
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x03EVENTCMD0x30SESSION_STARTSEQ10SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN33 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD3 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x68 61CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+SESSION_END gÃ¶nderilmez. Ä°ÅŸi biten cihaz sessizce MQTT baÄŸlantÄ±sÄ±nÄ± keser ve uykuya girer. Sunucu, cihazÄ±n MQTT'e baÄŸlÄ± olup olmadÄ±ÄŸÄ±nÄ± broker Ã¼zerinden kontrol ederek uyku durumunu anlar. BaÄŸlÄ± deÄŸilse uykudadÄ±r â€” yeni komutlar QUEUED'a alÄ±nÄ±r, buton basÄ±ldÄ±ÄŸÄ±nda SESSION_START ile teslim edilir.
+
+
+  
+    21
+    REMOTE_OPEN Komutu
+    MQTT Frame
+  
+  Sunucu, uzaktan aÃ§ma komutunu gÃ¶nderir. HMAC imzasÄ± zorunludur.
+  Sunucu â†’ Cihaz (publish, QoS 1) â€” Topic: onloi/v1/d/78356203936/cmdSunucu â†’ CihazCMD: REMOTE_OPEN 0x40MSG_TYPE: COMMAND (0x04)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x00001234Komut takip id â€” ACK'larda geri dÃ¶ner4reasonuint810x010x01=mobil uygulama5AUTH_TAGbytes8DE AD BE EF ...HMAC-SHA256(deviceSecret, seq||timestamp||payload)[0:8]Frame parse
+
+  4F0204400100000500000001954CD99EA90000123401????????????????ED10
+  SOFVERTYPECMDSEQLENSTTSPAYLOADAUTHCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x04COMMANDCMD0x40REMOTE_OPENSEQ256SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN55 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD5 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakAUTH_TAG8 byteHMAC-SHA256(deviceSecret, header||payload) â€” ilk 8 byteCRC160xED 10CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+AUTH_TAG frame sonunda, CRC16'dan Ã¶nce gelir.
+
+
+  
+    22
+    ACK â€” Komut AlÄ±ndÄ± (RECEIVED)
+    MQTT Frame
+  
+  Cihaz komutu baÅŸarÄ±yla parse etti. Sunucu bu ACK'Ä± alÄ±nca komutun durumunu DELIVERED yapar.
+  Cihaz â†’ Sunucu (publish, QoS 1) â€” Topic: onloi/v1/d/78356203936/ackCihaz â†’ SunucuCMD: ACK 0x05MSG_TYPE: ACK (0x05)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x00001234AdÄ±m 21'deki requestId4ackPhaseuint810x010x01=RECEIVED, 0x02=EXECUTING, 0x03=COMPLETED, 0x04=FAILED5cmdEchouint810x40YanÄ±tlanan CMD kodu6detailCodeuint810x00Ek hata kodu, baÅŸarÄ±da 0x00Frame parse
+
+  4F0205400100000700000001954CD99EA900001234014000154C
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x05ACKCMD0x40REMOTE_OPENSEQ256SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN77 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD7 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x15 4CCRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+
+
+
+  
+    23
+    ACK â€” TamamlandÄ± + LOCK_OPENED
+    MQTT Frame
+  
+  Cihaz kilidi aÃ§tÄ±. Ã–nce COMPLETED ACK, ardÄ±ndan LOCK_OPENED event gÃ¶nderir.
+  Cihaz â†’ Sunucu â€” Topic: onloi/v1/d/78356203936/ackCihaz â†’ SunucuCMD: ACK 0x05MSG_TYPE: ACK (0x05)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x000012344ackPhaseuint810x030x03 = COMPLETED5cmdEchouint810x40REMOTE_OPEN6detailCodeuint810x00Frame parse
+
+  4F0205400100000700000001954CD99EA9000012340340007B2C
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x05ACKCMD0x40REMOTE_OPENSEQ256SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN77 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD7 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x7B 2CCRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+Cihaz â†’ Sunucu â€” Topic: onloi/v1/d/78356203936/eventCihaz â†’ SunucuCMD: LOCK_OPENED 0x10MSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0accessMethoduint810x050x05=REMOTE1localIdbyte[3]300 00 00Uzaktan aÃ§mada 04triggeruint810x020x02=uzaktanFrame parse
+
+  4F0203100101000500000001954CD99EA90500000002EED7
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x03EVENTCMD0x10LOCK_OPENEDSEQ257SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN55 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD5 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160xEE D7CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+
+
+
+  
+    24
+    Mobil â€” Teslimat Durumu Sorgula
+    HTTPS
+  
+  Mobil, komutun tamamlanÄ±p tamamlanmadÄ±ÄŸÄ±nÄ± sorgular.
+  GET https://api.onloi.com/v1/devices/78356203936/commands/4660Response 200 OK{
+  "requestId": 4660,
+  "cmd": "REMOTE_OPEN",
+  "state": "COMPLETED",
+  "ackPhase": "COMPLETED"
+}
+
+
+
+  Uzaktan Kilitleme
+  
+
+  
+    19
+    Uzaktan Kapatma â€” Mobil Ä°steÄŸi
+    HTTPS
+  
+  KullanÄ±cÄ± mobil uygulamadan kilit kapatma isteÄŸi gÃ¶nderir.
+  POST https://api.onloi.com/v1/devices/78356203936/lockResponse 202 Accepted{
+  "requestId": 4660,
+  "state": "QUEUED",
+  "message": "Cihaza ulaÅŸmak iÃ§in cihazdaki butona basÄ±n"
+}AkÄ±ÅŸ REMOTE_OPEN ile aynÄ±dÄ±r: cihaz uykudaysa komut kuyruÄŸa alÄ±nÄ±r, SESSION_START ile teslim edilir.
+
+
+  
+    20
+    Cihaz UyandÄ± â€” SESSION_START (Kapatma)
+    MQTT Frame
+  
+  KullanÄ±cÄ± butona basar. Sunucu kuyruktaki REMOTE_CLOSE komutunu gÃ¶nderir.
+  Cihaz â†’ Sunucu (publish, QoS 1, retain=true) â€” Topic: onloi/v1/d/78356203936/lifecycleCihaz â†’ SunucuCMD: SESSION_START 0x30MSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0wakeReasonuint810x010x01=fiziksel buton1batteryPctuint810x57Pil yÃ¼zdesi 0â€“100Frame parse
+
+  4F020330000A000300000001954CD99EA9010BB86861
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x03EVENTCMD0x30SESSION_STARTSEQ10SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN33 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD3 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x68 61CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+
+
+
+  
+    21
+    REMOTE_CLOSE Komutu
+    MQTT Frame
+  
+  Sunucu uzaktan kilitleme komutunu gÃ¶nderir. Payload REMOTE_OPEN ile aynÄ±dÄ±r.
+  Sunucu â†’ Cihaz (publish, QoS 1) â€” Topic: onloi/v1/d/78356203936/cmdSunucu â†’ CihazCMD: REMOTE_CLOSE 0x4CMSG_TYPE: COMMAND (0x04)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x00001234Komut takip id4reasonuint810x010x01=mobil uygulama5AUTH_TAGbytes8DE AD BE EF ...HMAC-SHA256(deviceSecret, seq||timestamp||payload)[0:8]Frame parse
+
+  4F02044C0100000500000001954CD99EA90000123401????????????????ED10
+  SOFVERTYPECMDSEQLENSTTSPAYLOADAUTHCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x04COMMANDCMD0x4CREMOTE_CLOSESEQ256SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN55 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD5 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakAUTH_TAG8 byteHMAC-SHA256(deviceSecret, header||payload) â€” ilk 8 byteCRC160xED 10CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+AUTH_TAG frame sonunda, CRC16'dan Ã¶nce gelir.
+
+
+  
+    22
+    ACK â€” Komut AlÄ±ndÄ± (RECEIVED)
+    MQTT Frame
+  
+  Cihaz REMOTE_CLOSE komutunu aldÄ±.
+  Cihaz â†’ Sunucu â€” Topic: onloi/v1/d/78356203936/ackCihaz â†’ SunucuCMD: ACK 0x05MSG_TYPE: ACK (0x05)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x000012344ackPhaseuint810x01RECEIVED5cmdEchouint810x4CREMOTE_CLOSE6detailCodeuint810x00Frame parse
+
+  4F02054C0100000700000001954CD99EA900001234014C00154C
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x05ACKCMD0x4CREMOTE_CLOSESEQ256SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN77 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD7 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x15 4CCRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+
+
+
+  
+    23
+    ACK â€” TamamlandÄ± + LOCK_CLOSED
+    MQTT Frame
+  
+  Cihaz kilidi kapattÄ±. COMPLETED ACK ardÄ±ndan LOCK_CLOSED event gÃ¶nderir.
+  Cihaz â†’ Sunucu â€” Topic: onloi/v1/d/78356203936/ackCihaz â†’ SunucuCMD: ACK 0x05MSG_TYPE: ACK (0x05)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x000012344ackPhaseuint810x03COMPLETED5cmdEchouint810x4CREMOTE_CLOSE6detailCodeuint810x00Frame parse
+
+  4F02054C0100000700000001954CD99EA900001234034C007B2C
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x05ACKCMD0x4CREMOTE_CLOSESEQ256SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN77 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD7 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x7B 2CCRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+Cihaz â†’ Sunucu â€” Topic: onloi/v1/d/78356203936/eventCihaz â†’ SunucuCMD: LOCK_CLOSED 0x17MSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0triggeruint810x020x01=yerel, 0x02=uzaktan komut1reasonuint810x010x01=mobil uygulama (uzaktan kapatmada)Frame parse
+
+  4F0203170102000200000001954CD99EA902014A8E
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x03EVENTCMD0x17LOCK_CLOSEDSEQ258SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN22 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD2 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x4A 8ECRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+
+
+
+  
+    24
+    Mobil â€” Teslimat Durumu Sorgula (Kapatma)
+    HTTPS
+  
+  Mobil komut durumunu sorgular.
+  GET https://api.onloi.com/v1/devices/78356203936/commands/4660Response 200 OK{
+  "requestId": 4660,
+  "cmd": "REMOTE_CLOSE",
+  "state": "COMPLETED",
+  "ackPhase": "COMPLETED"
+}
+
+
+
+  Parmak Ä°zi Ekleme
+  
+
+  
+    25
+    Parmak Ä°zi Ekleme â€” BaÅŸlat
+    HTTPS
+  
+  Mobil sunucuya enrollment baÅŸlatma isteÄŸi gÃ¶nderir.
+  POST https://api.onloi.com/v1/devices/78356203936/fingerprint-enrollRequest Body{
+  "label": "Ahmet"
+}Response 202 Accepted{
+  "requestId": 8193,
+  "state": "QUEUED"
+}
+
+
+  
+    26
+    FP_ENROLL_START Komutu
+    MQTT Frame
+  
+  Sunucu cihaza enrollment baÅŸlatma komutu gÃ¶nderir. Cihaz uyanÄ±k olmalÄ±.
+  Sunucu â†’ Cihaz â€” Topic: onloi/v1/d/78356203936/cmdSunucu â†’ CihazCMD: FP_ENROLL_START 0x46MSG_TYPE: COMMAND (0x04)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x00002001Komut id (requestId=8193)4labelLenuint810x05Etiket uzunluÄŸu5labelASCIIlabelLenAhmetKullanÄ±cÄ± etiketi10AUTH_TAGbytes8...HMAC imzasÄ±Frame parse
+
+  4F0204460200000A00000001954CD99EA900002001054973696D5F????????????????5D89
+  SOFVERTYPECMDSEQLENSTTSPAYLOADAUTHCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x04COMMANDCMD0x46FP_ENROLL_STARTSEQ512SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN1010 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD10 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakAUTH_TAG8 byteHMAC-SHA256(deviceSecret, header||payload) â€” ilk 8 byteCRC160x5D 89CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+
+
+
+  
+    27
+    FP_ENROLL_READY
+    MQTT Frame
+  
+  Cihaz kayÄ±t moduna geÃ§tiÄŸini bildirir. KullanÄ±cÄ± parmaÄŸÄ±nÄ± okutmaya hazÄ±r.
+  Cihaz â†’ Sunucu â€” Topic: onloi/v1/d/78356203936/eventCihaz â†’ SunucuCMD: FP_ENROLL_READY 0x24MSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0serverRequestIduint32 BE40x00002001AdÄ±m 26'daki requestIdFrame parse
+
+  4F0203240201000400000001954CD99EA90000200121DA
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x03EVENTCMD0x24FP_ENROLL_READYSEQ513SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN44 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD4 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x21 DACRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+
+
+
+  
+    28
+    FP_SCAN_STEP â€” 3 Okuma
+    MQTT Frame
+  
+  KullanÄ±cÄ± parmaÄŸÄ±nÄ± 3 kez okuttur. Her okuma iÃ§in ayrÄ± event gÃ¶nderilir.
+  1. OkumaCihaz â†’ SunucuCMD: FP_SCAN_STEP 0x25MSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0serverRequestIduint32 BE40x000020014stepuint810x01Okuma adÄ±mÄ±: 15qualityuint810x55 (85)Okuma kalitesi 0â€“100Frame parse
+
+  4F0203250202000600000001954CD99EA90000200101551329
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x03EVENTCMD0x25FP_SCAN_STEPSEQ514SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN66 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD6 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x13 29CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+2. OkumaCihaz â†’ SunucuCMD: FP_SCAN_STEP 0x25MSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0serverRequestIduint32 BE40x000020014stepuint810x02Okuma adÄ±mÄ±: 25qualityuint810x5A (90)Okuma kalitesiFrame parse
+
+  4F0203250203000600000001954CD99EA900002001025A47A4
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x03EVENTCMD0x25FP_SCAN_STEPSEQ515SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN66 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD6 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x47 A4CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+3. OkumaCihaz â†’ SunucuCMD: FP_SCAN_STEP 0x25MSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0serverRequestIduint32 BE40x000020014stepuint810x03Okuma adÄ±mÄ±: 35qualityuint810x58 (88)Okuma kalitesiFrame parse
+
+  4F0203250204000600000001954CD99EA9000020010358A402
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x03EVENTCMD0x25FP_SCAN_STEPSEQ516SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN66 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD6 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160xA4 02CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+
+
+
+  
+    29
+    FP_ENROLLED â€” KayÄ±t TamamlandÄ±
+    MQTT Frame
+  
+  3 okuma baÅŸarÄ±lÄ±. Cihaz parmak izini kaydeder ve bir localId atar.
+  Cihaz â†’ Sunucu â€” Topic: onloi/v1/d/78356203936/eventCihaz â†’ SunucuCMD: FP_ENROLLED 0x26MSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0serverRequestIduint32 BE40x000020014localIdbyte[3]300 00 07CihazÄ±n atadÄ±ÄŸÄ± parmak izi slot id (uint24 BE)Frame parse
+
+  4F0203260205000700000001954CD99EA900002001000007F909
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x03EVENTCMD0x26FP_ENROLLEDSEQ517SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN77 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD7 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160xF9 09CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+localId, cihazda saklanan parmak izinin numarasÄ±dÄ±r (3 byte). Silme iÅŸlemlerinde bu id kullanÄ±lÄ±r.
+
+
+
+  NFC Kart Ekleme (Cihaz Ãœzerinden)
+  
+
+  
+    30
+    NFC Kart Ekleme â€” BaÅŸlat
+    HTTPS
+  
+  Mobil uygulama cihaz detay â†’ Kart Ä°ÅŸlemleri â†’ Yeni Kart â†’ Cihaz seÃ§eneÄŸi ile kayÄ±t baÅŸlatÄ±r.
+  POST https://api.onloi.com/v1/devices/78356203936/nfc-enrollRequest Body{
+  "label": "Ahmet KartÄ±"
+}Response 202 Accepted{
+  "requestId": 8193,
+  "state": "QUEUED",
+  "message": "Kilit uyku modunda gÃ¶rÃ¼nÃ¼yorâ€¦"
+}
+
+
+  
+    31
+    NFC_ENROLL_START Komutu
+    MQTT Frame
+  
+  Sunucu cihaza kart kayÄ±t moduna geÃ§mesini sÃ¶yler. Parmak izi akÄ±ÅŸÄ± ile aynÄ± komut teslimat modeli.
+  Sunucu â†’ Cihaz â€” Topic: onloi/v1/d/78356203936/cmdSunucu â†’ CihazCMD: NFC_ENROLL_START 0x44MSG_TYPE: COMMAND (0x04)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x00002001Komut id (requestId=8193)4labelLenuint810x05Etiket uzunluÄŸu5labelASCIIlabelLenAhmetKart etiketi (sunucuda credential adÄ±)10AUTH_TAGbytes8...HMAC imzasÄ±Frame parse
+
+  4F0204440208000A00000001954CD99EA9000020010541686D6574????????????????AABB
+  SOFVERTYPECMDSEQLENSTTSPAYLOADAUTHCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x04COMMANDCMD0x44NFC_ENROLL_STARTSEQ520SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN1010 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD10 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakAUTH_TAG8 byteHMAC-SHA256(deviceSecret, header||payload) â€” ilk 8 byteCRC160xAA BBCRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+
+
+
+  
+    32
+    NFC_ENROLL_READY
+    MQTT Frame
+  
+  Cihaz kart okuma moduna geÃ§ti. KullanÄ±cÄ± kartÄ± kilide okutabilir.
+  Cihaz â†’ Sunucu â€” Topic: onloi/v1/d/78356203936/eventCihaz â†’ SunucuCMD: NFC_ENROLL_READY 0x22MSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0serverRequestIduint32 BE40x00002001AdÄ±m 31'deki requestIdFrame parse
+
+  4F0203220209000400000001954CD99EA90000200118C2
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x03EVENTCMD0x22bilinmiyorSEQ521SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN44 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD4 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x18 C2CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+
+
+
+  
+    33
+    NFC_ENROLLED â€” KayÄ±t TamamlandÄ±
+    MQTT Frame
+  
+  Kart okundu ve cihaz hafÄ±zasÄ±na yazÄ±ldÄ±. Cihaz sunucuya kart UID'sini iletir.
+  Cihaz â†’ Sunucu â€” Topic: onloi/v1/d/78356203936/eventCihaz â†’ SunucuCMD: NFC_ENROLLED 0x23MSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0serverRequestIduint32 BE40x000020014uidLenuint810x04Kart UID uzunluÄŸu (1â€“32 byte)5uidbytesuidLenA1 B2 C3 D4Okunan kart UIDFrame parse
+
+  4F020323020A000900000001954CD99EA90000200104A1B2C3D49E41
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x03EVENTCMD0x23bilinmiyorSEQ522SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN99 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD9 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x9E 41CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+Parmak izinden farklÄ± olarak cihaz localId gÃ¶ndermez. Sunucu credentialValue olarak hex(uid) saklar (Ã¶r. A1B2C3D4). Silme iÅŸlemleri iÃ§in cihaz kendi iÃ§ slot id'sini kullanÄ±r; sunucu NFC_DELETE komutunda localId iletir.
+
+
+  
+    34
+    Mobil â€” Kart Ekleme Durumu
+    HTTPS
+  
+  Mobil uygulama polling ile kayÄ±t tamamlanana kadar bekler.
+  GET https://api.onloi.com/v1/devices/78356203936/nfc-enroll/8193Response 200 OK{
+  "requestId": 8193,
+  "phase": "COMPLETED",
+  "credentialValue": "A1B2C3D4",
+  "message": "Kart baÅŸarÄ±yla tanÄ±mlandÄ±."
+}
+
+
+
+  Telemetri ve Saat Senkronizasyonu
+  
+
+  
+    35
+    BATTERY_REPORT â€” Pil Durumu
+    MQTT Frame
+  
+  Cihaz her SESSION_START'ta ve periyodik olarak pil yÃ¼zdesini bildirir. Tek byte, 0â€“100 arasÄ± yÃ¼zde deÄŸeri.
+  Cihaz â†’ Sunucu (publish, QoS 1) â€” Topic: onloi/v1/d/78356203936/telemetryCihaz â†’ SunucuCMD: BATTERY_REPORT 0x32MSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0batteryPctuint810x57 (87%)Pil yÃ¼zdesi 0â€“100. 0x57=87, 0x64=100, 0x00=kritikFrame parse
+
+  4F020332003C0001000000000000000000572F30
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x03EVENTCMD0x32BATTERY_REPORTSEQ60SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN11 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD1 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x2F 30CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+Sunucu bu deÄŸeri veritabanÄ±na kaydeder. Mobil uygulama buradan pil ikonunu gÃ¼nceller.
+
+
+  
+    36
+    TIME_SYNC â€” Sunucu Saati
+    MQTT Frame
+  
+  CihazÄ±n iÃ§ saatinin senkronize kalmasÄ± iÃ§in sunucudan Unix timestamp talep eder. Her SESSION_START sonrasÄ±nda veya saat kaymasÄ± fark edildiÄŸinde gÃ¶nderilir.
+  Cihaz â†’ Sunucu (publish, QoS 1) â€” Topic: onloi/v1/d/78356203936/cmd â€” payload boÅŸCihaz â†’ SunucuCMD: TIME_SYNC 0x33MSG_TYPE: REQUEST (0x01)Payload: boÅŸ (0 byte)Frame parse
+
+  4F020133003D00000000000000000000003EA1
+  SOFVERTYPECMDSEQLENSTTSCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x01REQUESTCMD0x33TIME_SYNCSEQ61SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN00 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirCRC160x3E A1CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+Sunucu â†’ Cihaz (publish, QoS 1) â€” Topic: onloi/v1/d/78356203936/replySunucu â†’ CihazCMD: TIME_SYNC 0x33MSG_TYPE: RESPONSE (0x02)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0unixMsuint64 BE80x000001977A5EF000Cihaz yerel duvar saati (milisaniye, unix epoch). Sunucu Devices.TimeZoneId dilimine gÃ¶re hesaplanÄ±r; cihaz RTC'si bu deÄŸere ayarlanÄ±r.Frame parse
+
+  4F020233003D0008000000000000000000000001977A5EF00083FF
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x02RESPONSECMD0x33TIME_SYNCSEQ61SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN88 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD8 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x83 FFCRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+SEQ numarasÄ± istek ile aynÄ± olmalÄ± â€” cihaz bunu doÄŸrular.
+
+
+
+  Cihaz YÃ¶netimi ve SÄ±fÄ±rlama (WIFI_RESET, SERVER_DISCONNECT, FACTORY_RESET)
+  
+
+  
+    37
+    WIFI_RESET â€” Wi-Fi SÄ±fÄ±rlama
+    MQTT Frame
+  
+  Sunucu, cihazÄ± baÄŸlÄ± olduÄŸu Wi-Fi aÄŸÄ±ndan koparÄ±r. Cihaz farklÄ± bir aÄŸa baÄŸlanmak iÃ§in baÄŸlanma moduna (BLE provisioning) geÃ§er. Sunucu eÅŸleÅŸmesi (MQTT credential, deviceSecret) ve NVC credential'larÄ± korunur. AUTH_TAG zorunludur.
+  POST https://api.onloi.com/v1/devices/78356203936/wifi-resetResponse 202 Accepted{
+  "requestId": 4660,
+  "state": "QUEUED",
+  "cmd": "WIFI_RESET",
+  "message": "Cihaza ulaÅŸmak iÃ§in butona basÄ±n"
+}Sunucu â†’ Cihaz (publish, QoS 1) â€” Topic: onloi/v1/d/78356203936/cmdSunucu â†’ CihazCMD: WIFI_RESET 0x58MSG_TYPE: COMMAND (0x04)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x00001234Komut takip id4reasonuint810x010x01=mobil appFrame parse
+
+  4F0204580100000500000001954CD99EA90000123401DEADBEEFCAFEBABE0061
+  SOFVERTYPECMDSEQLENSTTSPAYLOADAUTHCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x04COMMANDCMD0x58WIFI_RESETSEQ256SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN55 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD5 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakAUTH_TAG8 byteHMAC-SHA256(deviceSecret, header||payload) â€” ilk 8 byteCRC160x00 61CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+AUTH_TAG frame sonunda, CRC16'dan Ã¶nce gelir.Cihaz â†’ Sunucu â€” ACK RECEIVEDCihaz â†’ SunucuCMD: ACK 0x05MSG_TYPE: ACK (0x05)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x00001234Komut requestId4ackPhaseuint810x010x01=RECEIVED5cmdEchouint810x58WIFI_RESET6detailCodeuint810x000x00=baÅŸarÄ±lÄ±Frame parse
+
+  4F0205580100000700000001954CD99EA900001234015800DE2D
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x05ACKCMD0x58WIFI_RESETSEQ256SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN77 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD7 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160xDE 2DCRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+Cihaz â†’ Sunucu â€” ACK COMPLETEDCihaz â†’ SunucuCMD: ACK 0x05MSG_TYPE: ACK (0x05)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x00001234Komut requestId4ackPhaseuint810x030x03=COMPLETED5cmdEchouint810x58WIFI_RESET6detailCodeuint810x000x00=baÅŸarÄ±lÄ±Frame parse
+
+  4F0205580100000700000001954CD99EA900001234035800B04D
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x05ACKCMD0x58WIFI_RESETSEQ256SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN77 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD7 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160xB0 4DCRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+ACK COMPLETED, Wi-Fi kesilmeden Ã¶nce gÃ¶nderilir.ArdÄ±ndan cihaz mevcut aÄŸdan Ã§Ä±kar ve baÄŸlanma moduna geÃ§er (BLE ile yeni Wi-Fi yapÄ±landÄ±rÄ±labilir).Sunucu eÅŸleÅŸmesi ve NVC credential'larÄ± silinmez.
+
+
+  
+    38
+    SERVER_DISCONNECT â€” EÅŸleÅŸme SÄ±fÄ±rlama
+    MQTT Frame
+  
+  Cihaz Onloi app'ten silindiÄŸinde gÃ¶nderilir. App, sunucu ve aÄŸ eÅŸleÅŸmeleri sÄ±fÄ±rlanÄ±r (Wi-Fi ayarlarÄ±, MQTT credential, deviceSecret, provisioning state). NVC'de kayÄ±tlÄ± PIN/NFC/parmak izi/QR credential'larÄ± ve deviceCode silinmez. FACTORY_RESET'ten farklÄ±dÄ±r â€” yalnÄ±zca eÅŸleÅŸtirme bilgileri temizlenir. AUTH_TAG zorunludur.
+  DELETE https://api.onloi.com/v1/devices/78356203936Response 202 Accepted{
+  "requestId": 4660,
+  "state": "QUEUED",
+  "cmd": "SERVER_DISCONNECT",
+  "message": "Cihaza ulaÅŸmak iÃ§in butona basÄ±n"
+}Sunucu â†’ Cihaz (publish, QoS 1) â€” Topic: onloi/v1/d/78356203936/cmdSunucu â†’ CihazCMD: SERVER_DISCONNECT 0x59MSG_TYPE: COMMAND (0x04)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x00001234Komut takip id4reasonuint810x010x01=mobil app (cihaz silindi)Frame parse
+
+  4F0204590100000500000001954CD99EA90000123401DEADBEEFCAFEBABE1507
+  SOFVERTYPECMDSEQLENSTTSPAYLOADAUTHCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x04COMMANDCMD0x59SERVER_DISCONNECTSEQ256SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN55 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD5 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakAUTH_TAG8 byteHMAC-SHA256(deviceSecret, header||payload) â€” ilk 8 byteCRC160x15 07CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+AUTH_TAG frame sonunda, CRC16'dan Ã¶nce gelir.Cihaz â†’ Sunucu â€” ACK RECEIVEDCihaz â†’ SunucuCMD: ACK 0x05MSG_TYPE: ACK (0x05)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x00001234Komut requestId4ackPhaseuint810x010x01=RECEIVED5cmdEchouint810x59SERVER_DISCONNECT6detailCodeuint810x000x00=baÅŸarÄ±lÄ±Frame parse
+
+  4F0205590100000700000001954CD99EA90000123401590038EA
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x05ACKCMD0x59SERVER_DISCONNECTSEQ256SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN77 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD7 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x38 EACRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+Cihaz â†’ Sunucu â€” ACK COMPLETEDCihaz â†’ SunucuCMD: ACK 0x05MSG_TYPE: ACK (0x05)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x00001234Komut requestId4ackPhaseuint810x030x03=COMPLETED5cmdEchouint810x59SERVER_DISCONNECT6detailCodeuint810x000x00=baÅŸarÄ±lÄ±Frame parse
+
+  4F0205590100000700000001954CD99EA900001234035900568A
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x05ACKCMD0x59SERVER_DISCONNECTSEQ256SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN77 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD7 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x56 8ACRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+ACK COMPLETED, eÅŸleÅŸme silinmeden Ã¶nce gÃ¶nderilir.Silinen: Wi-Fi ayarlarÄ±, MQTT credential, deviceSecret, provisioning state.Korunan: NVC credential'larÄ± (PIN/NFC/FP/QR) ve deviceCode.Cihaz baÄŸlanma moduna geÃ§er; yeniden app'e eklemek iÃ§in BLE provision gerekir.
+
+
+  
+    39
+    FACTORY_RESET â€” Fabrika SÄ±fÄ±rlama (Sunucu Komutu)
+    MQTT Frame
+  
+  Sunucu, cihazÄ± uzaktan fabrika ayarlarÄ±na dÃ¶ndÃ¼rÃ¼r. TÃ¼m kimlik bilgileri, Wi-Fi ayarlarÄ±, kayÄ±tlÄ± ÅŸifre/NFC/FP verileri silinir. SERVER_DISCONNECT'ten farklÄ± olarak NVC credential'larÄ± da silinir. Yerel tuÅŸ kombinasyonu ile yapÄ±lan sÄ±fÄ±rlama iÃ§in LOCAL_FACTORY_RESET (0x61) kullanÄ±lÄ±r â€” o cihazâ†’sunucu EVENT'tir. GÃ¼venlik iÃ§in AUTH_TAG zorunludur.
+  Sunucu â†’ Cihaz (publish, QoS 1) â€” Topic: onloi/v1/d/78356203936/cmdSunucu â†’ CihazCMD: FACTORY_RESET 0x50MSG_TYPE: COMMAND (0x04)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x00000001Komut takip id4AUTH_TAGbytes8AA BB CC ...HMAC-SHA256 imzasÄ± â€” eksikse cihaz komutu reddederFrame parse
+
+  4F0204500001000400000000000000000000000001AABBCCDDEEFF11227DE8
+  SOFVERTYPECMDSEQLENSTTSPAYLOADAUTHCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x04COMMANDCMD0x50FACTORY_RESETSEQ1SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN44 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD4 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakAUTH_TAG8 byteHMAC-SHA256(deviceSecret, header||payload) â€” ilk 8 byteCRC160x7D E8CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+Cihaz â†’ Sunucu â€” ACK COMPLETEDCihaz â†’ SunucuCMD: ACK 0x05MSG_TYPE: ACK (0x05)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x00000001Komut requestId4ackPhaseuint810x030x03=COMPLETED â€” sÄ±fÄ±rlama tamamlandÄ±5cmdEchouint810x50FACTORY_RESET6detailCodeuint810x000x00=baÅŸarÄ±lÄ±Frame parse
+
+  4F0205050001000700000000000000000000000001035000ECFF
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x05ACKCMD0x05ACKSEQ1SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN77 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD7 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160xEC FFCRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+ACK gÃ¶nderildikten sonra cihaz anÄ±nda sÄ±fÄ±rlanÄ±r ve MQTT baÄŸlantÄ±sÄ±nÄ± keser. Yeniden provision gerekir.
+
+
+  
+    40
+    LOCAL_FACTORY_RESET â€” Yerel Fabrika SÄ±fÄ±rlama Bildirimi
+    MQTT Frame
+  
+  KullanÄ±cÄ± cihaz Ã¼zerinde tuÅŸ kombinasyonu ile fabrika ayarlarÄ±na dÃ¶ndÃ¼rdÃ¼ÄŸÃ¼nde cihaz, sunucuya 'fabrika ayarlarÄ±na dÃ¶ndÃ¼rÃ¼ldÃ¼m' bilgisini gÃ¶nderir. Sunucu hiÃ§bir komut gÃ¶ndermez â€” iÅŸlem tamamen kullanÄ±cÄ± mÃ¼dahalesiyle cihazda baÅŸlar. FACTORY_RESET (0x50) sunucuâ†’cihaz COMMAND'Ä±ndan farklÄ±dÄ±r; bu cihazâ†’sunucu EVENT'tir.
+  Cihaz â†’ Sunucu (publish, QoS 1) â€” Topic: onloi/v1/d/78356203936/lifecycleCihaz â†’ SunucuCMD: LOCAL_FACTORY_RESET 0x61MSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0reasonuint810x010x01=tuÅŸ kombinasyonu (kullanÄ±cÄ± mÃ¼dahalesi)Frame parse
+
+  4F020361000C000100000001954CD99EA9019954
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x03EVENTCMD0x61LOCAL_FACTORY_RESETSEQ12SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN11 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD1 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x99 54CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+Event, MQTT baÄŸlantÄ±sÄ± hÃ¢lÃ¢ aÃ§Ä±kken ve veri silinmeden hemen Ã¶nce gÃ¶nderilir.ArdÄ±ndan cihaz tÃ¼m veriyi (eÅŸleÅŸme + NVC credential) siler ve baÄŸlanma moduna geÃ§er.Sunucu bu event'i alÄ±nca cihazÄ± app/hesap eÅŸleÅŸmesinden dÃ¼ÅŸÃ¼rmelidir (unbind).FACTORY_RESET (0x50) ile karÄ±ÅŸtÄ±rÄ±lmamalÄ±: o sunucunun uzaktan sÄ±fÄ±rlama komutudur.
+
+
+
+  Offline EriÅŸim LoglarÄ±
+  
+
+  
+    41
+    OFFLINE_LOG_BATCH â€” Toplu EriÅŸim Logu
+    MQTT Frame
+  
+  Cihaz offline Ã§alÄ±ÅŸÄ±rken (sunucuya sormadan kendi hafÄ±zasÄ±ndaki bilgilerle) gerÃ§ekleÅŸen tÃ¼m eriÅŸim olaylarÄ±nÄ± saklar. MQTT baÄŸlantÄ±sÄ± kurulunca bu loglarÄ± toplu olarak gÃ¶nderir. En fazla 250 kayÄ±t gÃ¶nderilebilir. Her kayÄ±t sabit 13 byte'tÄ±r: timestamp(8) + accessMethod(1) + localId(3) + result(1). localId alanÄ±nÄ±n anlamÄ± accessMethod'a gÃ¶re belirlenir: PIN â†’ girilen ÅŸifrenin kendisi (Ã¶r. 79654), NFC â†’ karta programlanan personelID/customerID/userID, Parmak Ä°zi â†’ cihazÄ±n tanÄ±mlama sÄ±rasÄ±nda atadÄ±ÄŸÄ± slot id, QR â†’ otel kilidinde userID (NFC gibi); genel modda PIN gibi QR metninin ilk 3 byte'Ä±. Otel/genel mod ayrÄ±mÄ± sunucu tarafÄ±nda Onloi Admin katalog ayarlarÄ±nda (isHotelLock) belirtilir.
+  Cihaz â†’ Sunucu (publish, QoS 1) â€” Topic: onloi/v1/d/78356203936/logCihaz â†’ SunucuCMD: OFFLINE_LOG_BATCH 0x35MSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0countuint810x02Log kaydÄ± sayÄ±sÄ± (1â€“250). AÅŸaÄŸÄ±daki kayÄ±t bu kadar tekrar eder.1â”€â”€ entry[n] â”€â”€â”€13â”€â”€Her kayÄ±t sabit 13 byte1+nÃ—13timestampuint64 BE80x000001954CD99EA9EriÅŸim anÄ±, Unix ms9+nÃ—13accessMethoduint810x010x01=PIN, 0x02=NFC, 0x03=Parmak Ä°zi, 0x04=QR10+nÃ—13localIdbyte[3]300 B2 6EEriÅŸim kimliÄŸi â€” PIN: ÅŸifre (45678â†’0x00B26E), NFC: kart kimliÄŸi (10023â†’0x002727), FP: slot id, QR: otel userID veya genel mod QR metni13+nÃ—13resultuint810x000x00=kilit aÃ§Ä±ldÄ±, 0x01=eÅŸleÅŸme bulunamadÄ±, 0x02=kilitli zaman dilimiFrame parse
+
+  4F0203350001001B00000000000000000002000001954CD99EA90100B26E00000001954CE75A4902002727007AD6
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x03EVENTCMD0x35OFFLINE_LOG_BATCHSEQ1SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN2727 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD27 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x7A D6CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+Sunucu â†’ Cihaz (publish, QoS 1) â€” Topic: onloi/v1/d/78356203936/replySunucu â†’ CihazCMD: OFFLINE_LOG_BATCH 0x35MSG_TYPE: RESPONSE (0x02)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0accepteduint16 BE20x0002BaÅŸarÄ±yla kaydedilen log sayÄ±sÄ±2errorCodeuint810x000x00=tÃ¼mÃ¼ kaydedildi, 0x01=kÄ±smi kayÄ±p (sunucu hatasÄ±), 0x02=tÃ¼mÃ¼ baÅŸarÄ±sÄ±zFrame parse
+
+  4F02023500010003000000000000000000000200547B
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x02RESPONSECMD0x35OFFLINE_LOG_BATCHSEQ1SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN33 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD3 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x54 7BCRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+Ã–rnek pakette 2 kayÄ±t var: (1) PIN, localId=45678 (0x00B26E), aÃ§Ä±ldÄ±; (2) NFC, localId=10023 (0x002727), aÃ§Ä±ldÄ±.KayÄ±tlar sabit boyutludur: sunucu count Ã— 13 byte ilerleyerek ayrÄ±ÅŸtÄ±rÄ±r.Sunucu localId deÄŸerini ilgili credential kaydÄ±nÄ±n deÄŸeriyle eÅŸleÅŸtirir (PIN/QR metni, parmak izi slot id, NFC/QR otel userID).SayÄ±sal kimlikler uint24 big-endian; genel mod QR metni UTF-8'in ilk 3 byte'Ä± (saÄŸdan 0x00 ile doldurulur).250'den fazla log varsa cihaz, en eski 250 kaydÄ± ilk pakette gÃ¶nderir. errorCode=0x00 alÄ±nca bunlarÄ± siler ve kalan loglar iÃ§in tekrar gÃ¶nderir.Sunucu, accepted deÄŸerini dÃ¶ndÃ¼rerek hangi loglarÄ±n iÅŸlendiÄŸini bildirir.
+
+
+
+  Firmware GÃ¼ncelleme (OTA) â€” MQTT kontrol + HTTPS indirme
+  
+
+  
+    42
+    OTA â€” Mimari Ã–zet
+    MQTT + HTTPS
+  
+  Firmware gÃ¼ncellemede iki kanal kullanÄ±lÄ±r: MQTT komut ve durumu taÅŸÄ±r; firmware dosyasÄ± HTTPS ile indirilir. GÃ¼ncellenecek birim firmwareTarget ile seÃ§ilir: ESP (0x01), STM (0x02), BLE-only alt cihaz (0x03).
+  Cihaz tÃ¼rÃ¼ notu: ÃœÃ§ senaryo aynÄ± OTA komut setini kullanÄ±r.
+      
+        YalnÄ±zca ESP: target 0x01. STM/BLE-sub yollarÄ± yok.
+        ESP + STM: kendi ESPâ€™si 0x01; STM imajÄ± 0x02 (ESP staging â†’ UART).
+        Gateway + BLE-only sub: GW kendi FWâ€™si 0x01. Alt cihaz Wi-Fi/HTTPS yapamÄ±yorsa target 0x03: imajÄ± GW indirir, BLE ile yazar. Alt cihazÄ±n kendi Wi-Fiâ€™si varsa o cihaz kendi deviceIdâ€™si ile 0x01 kullanÄ±r; 0x03 deÄŸildir.
+      
+      Desteklenmeyen target â†’ TARGET_INVALID (0x04). Sunucu Product ID / deviceCode kataloÄŸundan geÃ§erli targetâ€™Ä± seÃ§er.
+    Kurallar:
+      
+        Sunucu veya cihaz gÃ¼ncellemeyi MQTT ile baÅŸlatÄ±r (FIRMWARE_UPDATE / FIRMWARE_UPDATE_REQUEST).
+        Sunucu imzalÄ± HTTPS URL + sÃ¼rÃ¼m, boyut, SHA-256, CRC32 meta bilgisini MQTT komutuyla gÃ¶nderir.
+        Ä°ndiren taraf (cihaz veya GW) dosyayÄ± HTTPS ile alÄ±r; flashâ€™a yazar; SHA-256 + CRC32 doÄŸrular.
+        0x01 / 0x02 / 0x03: indirme + doÄŸrulama sonrasÄ± cihaz/GW self-apply (ESP flash / STM UART / BLE aktarÄ±m).
+        0x03 iÃ§in subDeviceId ve/veya subMac dolu olmalÄ±dÄ±r (aÅŸaÄŸÄ±daki seÃ§im kuralÄ±).
+        Product ID / Hardware Revision uyuÅŸmazsa red.
+        Ä°lerleme FIRMWARE_STATUS ile MQTTâ€™den bildirilir.
+      
+    CMDHexYÃ¶nAÃ§Ä±klamaKapsam
+      FIRMWARE_UPDATE_REQUEST0x38Cihazâ†’SunucuIoT menÃ¼sÃ¼nden FW gÃ¼ncelle isteÄŸiTÃ¼m (kendi birimleri)
+      FIRMWARE_STATUS0x39Cihazâ†’SunucuÄ°lerleme / sonuÃ§TÃ¼m
+      FIRMWARE_INFO0x3ACihazâ†’SunucuFW raporu (entry baÅŸÄ±na target + deviceId)TÃ¼m / GWâ†’sub
+      FIRMWARE_UPDATE0x53Sunucuâ†’CihazÄ°mzalÄ± URL + meta (HMAC)TÃ¼m targetâ€™lar
+      FIRMWARE_ABORT0x5ASunucuâ†’CihazÄ°ptalTÃ¼m
+      GET_FIRMWARE_INFO0x5CSunucuâ†’CihazSÃ¼rÃ¼m sorgusu (HMAC; target + deviceId)TÃ¼m / GWâ†’sub
+    TargetHexAnlamNe zaman
+      UNIT1_ESP0x01ESP OTA partitionTÃ¼m cihazlar (kendi ESP FW)
+      UNIT2_STM0x02STM imajÄ± (ESP staging â†’ UART)STMâ€™li Ã¼rÃ¼nler
+      UNIT3_BLE_SUB0x03BLE-only alt cihaz (GW staging â†’ BLE)Gateway / parent ESP; subDeviceId veya subMac zorunlu
+    0x03 alt cihaz seÃ§imi (FIRMWARE_UPDATE): subDeviceId (16 byte ASCII) ve subMac (6 byte) alanlarÄ±ndan en az biri dolu olmalÄ±dÄ±r. Ä°kisi de doluysa gateway Ã¶nce subDeviceId ile eÅŸleÅŸtirir; bulamazsa subMac + subAddrType dener. YalnÄ±zca biri doluysa o kullanÄ±lÄ±r. Ä°kisi de boÅŸsa SUB_ADDR_REQUIRED (0x10).GET_FIRMWARE_INFO / FIRMWARE_INFO: Her iki komutta da firmwareTarget ve deviceId zorunlu (INFOâ€™da entry baÅŸÄ±na). deviceId anlamÄ± targetâ€™a baÄŸlÄ±: 0x01â†’ESP id, 0x02â†’STM id, 0x03â†’BLE-sub id. GETâ€™te 0x00=o deviceId baÄŸlamÄ±ndaki yerel birimler (ESP+STM birlikte cevaplanabilir). Cevap event topicâ€™inde FIRMWARE_INFO (0x3A) gelir.Sunucu â†’ Cihaz â€” Topic: onloi/v1/d/78356203936/cmd â€” ESP / ESP+STMSunucu â†’ CihazCMD: GET_FIRMWARE_INFO 0x5CMSG_TYPE: COMMAND (0x04)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x00003050Sunucu istek id4firmwareTargetuint810x000x00=yerel birimler (ESP+STM); 0x01/02/03=tek target5deviceIdASCII1678356203936\0â€¦Sorgulanacak birimin idâ€™si (targetâ€™a gÃ¶re)21AUTH_TAGbytes8DE AD â€¦HMAC â€” PAYLOAD_LEN dÄ±ÅŸÄ±Sunucu â†’ GW â€” Topic: onloi/v1/d/{gwId}/cmd â€” BLE-subSunucu â†’ GWCMD: GET_FIRMWARE_INFO 0x5CMSG_TYPE: COMMAND (0x04)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x00003051Sunucu istek id4firmwareTargetuint810x03UNIT3_BLE_SUB5deviceIdASCII1640119203871\0â€¦BLE-sub deviceId (zorunlu)21AUTH_TAGbytes8DE AD â€¦HMACtarget=0x03 iken deviceId boÅŸsa hata. Peer yoksa SUB_NOT_FOUND.Cihaz/GW â†’ Sunucu â€” Topic: onloi/v1/d/â€¦/eventCihaz â†’ SunucuCMD: FIRMWARE_INFO 0x3AMSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x00003050GET ile aynÄ± id (unsolicitedâ€™te 0 olabilir)4countuint810x02Takip eden kayÄ±t sayÄ±sÄ± (ESP+STM â†’ 2)5 + iÃ—24firmwareTargetuint810x01 / 0x020x01=ESP, 0x02=STM, 0x03=BLE-sub6 + iÃ—24deviceIdASCII1678356203936\0â€¦Bu entryâ€™nin birim idâ€™si22 + iÃ—24versionuint32 BE40x00010005Ã‡alÄ±ÅŸan FW sÃ¼rÃ¼mÃ¼26 + iÃ—24productIduint16 BE20x0310ÃœrÃ¼n ailesi28 + iÃ—24hardwareRevisionuint810x01Kart revizyonuHer entry kendi firmwareTarget + deviceId taÅŸÄ±r â€” GET ile aynÄ± semantik.ESP+STM Ã¼rÃ¼nler tek FIRMWARE_INFOâ€™da iki entry gÃ¶nderebilir.
+
+
+  
+    43
+    OTA â€” Mobil / Sunucu Tetikleme
+    HTTPS
+  
+  Cihaz detay â†’ FW gÃ¼ncelle. Bodyâ€™de firmwareTarget ve (0x03 ise) alt cihaz kimliÄŸi gÃ¶nderilir.
+  POST https://api.onloi.com/v1/devices/78356203936/firmware/updateRequest Body{
+  "firmwareTarget": 1,
+  "version": null
+}Response 202 Accepted{
+  "requestId": 12304,
+  "state": "QUEUED",
+  "cmd": "FIRMWARE_UPDATE"
+}firmwareTarget: 1=ESP, 2=STM, 3=BLE-sub. Target 3 Ã¶rneÄŸi: { firmwareTarget: 3, subDeviceId: "40119203871", subMac: null, version: null } veya yalnÄ±zca subMac. {id} pathâ€™i GW/parent deviceIdâ€™dir.
+
+
+  
+    44
+    OTA â€” Cihaz MenÃ¼sÃ¼nden Ä°stek
+    MQTT Frame
+  
+  KullanÄ±cÄ± IoT Ã¼zerinde FW gÃ¼ncelle seÃ§er. STMâ€™siz / BLE-sub menÃ¼sÃ¼ olmayan cihaz yalnÄ±zca 0x01 ister.
+  Cihaz â†’ Sunucu (publish, QoS 1) â€” Topic: onloi/v1/d/78356203936/eventCihaz â†’ SunucuCMD: FIRMWARE_UPDATE_REQUEST 0x38MSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x00003001CihazÄ±n Ã¼rettiÄŸi istek id4firmwareTargetuint810x010x01=ESP; 0x02=STM (varsa)5currentVersionuint32 BE40x00010002Mevcut FW sÃ¼rÃ¼mÃ¼9productIduint16 BE20x0310ÃœrÃ¼n ailesi11hardwareRevisionuint810x01Kart revizyonuFrame parse
+
+  4F0203380050000C00000001954CD99EA9000030010100010002031001C9D3
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x03EVENTCMD0x38FIRMWARE_UPDATE_REQUESTSEQ80SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN1212 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD12 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160xC9 D3CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+BLE-only sub gÃ¼ncellemesi genelde mobil/adminâ€™den GW deviceIdâ€™sine target=0x03 ile baÅŸlatÄ±lÄ±r.
+
+
+  
+    45
+    OTA â€” FIRMWARE_UPDATE Komutu
+    MQTT Frame
+  
+  Sunucu imzalÄ± HTTPS URL + meta gÃ¶nderir. subDeviceId / subMac / subAddrType alanlarÄ± her frameâ€™de sabittir; targetâ‰ 0x03 iken sÄ±fÄ±rlanÄ±r. AUTH_TAG PAYLOAD_LEN dÄ±ÅŸÄ±ndadÄ±r (CRC16â€™dan hemen Ã¶nce).
+  Sunucu â†’ Cihaz (publish, QoS 1) â€” Topic: onloi/v1/d/78356203936/cmd â€” target 0x01 (ESP)Sunucu â†’ CihazCMD: FIRMWARE_UPDATE 0x53MSG_TYPE: COMMAND (0x04)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x00003010Sunucu komut id4firmwareTargetuint810x010x01=ESP, 0x02=STM, 0x03=BLE-sub5productIduint16 BE20x0310Hedef birim Product ID (0x03â€™te alt cihazÄ±nki)7hardwareRevisionuint810x01Hedef birim HW rev8subDeviceIdASCII160x00â€¦ (16)Alt cihaz deviceId; targetâ‰ 0x03 ise tÃ¼mÃ¼ 0x0024subMacbytes600:00:00:00:00:00Alt cihaz BLE MAC; kullanÄ±lmÄ±yorsa sÄ±fÄ±r30subAddrTypeuint810x000x00=public, 0x01=random (subMac ile)31firmwareVersionuint32 BE40x00010003Hedef FW sÃ¼rÃ¼mÃ¼35plainFwLengthuint32 BE40x00180000Bin boyutu39plainFwSha256bytes32AAÃ—32Beklenen SHA-256 (Ã¶rnekte AA doldurma)71plainFwCrc32uint32 BE40x4A3C9F12Beklenen CRC3275urlExpiresAtuint64 BE8Unix msURL son geÃ§erlilik83urlLenuint16 BE20x003CURL uzunluÄŸu (Ã¶rnek 60)85urlASCIIurlLenhttps://api.onloi.com/v1/firmware/ota/job-9f3a?token=eyJdemoÄ°mzalÄ± HTTPS URL85+NAUTH_TAGbytes8DE AD â€¦HMAC â€” PAYLOAD_LENâ€™e dahil deÄŸilFrame parse
+
+  4F0204530051009100000001954CD99EA9000030100103100100000000000000000000000000000000000000000000000001000300180000AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4A3C9F12000001954CE75A49003C68747470733A2F2F6170692E6F6E6C6F692E636F6D2F76312F6669726D776172652F6F74612F6A6F622D396633613F746F6B656E3D65794A64656D6FDEADBEEFCAFEBABE1595
+  SOFVERTYPECMDSEQLENSTTSPAYLOADAUTHCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x04COMMANDCMD0x53FIRMWARE_UPDATESEQ81SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN145145 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD145 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakAUTH_TAG8 byteHMAC-SHA256(deviceSecret, header||payload) â€” ilk 8 byteCRC160x15 95CRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+Frame parse: renkli byte satÄ±rÄ± header / PAYLOAD / AUTH_TAG / CRC16 ayrÄ±mÄ±nÄ± gÃ¶sterir.Desteklenmeyen target â†’ TARGET_INVALID.Sunucu â†’ Cihaz â€” Topic: onloi/v1/d/78356203936/cmd â€” target 0x03 (BLE-sub)Sunucu â†’ CihazCMD: FIRMWARE_UPDATE 0x53MSG_TYPE: COMMAND (0x04)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x00003010Sunucu komut id4firmwareTargetuint810x03UNIT3_BLE_SUB5productIduint16 BE20x0310Alt cihaz Product ID7hardwareRevisionuint810x01Alt cihaz HW rev8subDeviceIdASCII1640119203871\0â€¦Dolu â€” GW Ã¶nce bununla eÅŸleÅŸtirir24subMacbytes6AA:BB:CC:DD:EE:0FDolu â€” deviceId bulunamazsa fallback30subAddrTypeuint810x00public31â€¦â€¦â€¦(ESP Ã¶rneÄŸiyle aynÄ±)version â†’ url alanlarÄ± aynÄ± layout85+NAUTH_TAGbytes8DE AD â€¦HMAC â€” zorunluFrame parse
+
+  4F0204530052009100000001954CD99EA9000030100303100134303131393230333837310000000000AABBCCDDEE0F000001000300180000AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4A3C9F12000001954CE75A49003C68747470733A2F2F6170692E6F6E6C6F692E636F6D2F76312F6669726D776172652F6F74612F6A6F622D396633613F746F6B656E3D65794A64656D6FDEADBEEFCAFEBABE6AFD
+  SOFVERTYPECMDSEQLENSTTSPAYLOADAUTHCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x04COMMANDCMD0x53FIRMWARE_UPDATESEQ82SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN145145 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD145 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakAUTH_TAG8 byteHMAC-SHA256(deviceSecret, header||payload) â€” ilk 8 byteCRC160x6A FDCRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+0x03: indirmeyi parent/GW yapar. subDeviceId veya subMac en az biri dolu olmalÄ±; ikisi boÅŸsa SUB_ADDR_REQUIRED.Peer bulunamazsa SUB_NOT_FOUND.
+
+
+  
+    46
+    OTA â€” HTTPS Ä°ndirme GÃ¼venliÄŸi
+    HTTPS
+  
+  URLâ€™yi bilmek yetmez. Ä°ndirme endpointâ€™i imzalÄ±, kÄ±sa Ã¶mÃ¼rlÃ¼ ve deviceIdâ€™ye baÄŸlÄ± token ister.
+  GÃ¼venlik katmanlarÄ±:
+    
+      TLS zorunlu (https://api.onloi.com/v1/firmware)
+      Pre-signed token: deviceId (parent/GW veya self), jobId, sha256, exp, HMAC
+      TTL varsayÄ±lan 900 sn
+      Ä°ndirme bitince SHA-256 + CRC32; uyuÅŸmazsa apply yok
+    GET https://api.onloi.com/v1/firmware/ota/job-9f3a?token=eyJâ€¦&amp;exp=â€¦&amp;sig=â€¦Response 200 OK (application/octet-stream)target 0x01 â†’ OTA partition; 0x02/0x03 â†’ staging flash (parent). Token geÃ§ersizse 401/403.
+
+
+  
+    47
+    OTA â€” FIRMWARE_STATUS
+    MQTT Frame
+  
+  Ä°lerleme ve sonuÃ§. STM stateâ€™leri 0x23â€“0x25; BLE-sub stateâ€™leri 0x33â€“0x35 yalnÄ±zca ilgili targetâ€™ta gÃ¶rÃ¼lÃ¼r.
+  Cihaz â†’ Sunucu (publish, QoS 1) â€” Topic: onloi/v1/d/78356203936/eventCihaz â†’ SunucuCMD: FIRMWARE_STATUS 0x39MSG_TYPE: EVENT (0x03)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x00003010OTA requestId4firmwareTargetuint810x010x01 / 0x02 / 0x035stateuint810x02Durum kodu (Ã¶rnek: DOWNLOADING)6progressPctuint810x2D0â€“100 (Ã¶rnek %45)7errorCodeuint810x000x00=yok8bytesTransferreduint32 BE40x000C0000Ä°ndirilen/iÅŸlenen byte12reportedVersionuint32 BE40x00010003COMPLETED sonrasÄ± yeni sÃ¼rÃ¼mFrame parse
+
+  4F0203390053001000000001954CD99EA90000301001022D00000C000000010003425B
+  SOFVERTYPECMDSEQLENSTTSPAYLOADCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x03EVENTCMD0x39FIRMWARE_STATUSSEQ83SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN1616 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD16 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakCRC160x42 5BCRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+stateHexAÃ§Ä±klamaKapsam
+      IDLE0x00Aktif yokTÃ¼m
+      ACCEPTED0x01KabulTÃ¼m
+      DOWNLOADING0x02HTTPS indirmeTÃ¼m
+      VERIFYING0x03SHA-256 / CRC32TÃ¼m
+      DOWNLOAD_VERIFIED0x04Dosya doÄŸrulandÄ±TÃ¼m
+      ESP_APPLYING0x10ESP apply / reboot0x01
+      STM32_IMAGE_READY0x23STM staging hazÄ±r (bilgi; self-apply baÅŸlar)0x02
+      STM32_TRANSFERRING0x24UART yazma0x02
+      STM32_VERIFYING0x25STM CRC0x02
+      BLE_SUB_IMAGE_READY0x33BLE-sub staging hazÄ±r (bilgi; self-apply baÅŸlar)0x03
+      BLE_SUB_TRANSFERRING0x34BLE yazma0x03
+      BLE_SUB_VERIFYING0x35Alt cihaz doÄŸrulama0x03
+      COMPLETED0x06BaÅŸarÄ±lÄ±TÃ¼m
+      FAILED0x07BaÅŸarÄ±sÄ±zTÃ¼m
+      ABORTED0x08Ä°ptalTÃ¼m
+    ESP: â€¦ â†’ ESP_APPLYING â†’ COMPLETED. STM: â€¦ â†’ (STM32_IMAGE_READY) â†’ TRANSFERRING â†’ VERIFYING â†’ COMPLETED. BLE-sub: â€¦ â†’ (BLE_SUB_IMAGE_READY) â†’ TRANSFERRING â†’ VERIFYING â†’ COMPLETED. TÃ¼m targetâ€™larda indirme doÄŸrulandÄ±ktan sonra cihaz/GW yÃ¼klemeyi kendisi baÅŸlatÄ±r.
+
+
+  
+    48
+    OTA â€” Self-apply: ESP / STM / BLE-sub
+    Cihaz iÃ§i
+  
+  Ä°ndirme doÄŸrulandÄ±ktan sonra cihaz/GW yÃ¼klemeyi kendisi baÅŸlatÄ±r.
+  ESP (0x01): indirme sonrasÄ± cihaz kendi apply/reboot sÃ¼recini baÅŸlatÄ±r.
+      STM (0x02): indirme + doÄŸrulama sonrasÄ± ESP otomatik UART ile STMâ€™ye yazar.
+      BLE-sub (0x03): indirme + doÄŸrulama sonrasÄ± GW otomatik BLE ile alt cihaza yazar (cihaz iÃ§i / Ã¼rÃ¼n-Ã¶zel frameâ€™ler; MQTTâ€™ye taÅŸÄ±nmaz).
+
+
+  
+    49
+    OTA â€” FIRMWARE_ABORT
+    MQTT Frame
+  
+  Aktif indirme/apply iptal. TÃ¼m targetâ€™larda geÃ§erli.
+  POST https://api.onloi.com/v1/devices/78356203936/firmware/abortRequest Body{
+  "requestId": 12304
+}Response 202 Accepted{
+  "requestId": 12304,
+  "state": "QUEUED",
+  "cmd": "FIRMWARE_ABORT"
+}Sunucu â†’ Cihaz â€” Topic: onloi/v1/d/78356203936/cmdSunucu â†’ CihazCMD: FIRMWARE_ABORT 0x5AMSG_TYPE: COMMAND (0x04)OffsetAlanTipBoyutÃ–rnekAÃ§Ä±klama0requestIduint32 BE40x00003010Ä°ptal edilecek OTA requestId4reasonuint810x010x01=mobil/admin iptali5AUTH_TAGbytes8DE AD â€¦HMAC â€” PAYLOAD_LEN dÄ±ÅŸÄ±Frame parse
+
+  4F02045A0055000500000001954CD99EA90000301001DEADBEEFCAFEBABE2FAC
+  SOFVERTYPECMDSEQLENSTTSPAYLOADAUTHCRC
+  AlanDeÄŸerAÃ§Ä±klamaSOF0x4F"O" â€” frame baÅŸlangÄ±Ã§ iÅŸaretiVER0x02Protokol versiyonu 2MSG_TYPE0x04COMMANDCMD0x5AFIRMWARE_ABORTSEQ85SÄ±ra numarasÄ± â€” reply'de aynÄ± deÄŸer dÃ¶nerPAYLOAD_LEN55 byte payloadSTATUS0x000x00 = OKTIMESTAMP8 byteUnix ms â€” cihaz gÃ¶nderirken 0 gÃ¶nderebilirPAYLOAD5 byteMesaj iÃ§eriÄŸi â€” payload tablosuna bakAUTH_TAG8 byteHMAC-SHA256(deviceSecret, header||payload) â€” ilk 8 byteCRC160x2F ACCRC16-CCITT (SOFâ†’payload son byte Ã¼zerinden)
+FIRMWARE_STATUS state=ABORTED. AUTH_TAG frame sonunda, CRC16â€™dan Ã¶nce gelir.
+
+
+
+

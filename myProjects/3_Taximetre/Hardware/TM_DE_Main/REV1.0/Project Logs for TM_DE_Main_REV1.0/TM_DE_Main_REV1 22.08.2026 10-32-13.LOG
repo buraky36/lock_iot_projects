@@ -1,0 +1,8 @@
+Added Component: Designator=J6(HRS_DF12NB(3.0)-60DP-0.5V(51))
+Add component (AddParameter): Name = "Check_prices"; Value = "https://www.snapeda.com/parts/DF12NB(3.0)-60DP-0.5V(51)/Hirose/view-part/?ref=eda"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MF"; Value = "Hirose Electric Co Ltd"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MP"; Value = "DF12NB(3.0)-60DP-0.5V(51)"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "None"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "SnapEDA_Link"; Value = "https://www.snapeda.com/parts/DF12NB(3.0)-60DP-0.5V(51)/Hirose/view-part/?ref=snap"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = ""; VariantName = "[No Variations]"
+Added Member To Class: ClassName=TOP Member=Component J6 DF12NB(3.0)-60DP-0.5V(51)

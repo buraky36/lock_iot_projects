@@ -1,0 +1,40 @@
+Removed Pin From Net: NetName=GND Pin=C42-1
+Removed Pin From Net: NetName=GND Pin=C43-1
+Removed Pin From Net: NetName=GND Pin=C44-1
+Removed Pin From Net: NetName=+3V3DC Pin=C44-2
+Removed Pin From Net: NetName=GND Pin=C46-2
+Removed Pin From Net: NetName=GND Pin=C47-2
+Removed Pin From Net: NetName=GND Pin=C48-1
+Removed Pin From Net: NetName=GND Pin=C49-1
+Removed Pin From Net: NetName=GND Pin=C50-1
+Removed Pin From Net: NetName=GND Pin=C51-2
+Removed Pin From Net: NetName=GND Pin=C53-1
+Removed Pin From Net: NetName=GND Pin=C54-1
+Removed Pin From Net: NetName=GND Pin=C55-2
+Removed Pin From Net: NetName=GND Pin=C56-1
+Removed Pin From Net: NetName=GND Pin=C57-1
+Removed Pin From Net: NetName=GND Pin=C58-1
+Removed Pin From Net: NetName=GND Pin=J4-6
+Removed Pin From Net: NetName=GND Pin=J4-10
+Removed Pin From Net: NetName=GND Pin=J4-10
+Removed Pin From Net: NetName=GND Pin=J4-10
+Removed Pin From Net: NetName=GND Pin=J4-10
+Removed Pin From Net: NetName=+3V3DC Pin=R52-1
+Removed Pin From Net: NetName=GND Pin=U8-1
+Removed Pin From Net: NetName=+3V3DC Pin=U8-2
+Removed Pin From Net: NetName=+3V3DC Pin=U8-3
+Removed Pin From Net: NetName=GND Pin=U8-4
+Removed Pin From Net: NetName=GND Pin=U8-5
+Removed Pin From Net: NetName=GND Pin=U8-10
+Removed Pin From Net: NetName=+3V3DC Pin=U8-12
+Removed Pin From Net: NetName=GND Pin=U8-14
+Removed Pin From Net: NetName=+3V3DC Pin=U8-15
+Removed Pin From Net: NetName=GND Pin=U8-18
+Removed Pin From Net: NetName=+3V3DC Pin=U8-32
+Removed Pin From Net: NetName=GND Pin=U8-33
+Removed Pin From Net: NetName=GND Pin=U9-4
+Removed Pin From Net: NetName=GND Pin=Y1-2
+Removed Pin From Net: NetName=GND Pin=Y1-4
+Add Net: Net with name "LED_BLANK" already exists
+Add Net: Net with name "LED_DR_CLK" already exists
+Add Net: Net with name "LED_DR_LATCH" already exists

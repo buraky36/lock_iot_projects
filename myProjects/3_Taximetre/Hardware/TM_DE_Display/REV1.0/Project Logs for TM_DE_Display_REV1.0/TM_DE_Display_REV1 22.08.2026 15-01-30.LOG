@@ -1,0 +1,2423 @@
+Added Component: Designator=BT1(DB1092)
+Add component (AddParameter): Name = "Manufacturer"; Value = "CONNFLY"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "DS1092-04-B6P"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "Ozdisan"; VariantName = "[No Variations]"
+Added Component: Designator=C33(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10A105KA8NNNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "1uF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "25V"; VariantName = "[No Variations]"
+Added Component: Designator=C34(CAP_0805)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL21A226MPCLRNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "22uF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "10V"; VariantName = "[No Variations]"
+Added Component: Designator=C35(CAP_0805)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL21A226MPCLRNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "22uF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "10V"; VariantName = "[No Variations]"
+Added Component: Designator=C36(CAP_0805)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL21A226MPCLRNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "22uF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "10V"; VariantName = "[No Variations]"
+Added Component: Designator=C37(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung Electro-Mechanics America, Inc"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10B104KB8NNNL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "OZDISAN"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100nF"; VariantName = "[No Variations]"
+Added Component: Designator=C38(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung Electro-Mechanics America, Inc"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10B104KB8NNNL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "OZDISAN"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100nF"; VariantName = "[No Variations]"
+Added Component: Designator=C39(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung Electro-Mechanics America, Inc"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10B104KB8NNNL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "OZDISAN"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100nF"; VariantName = "[No Variations]"
+Added Component: Designator=C40(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung Electro-Mechanics America, Inc"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10B104KB8NNNL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "OZDISAN"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100nF"; VariantName = "[No Variations]"
+Added Component: Designator=C41(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10B104KB8NNNL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100nF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C42(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10B104KB8NNNL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100nF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C43(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10B104KB8NNNL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100nF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C44(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10B104KB8NNNL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100nF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C45(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10C150JB8NNNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "15pF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C46(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10C470JB8NNNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "47pF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C47(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10C181JB8NNNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "180pF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C48(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "SAMSUNG"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10C100CB8NNNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "Ozdisan"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "10pF"; VariantName = "[No Variations]"
+Added Component: Designator=C49(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10C470JB8NNNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "47pF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C50(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10C181JB8NNNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "180pF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C51(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "SAMSUNG"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10C100CB8NNNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "Ozdisan"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "10pF"; VariantName = "[No Variations]"
+Added Component: Designator=C52(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10C150JB8NNNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "15pF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C53(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung Electro-Mechanics America, Inc"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10C180JB8NNNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "OZDISAN"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "18pF"; VariantName = "[No Variations]"
+Added Component: Designator=C54(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung Electro-Mechanics America, Inc"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10C180JB8NNNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "OZDISAN"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "18pF"; VariantName = "[No Variations]"
+Added Component: Designator=C55(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10B104KB8NNNL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100nF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C56(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10B104KB8NNNL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100nF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C57(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung Electro-Mechanics America, Inc"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10C180JB8NNNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "OZDISAN"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "18pF"; VariantName = "[No Variations]"
+Added Component: Designator=C58(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung Electro-Mechanics America, Inc"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10C180JB8NNNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "OZDISAN"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "18pF"; VariantName = "[No Variations]"
+Added Component: Designator=C79(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10B104KB8NNNL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100nF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C80(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10B104KB8NNNL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100nF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C81(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10B104KB8NNNL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100nF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C82(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10B104KB8NNNL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100nF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C83(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10B104KB8NNNL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100nF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C84(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10B104KB8NNNL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100nF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C85(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10B104KB8NNNL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100nF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C86(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10B104KB8NNNL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100nF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C87(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10B104KB8NNNL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100nF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C88(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10B104KB8NNNL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100nF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C89(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10B104KB8NNNL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100nF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=C90(CAP_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Samsung"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CL10B104KB8NNNL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "100nF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage"; Value = "50V"; VariantName = "[No Variations]"
+Added Component: Designator=D13(SOD-123)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Nexperia USA Inc."; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "PMEG4010EGWJ"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "40V 1A"; VariantName = "[No Variations]"
+Added Component: Designator=D14(SOD-123F)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Comchip Technology"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "ATV02W5V0B-HF"; VariantName = "[No Variations]"
+Added Component: Designator=D15(SOD-123F)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Comchip Technology"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "ATV02W5V0B-HF"; VariantName = "[No Variations]"
+Added Component: Designator=D16(SOD-123F)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Comchip Technology"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "ATV02W5V0B-HF"; VariantName = "[No Variations]"
+Added Component: Designator=J3(AMPHENOL_10118194-0001LF)
+Add component (AddParameter): Name = "Check_prices"; Value = "https://www.snapeda.com/parts/10118194-0001LF/Amphenol+FCI/view-part/?ref=eda"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MF"; Value = "Amphenol ICC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MP"; Value = "10118194-0001LF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "None"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "SnapEDA_Link"; Value = "https://www.snapeda.com/parts/10118194-0001LF/Amphenol+FCI/view-part/?ref=snap"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=J4(microSD_2)
+Add component (AddParameter): Name = "Ordering"; Value = "https://www.ozdisan.com/konnektor-baglanti-elemanlari/sim-sd-kart-konnektorleri/sd-kart-konnektorleri/L-KLS1-TF-003-H1-85-R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number"; Value = "L-KLS1-TF-003-H1.85-R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Price"; Value = "0,26439"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Unit"; Value = "USD"; VariantName = "[No Variations]"
+Added Component: Designator=L4(LQM18PN1R0NC0L)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Murata Electronics"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "LQM18PN2R2NC0L"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "2.2uH"; VariantName = "[No Variations]"
+Added Component: Designator=L5(LQM18PN1R0NC0L)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Murata Electronics"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "LQM18PN2R2NC0L"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "2.2uH"; VariantName = "[No Variations]"
+Added Component: Designator=LED1(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED2(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED3(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED4(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED5(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED6(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED7(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED8(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED9(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED10(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED11(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED12(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED13(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED14(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED15(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED16(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED17(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED18(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED19(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED20(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED21(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED22(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED23(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED24(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED25(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED26(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED27(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED28(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED29(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED30(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED31(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED32(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED33(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED34(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED35(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED36(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED37(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED38(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED39(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED40(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED41(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED42(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED43(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED44(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED45(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED46(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED47(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED48(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED49(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED50(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED51(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED52(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED53(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED54(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED55(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED56(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED57(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED58(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED59(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED60(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED61(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED62(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED63(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED64(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED65(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED66(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED67(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED68(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED69(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED70(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED71(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED72(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED73(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED74(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED75(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED76(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED77(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED78(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED79(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED80(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED81(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED82(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED83(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED84(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED85(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED86(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED87(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED88(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED89(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED90(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED91(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED92(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED93(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED94(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED95(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED96(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED97(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED98(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED99(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED100(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED101(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED102(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED103(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED104(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED105(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED106(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED107(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED108(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED109(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED110(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED111(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED112(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED113(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED114(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED115(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED116(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED117(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED118(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED119(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED120(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED121(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED122(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED123(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED124(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED125(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED126(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED127(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED128(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED129(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED130(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED131(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED132(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED133(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED134(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED135(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED136(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED137(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED138(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED139(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED140(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED141(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED142(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED143(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED144(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED145(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED146(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED147(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED148(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED149(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED150(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED151(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED152(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED153(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED154(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED155(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED156(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED157(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED158(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED159(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED160(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED161(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED162(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED163(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED164(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED165(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED166(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED167(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED168(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED169(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED170(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED171(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "LITEON"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "LTW-C283DS5"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED172(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED173(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED174(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED175(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED176(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED177(L1MCRGB0028000MP0)
+Add component (AddParameter): Name = "Arrow Part Number"; Value = "L1MC-RGB0028000MP0"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/l1mc-rgb0028000mp0/lumileds.html?utm_currency=USD&region=nac"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet Link"; Value = "https://lumileds.com/wp-content/uploads/2022/03/DS388-luxeon-3528-rgb-datasheet.pdf"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Height"; Value = "1.85mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Name"; Value = "Lumileds"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Part_Number"; Value = "L1MC-RGB0028000MP0"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Part Number"; Value = "997-L1MCRGB00280MP"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/Lumileds/L1MC-RGB0028000MP0?qs=Znm5pLBrcAJSGF05jr80lQ%3D%3D"; VariantName = "[No Variations]"
+Added Component: Designator=LED178(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED179(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED180(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED181(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED182(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED183(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED184(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED185(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED186(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED187(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED188(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=LED189(APHHS1005LSECKJ3PF)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Kingbright"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "YLED0402R"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "0402"; VariantName = "[No Variations]"
+Added Component: Designator=Q6(SOT-23-3)
+Add component (AddParameter): Name = "Manufacturer"; Value = "PANJIT"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "MMBTA42_R1_00001"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "SOT23"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "DIGIKEY"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = "MOUSER"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 3"; Value = "OZDISAN"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier Part Number 1"; Value = "3757-MMBTA42_R1_00001CT-ND"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier Part Number 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier Part Number 3"; Value = "MMBTA42_R1_00001"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "300V 0.5A"; VariantName = "[No Variations]"
+Added Component: Designator=Q7(SOT-23-3)
+Add component (AddParameter): Name = "Manufacturer"; Value = "PANJIT"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "MMBTA42_R1_00001"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "SOT23"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "DIGIKEY"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = "MOUSER"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 3"; Value = "OZDISAN"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier Part Number 1"; Value = "3757-MMBTA42_R1_00001CT-ND"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier Part Number 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier Part Number 3"; Value = "MMBTA42_R1_00001"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "300V 0.5A"; VariantName = "[No Variations]"
+Added Component: Designator=R32(RES_0402)
+Add component (AddParameter): Name = "Manufacturer"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "RC0402JR-0710KL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "10K"; VariantName = "[No Variations]"
+Added Component: Designator=R33(RES_0402)
+Add component (AddParameter): Name = "Manufacturer"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "RC0402JR-0710KL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "10K"; VariantName = "[No Variations]"
+Added Component: Designator=R34(RES_0805)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Yageo"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "RC0805FR-072M2L"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "2.2M"; VariantName = "[No Variations]"
+Added Component: Designator=R35(RES_0402)
+Add component (AddParameter): Name = "Manufacturer"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "RC0402JR-0710KL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "10K"; VariantName = "[No Variations]"
+Added Component: Designator=R36(RES_0402)
+Add component (AddParameter): Name = "Manufacturer"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "RC0402JR-0710KL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "10K"; VariantName = "[No Variations]"
+Added Component: Designator=R37(RES_0402)
+Add component (AddParameter): Name = "Manufacturer"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "RC0402JR-0710KL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "10K"; VariantName = "[No Variations]"
+Added Component: Designator=R38(RES_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "ROYALOHM"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "0603SAF4702T5E"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "Ozdisan"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "47K"; VariantName = "[No Variations]"
+Added Component: Designator=R39(RES_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "ROYALOHM"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "0603SAF4702T5E"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "Ozdisan"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "47K"; VariantName = "[No Variations]"
+Added Component: Designator=R52(RES_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "ROYALOHM"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "0603SAF1002T5E"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "10K"; VariantName = "[No Variations]"
+Added Component: Designator=R53(RES_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "ROYALOHM"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "0603SAJ0821T5E"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "820R"; VariantName = "[No Variations]"
+Added Component: Designator=R54(RES_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "RC0603FR-075K1L"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "5.1K"; VariantName = "[No Variations]"
+Added Component: Designator=R55(RES_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "ROYALOHM"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "0603SAF1002T5E"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "10K"; VariantName = "[No Variations]"
+Added Component: Designator=R56(RES_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "ROYALOHM"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "0603SAF3300T5E"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "Ozdisan"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "330R"; VariantName = "[No Variations]"
+Added Component: Designator=R57(RES_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "ROYALOHM"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "0603SAF3300T5E"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "Ozdisan"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "330R"; VariantName = "[No Variations]"
+Added Component: Designator=R77(RES_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "RC0603FR-133K6L"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "3.6K"; VariantName = "[No Variations]"
+Added Component: Designator=R78(RES_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "RC0603FR-133K6L"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "3.6K"; VariantName = "[No Variations]"
+Added Component: Designator=R79(RES_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "RC0603FR-133K6L"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "3.6K"; VariantName = "[No Variations]"
+Added Component: Designator=R80(RES_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "RC0603FR-133K6L"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "3.6K"; VariantName = "[No Variations]"
+Added Component: Designator=R81(RES_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "RC0603FR-133K6L"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "3.6K"; VariantName = "[No Variations]"
+Added Component: Designator=R82(RES_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "RC0603FR-133K6L"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "3.6K"; VariantName = "[No Variations]"
+Added Component: Designator=R83(RES_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "RC0603FR-133K6L"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "3.6K"; VariantName = "[No Variations]"
+Added Component: Designator=R84(RES_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "RC0603FR-133K6L"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "3.6K"; VariantName = "[No Variations]"
+Added Component: Designator=R85(RES_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "RC0603FR-133K6L"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "3.6K"; VariantName = "[No Variations]"
+Added Component: Designator=R86(RES_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "RC0603FR-133K6L"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "3.6K"; VariantName = "[No Variations]"
+Added Component: Designator=R87(RES_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "RC0603FR-133K6L"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "3.6K"; VariantName = "[No Variations]"
+Added Component: Designator=R88(RES_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "RC0603FR-133K6L"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "3.6K"; VariantName = "[No Variations]"
+Added Component: Designator=U6(SOT95P280X125-5N)
+Add component (AddParameter): Name = "Manufacturer"; Value = "DIOO Microcircuits"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "DIO7002AST5"; VariantName = "[No Variations]"
+Added Component: Designator=U7(QFN50P300X300X80-17N)
+Add component (AddParameter): Name = "Check_prices"; Value = "https://www.snapeda.com/parts/CH343P/WCH/view-part/?ref=eda"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer"; Value = "WCH"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "CH343P"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "Package"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "SnapEDA_Link"; Value = "https://www.snapeda.com/parts/CH343P/WCH/view-part/?ref=snap"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=U8(QFN50P500X500X100-33N-D)
+Add component (AddParameter): Name = "Arrow Part Number"; Value = "MFRC52201HN1,115"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/mfrc52201hn1115/nxp-semiconductors?utm_currency=USD&region=nac"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet Link"; Value = "https://media.digikey.com/pdf/Data%20Sheets/NXP%20PDFs/MFRC522.pdf"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Height"; Value = "1mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Name"; Value = "NXP"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Part_Number"; Value = "MFRC52201HN1,115"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Part Number"; Value = "771-MFRC52201HN1115"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/NXP-Semiconductors/MFRC52201HN1115?qs=cbprxTG2Yq8gosQeFVBvCQ%3D%3D"; VariantName = "[No Variations]"
+Added Component: Designator=U9(8_MSOP)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Microchip Technology"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "MCP79410T-I/MS"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "DIGIKEY"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=U13(QFN50P400X400X80-25N-D)
+Add component (AddParameter): Name = "Arrow Part Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/cat4016hv6-gt2/on-semiconductor"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet Link"; Value = "https://www.onsemi.com/download/data-sheet/pdf/cat4016-d.pdf"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Height"; Value = "0.8mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Name"; Value = "onsemi"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Part_Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Part Number"; Value = "698-CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/onsemi/CAT4016HV6-GT2?qs=rZgeL6XvLwaPp0eUTTX%2FiA%3D%3D"; VariantName = "[No Variations]"
+Added Component: Designator=U14(QFN50P400X400X80-25N-D)
+Add component (AddParameter): Name = "Arrow Part Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/cat4016hv6-gt2/on-semiconductor"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet Link"; Value = "https://www.onsemi.com/download/data-sheet/pdf/cat4016-d.pdf"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Height"; Value = "0.8mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Name"; Value = "onsemi"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Part_Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Part Number"; Value = "698-CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/onsemi/CAT4016HV6-GT2?qs=rZgeL6XvLwaPp0eUTTX%2FiA%3D%3D"; VariantName = "[No Variations]"
+Added Component: Designator=U15(QFN50P400X400X80-25N-D)
+Add component (AddParameter): Name = "Arrow Part Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/cat4016hv6-gt2/on-semiconductor"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet Link"; Value = "https://www.onsemi.com/download/data-sheet/pdf/cat4016-d.pdf"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Height"; Value = "0.8mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Name"; Value = "onsemi"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Part_Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Part Number"; Value = "698-CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/onsemi/CAT4016HV6-GT2?qs=rZgeL6XvLwaPp0eUTTX%2FiA%3D%3D"; VariantName = "[No Variations]"
+Added Component: Designator=U16(QFN50P400X400X80-25N-D)
+Add component (AddParameter): Name = "Arrow Part Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/cat4016hv6-gt2/on-semiconductor"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet Link"; Value = "https://www.onsemi.com/download/data-sheet/pdf/cat4016-d.pdf"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Height"; Value = "0.8mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Name"; Value = "onsemi"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Part_Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Part Number"; Value = "698-CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/onsemi/CAT4016HV6-GT2?qs=rZgeL6XvLwaPp0eUTTX%2FiA%3D%3D"; VariantName = "[No Variations]"
+Added Component: Designator=U17(QFN50P400X400X80-25N-D)
+Add component (AddParameter): Name = "Arrow Part Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/cat4016hv6-gt2/on-semiconductor"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet Link"; Value = "https://www.onsemi.com/download/data-sheet/pdf/cat4016-d.pdf"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Height"; Value = "0.8mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Name"; Value = "onsemi"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Part_Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Part Number"; Value = "698-CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/onsemi/CAT4016HV6-GT2?qs=rZgeL6XvLwaPp0eUTTX%2FiA%3D%3D"; VariantName = "[No Variations]"
+Added Component: Designator=U18(QFN50P400X400X80-25N-D)
+Add component (AddParameter): Name = "Arrow Part Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/cat4016hv6-gt2/on-semiconductor"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet Link"; Value = "https://www.onsemi.com/download/data-sheet/pdf/cat4016-d.pdf"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Height"; Value = "0.8mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Name"; Value = "onsemi"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Part_Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Part Number"; Value = "698-CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/onsemi/CAT4016HV6-GT2?qs=rZgeL6XvLwaPp0eUTTX%2FiA%3D%3D"; VariantName = "[No Variations]"
+Added Component: Designator=U19(QFN50P400X400X80-25N-D)
+Add component (AddParameter): Name = "Arrow Part Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/cat4016hv6-gt2/on-semiconductor"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet Link"; Value = "https://www.onsemi.com/download/data-sheet/pdf/cat4016-d.pdf"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Height"; Value = "0.8mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Name"; Value = "onsemi"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Part_Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Part Number"; Value = "698-CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/onsemi/CAT4016HV6-GT2?qs=rZgeL6XvLwaPp0eUTTX%2FiA%3D%3D"; VariantName = "[No Variations]"
+Added Component: Designator=U20(QFN50P400X400X80-25N-D)
+Add component (AddParameter): Name = "Arrow Part Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/cat4016hv6-gt2/on-semiconductor"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet Link"; Value = "https://www.onsemi.com/download/data-sheet/pdf/cat4016-d.pdf"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Height"; Value = "0.8mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Name"; Value = "onsemi"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Part_Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Part Number"; Value = "698-CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/onsemi/CAT4016HV6-GT2?qs=rZgeL6XvLwaPp0eUTTX%2FiA%3D%3D"; VariantName = "[No Variations]"
+Added Component: Designator=U21(QFN50P400X400X80-25N-D)
+Add component (AddParameter): Name = "Arrow Part Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/cat4016hv6-gt2/on-semiconductor"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet Link"; Value = "https://www.onsemi.com/download/data-sheet/pdf/cat4016-d.pdf"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Height"; Value = "0.8mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Name"; Value = "onsemi"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Part_Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Part Number"; Value = "698-CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/onsemi/CAT4016HV6-GT2?qs=rZgeL6XvLwaPp0eUTTX%2FiA%3D%3D"; VariantName = "[No Variations]"
+Added Component: Designator=U22(QFN50P400X400X80-25N-D)
+Add component (AddParameter): Name = "Arrow Part Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/cat4016hv6-gt2/on-semiconductor"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet Link"; Value = "https://www.onsemi.com/download/data-sheet/pdf/cat4016-d.pdf"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Height"; Value = "0.8mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Name"; Value = "onsemi"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Part_Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Part Number"; Value = "698-CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/onsemi/CAT4016HV6-GT2?qs=rZgeL6XvLwaPp0eUTTX%2FiA%3D%3D"; VariantName = "[No Variations]"
+Added Component: Designator=U23(QFN50P400X400X80-25N-D)
+Add component (AddParameter): Name = "Arrow Part Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/cat4016hv6-gt2/on-semiconductor"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet Link"; Value = "https://www.onsemi.com/download/data-sheet/pdf/cat4016-d.pdf"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Height"; Value = "0.8mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Name"; Value = "onsemi"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Part_Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Part Number"; Value = "698-CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/onsemi/CAT4016HV6-GT2?qs=rZgeL6XvLwaPp0eUTTX%2FiA%3D%3D"; VariantName = "[No Variations]"
+Added Component: Designator=U24(QFN50P400X400X80-25N-D)
+Add component (AddParameter): Name = "Arrow Part Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Arrow Price/Stock"; Value = "https://www.arrow.com/en/products/cat4016hv6-gt2/on-semiconductor"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet Link"; Value = "https://www.onsemi.com/download/data-sheet/pdf/cat4016-d.pdf"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Height"; Value = "0.8mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Name"; Value = "onsemi"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Part_Number"; Value = "CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Part Number"; Value = "698-CAT4016HV6-GT2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/onsemi/CAT4016HV6-GT2?qs=rZgeL6XvLwaPp0eUTTX%2FiA%3D%3D"; VariantName = "[No Variations]"
+Added Component: Designator=XTAL1(R38_THT_2)
+Add component (AddParameter): Name = "Manufacturer"; Value = "RALTRON"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "R38-32.768-12.5-EXT-5PPM"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "OZDISAN"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=Y1(ECS27121037CKMTR)
+Add component (AddParameter): Name = "Height"; Value = "0.55mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer"; Value = "ECS"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "ECS-271.2-10-37-CKM-TR"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=GND Pin=BT1-1
+Added Pin To Net: NetName=NetBT1_2 Pin=BT1-2
+Added Pin To Net: NetName=USB_5V Pin=C33-1
+Added Pin To Net: NetName=GND Pin=C33-2
+Added Pin To Net: NetName=NetC34_1 Pin=C34-1
+Added Pin To Net: NetName=GND Pin=C34-2
+Added Pin To Net: NetName=NetC34_1 Pin=C35-1
+Added Pin To Net: NetName=GND Pin=C35-2
+Added Pin To Net: NetName=NetC34_1 Pin=C36-1
+Added Pin To Net: NetName=GND Pin=C36-2
+Added Pin To Net: NetName=GND Pin=C37-1
+Added Pin To Net: NetName=+3V3DC Pin=C37-2
+Added Pin To Net: NetName=GND Pin=C38-1
+Added Pin To Net: NetName=+3V3DC Pin=C38-2
+Added Pin To Net: NetName=GND Pin=C39-1
+Added Pin To Net: NetName=+3V3DC Pin=C39-2
+Added Pin To Net: NetName=GND Pin=C40-1
+Added Pin To Net: NetName=USB_5V Pin=C40-2
+Added Pin To Net: NetName=RF_ANT1 Pin=C41-1
+Added Pin To Net: NetName=NetC41_2 Pin=C41-2
+Added Pin To Net: NetName=GND Pin=C42-1
+Added Pin To Net: NetName=VMID Pin=C42-2
+Added Pin To Net: NetName=GND Pin=C43-1
+Added Pin To Net: NetName=NetC43_2 Pin=C43-2
+Added Pin To Net: NetName=GND Pin=C44-1
+Added Pin To Net: NetName=+3V3DC Pin=C44-2
+Added Pin To Net: NetName=RF_ANT1 Pin=C45-1
+Added Pin To Net: NetName=NetC45_2 Pin=C45-2
+Added Pin To Net: NetName=NetC45_2 Pin=C46-1
+Added Pin To Net: NetName=GND Pin=C46-2
+Added Pin To Net: NetName=RF_ANT1 Pin=C47-1
+Added Pin To Net: NetName=GND Pin=C47-2
+Added Pin To Net: NetName=GND Pin=C48-1
+Added Pin To Net: NetName=RF_ANT1 Pin=C48-2
+Added Pin To Net: NetName=GND Pin=C49-1
+Added Pin To Net: NetName=NetC49_2 Pin=C49-2
+Added Pin To Net: NetName=GND Pin=C50-1
+Added Pin To Net: NetName=RF_ANT2 Pin=C50-2
+Added Pin To Net: NetName=RF_ANT2 Pin=C51-1
+Added Pin To Net: NetName=GND Pin=C51-2
+Added Pin To Net: NetName=RF_ANT2 Pin=C52-1
+Added Pin To Net: NetName=NetC49_2 Pin=C52-2
+Added Pin To Net: NetName=GND Pin=C53-1
+Added Pin To Net: NetName=OSCIN Pin=C53-2
+Added Pin To Net: NetName=GND Pin=C54-1
+Added Pin To Net: NetName=OSCOUT Pin=C54-2
+Added Pin To Net: NetName=+3V3 Pin=C55-1
+Added Pin To Net: NetName=GND Pin=C55-2
+Added Pin To Net: NetName=GND Pin=C56-1
+Added Pin To Net: NetName=+3V3 Pin=C56-2
+Added Pin To Net: NetName=GND Pin=C57-1
+Added Pin To Net: NetName=NetC57_2 Pin=C57-2
+Added Pin To Net: NetName=GND Pin=C58-1
+Added Pin To Net: NetName=NetC58_2 Pin=C58-2
+Added Pin To Net: NetName=+5VDC Pin=C79-1
+Added Pin To Net: NetName=GND Pin=C79-2
+Added Pin To Net: NetName=+5VDC Pin=C80-1
+Added Pin To Net: NetName=GND Pin=C80-2
+Added Pin To Net: NetName=+5VDC Pin=C81-1
+Added Pin To Net: NetName=GND Pin=C81-2
+Added Pin To Net: NetName=+5VDC Pin=C82-1
+Added Pin To Net: NetName=GND Pin=C82-2
+Added Pin To Net: NetName=+5VDC Pin=C83-1
+Added Pin To Net: NetName=GND Pin=C83-2
+Added Pin To Net: NetName=+5VDC Pin=C84-1
+Added Pin To Net: NetName=GND Pin=C84-2
+Added Pin To Net: NetName=+5VDC Pin=C85-1
+Added Pin To Net: NetName=GND Pin=C85-2
+Added Pin To Net: NetName=+5VDC Pin=C86-1
+Added Pin To Net: NetName=GND Pin=C86-2
+Added Pin To Net: NetName=+5VDC Pin=C87-1
+Added Pin To Net: NetName=GND Pin=C87-2
+Added Pin To Net: NetName=+5VDC Pin=C88-1
+Added Pin To Net: NetName=GND Pin=C88-2
+Added Pin To Net: NetName=+5VDC Pin=C89-1
+Added Pin To Net: NetName=GND Pin=C89-2
+Added Pin To Net: NetName=+5VDC Pin=C90-1
+Added Pin To Net: NetName=GND Pin=C90-2
+Added Pin To Net: NetName=USB_5V Pin=D13-1
+Added Pin To Net: NetName=VBUSA Pin=D13-2
+Added Pin To Net: NetName=GND Pin=D14-1
+Added Pin To Net: NetName=VBUSA Pin=D14-2
+Added Pin To Net: NetName=GND Pin=D15-1
+Added Pin To Net: NetName=USB_DBG_D_P Pin=D15-2
+Added Pin To Net: NetName=GND Pin=D16-1
+Added Pin To Net: NetName=USB_DBG_D_N Pin=D16-2
+Added Pin To Net: NetName=NetC34_1 Pin=J3-1
+Added Pin To Net: NetName=USBD_N Pin=J3-2
+Added Pin To Net: NetName=USBD_P Pin=J3-3
+Added Pin To Net: NetName=GND Pin=J3-4
+Added Pin To Net: NetName=GND Pin=J3-5
+Added Pin To Net: NetName=GND Pin=J3-SH1
+Added Pin To Net: NetName=GND Pin=J3-SH2
+Added Pin To Net: NetName=GND Pin=J3-SH3
+Added Pin To Net: NetName=GND Pin=J3-SH4
+Added Pin To Net: NetName=GND Pin=J3-SH5
+Added Pin To Net: NetName=GND Pin=J3-SH6
+Added Pin To Net: NetName=NetJ4_1 Pin=J4-1
+Added Pin To Net: NetName=NetJ4_2 Pin=J4-2
+Added Pin To Net: NetName=NetJ4_3 Pin=J4-3
+Added Pin To Net: NetName=+3V3 Pin=J4-4
+Added Pin To Net: NetName=NetJ4_5 Pin=J4-5
+Added Pin To Net: NetName=GND Pin=J4-6
+Added Pin To Net: NetName=NetJ4_7 Pin=J4-7
+Added Pin To Net: NetName=NetJ4_8 Pin=J4-8
+Added Pin To Net: NetName=SSP0_DETECT Pin=J4-9
+Added Pin To Net: NetName=GND Pin=J4-10
+Added Pin To Net: NetName=GND Pin=J4-10
+Added Pin To Net: NetName=GND Pin=J4-10
+Added Pin To Net: NetName=GND Pin=J4-10
+Added Pin To Net: NetName=TX1 Pin=L4-1
+Added Pin To Net: NetName=NetC45_2 Pin=L4-2
+Added Pin To Net: NetName=TX2 Pin=L5-1
+Added Pin To Net: NetName=NetC49_2 Pin=L5-2
+Added Pin To Net: NetName=A_1 Pin=LED1-1
+Added Pin To Net: NetName=+5VDC Pin=LED1-2
+Added Pin To Net: NetName=B_1 Pin=LED2-1
+Added Pin To Net: NetName=+5VDC Pin=LED2-2
+Added Pin To Net: NetName=C_1 Pin=LED3-1
+Added Pin To Net: NetName=+5VDC Pin=LED3-2
+Added Pin To Net: NetName=D_1 Pin=LED4-1
+Added Pin To Net: NetName=+5VDC Pin=LED4-2
+Added Pin To Net: NetName=E_1 Pin=LED5-1
+Added Pin To Net: NetName=+5VDC Pin=LED5-2
+Added Pin To Net: NetName=F_1 Pin=LED6-1
+Added Pin To Net: NetName=+5VDC Pin=LED6-2
+Added Pin To Net: NetName=G_1 Pin=LED7-1
+Added Pin To Net: NetName=+5VDC Pin=LED7-2
+Added Pin To Net: NetName=DP_1 Pin=LED8-1
+Added Pin To Net: NetName=+5VDC Pin=LED8-2
+Added Pin To Net: NetName=A_7 Pin=LED9-1
+Added Pin To Net: NetName=+5VDC Pin=LED9-2
+Added Pin To Net: NetName=B_7 Pin=LED10-1
+Added Pin To Net: NetName=+5VDC Pin=LED10-2
+Added Pin To Net: NetName=C_7 Pin=LED11-1
+Added Pin To Net: NetName=+5VDC Pin=LED11-2
+Added Pin To Net: NetName=D_7 Pin=LED12-1
+Added Pin To Net: NetName=+5VDC Pin=LED12-2
+Added Pin To Net: NetName=E_7 Pin=LED13-1
+Added Pin To Net: NetName=+5VDC Pin=LED13-2
+Added Pin To Net: NetName=F_7 Pin=LED14-1
+Added Pin To Net: NetName=+5VDC Pin=LED14-2
+Added Pin To Net: NetName=G_7 Pin=LED15-1
+Added Pin To Net: NetName=+5VDC Pin=LED15-2
+Added Pin To Net: NetName=DP_7 Pin=LED16-1
+Added Pin To Net: NetName=+5VDC Pin=LED16-2
+Added Pin To Net: NetName=A1 Pin=LED17-1
+Added Pin To Net: NetName=+5VDC Pin=LED17-2
+Added Pin To Net: NetName=B1 Pin=LED18-1
+Added Pin To Net: NetName=+5VDC Pin=LED18-2
+Added Pin To Net: NetName=C1 Pin=LED19-1
+Added Pin To Net: NetName=+5VDC Pin=LED19-2
+Added Pin To Net: NetName=D1 Pin=LED20-1
+Added Pin To Net: NetName=+5VDC Pin=LED20-2
+Added Pin To Net: NetName=E1 Pin=LED21-1
+Added Pin To Net: NetName=+5VDC Pin=LED21-2
+Added Pin To Net: NetName=F1 Pin=LED22-1
+Added Pin To Net: NetName=+5VDC Pin=LED22-2
+Added Pin To Net: NetName=G1.1 Pin=LED23-1
+Added Pin To Net: NetName=+5VDC Pin=LED23-2
+Added Pin To Net: NetName=G1.2 Pin=LED24-1
+Added Pin To Net: NetName=+5VDC Pin=LED24-2
+Added Pin To Net: NetName=H1 Pin=LED25-1
+Added Pin To Net: NetName=+5VDC Pin=LED25-2
+Added Pin To Net: NetName=J1 Pin=LED26-1
+Added Pin To Net: NetName=+5VDC Pin=LED26-2
+Added Pin To Net: NetName=K1 Pin=LED27-1
+Added Pin To Net: NetName=+5VDC Pin=LED27-2
+Added Pin To Net: NetName=L1 Pin=LED28-1
+Added Pin To Net: NetName=+5VDC Pin=LED28-2
+Added Pin To Net: NetName=M1 Pin=LED29-1
+Added Pin To Net: NetName=+5VDC Pin=LED29-2
+Added Pin To Net: NetName=N1 Pin=LED30-1
+Added Pin To Net: NetName=+5VDC Pin=LED30-2
+Added Pin To Net: NetName=A_2 Pin=LED31-1
+Added Pin To Net: NetName=+5VDC Pin=LED31-2
+Added Pin To Net: NetName=B_2 Pin=LED32-1
+Added Pin To Net: NetName=+5VDC Pin=LED32-2
+Added Pin To Net: NetName=C_2 Pin=LED33-1
+Added Pin To Net: NetName=+5VDC Pin=LED33-2
+Added Pin To Net: NetName=D_2 Pin=LED34-1
+Added Pin To Net: NetName=+5VDC Pin=LED34-2
+Added Pin To Net: NetName=E_2 Pin=LED35-1
+Added Pin To Net: NetName=+5VDC Pin=LED35-2
+Added Pin To Net: NetName=F_2 Pin=LED36-1
+Added Pin To Net: NetName=+5VDC Pin=LED36-2
+Added Pin To Net: NetName=G_2 Pin=LED37-1
+Added Pin To Net: NetName=+5VDC Pin=LED37-2
+Added Pin To Net: NetName=DP_2 Pin=LED38-1
+Added Pin To Net: NetName=+5VDC Pin=LED38-2
+Added Pin To Net: NetName=A_8 Pin=LED39-1
+Added Pin To Net: NetName=+5VDC Pin=LED39-2
+Added Pin To Net: NetName=B_8 Pin=LED40-1
+Added Pin To Net: NetName=+5VDC Pin=LED40-2
+Added Pin To Net: NetName=C_8 Pin=LED41-1
+Added Pin To Net: NetName=+5VDC Pin=LED41-2
+Added Pin To Net: NetName=D_8 Pin=LED42-1
+Added Pin To Net: NetName=+5VDC Pin=LED42-2
+Added Pin To Net: NetName=E_8 Pin=LED43-1
+Added Pin To Net: NetName=+5VDC Pin=LED43-2
+Added Pin To Net: NetName=F_8 Pin=LED44-1
+Added Pin To Net: NetName=+5VDC Pin=LED44-2
+Added Pin To Net: NetName=G_8 Pin=LED45-1
+Added Pin To Net: NetName=+5VDC Pin=LED45-2
+Added Pin To Net: NetName=DP_8 Pin=LED46-1
+Added Pin To Net: NetName=+5VDC Pin=LED46-2
+Added Pin To Net: NetName=A2 Pin=LED47-1
+Added Pin To Net: NetName=+5VDC Pin=LED47-2
+Added Pin To Net: NetName=B2 Pin=LED48-1
+Added Pin To Net: NetName=+5VDC Pin=LED48-2
+Added Pin To Net: NetName=C2 Pin=LED49-1
+Added Pin To Net: NetName=+5VDC Pin=LED49-2
+Added Pin To Net: NetName=D2 Pin=LED50-1
+Added Pin To Net: NetName=+5VDC Pin=LED50-2
+Added Pin To Net: NetName=E2 Pin=LED51-1
+Added Pin To Net: NetName=+5VDC Pin=LED51-2
+Added Pin To Net: NetName=F2 Pin=LED52-1
+Added Pin To Net: NetName=+5VDC Pin=LED52-2
+Added Pin To Net: NetName=G2.1 Pin=LED53-1
+Added Pin To Net: NetName=+5VDC Pin=LED53-2
+Added Pin To Net: NetName=G2.2 Pin=LED54-1
+Added Pin To Net: NetName=+5VDC Pin=LED54-2
+Added Pin To Net: NetName=H2 Pin=LED55-1
+Added Pin To Net: NetName=+5VDC Pin=LED55-2
+Added Pin To Net: NetName=J2 Pin=LED56-1
+Added Pin To Net: NetName=+5VDC Pin=LED56-2
+Added Pin To Net: NetName=K2 Pin=LED57-1
+Added Pin To Net: NetName=+5VDC Pin=LED57-2
+Added Pin To Net: NetName=L2 Pin=LED58-1
+Added Pin To Net: NetName=+5VDC Pin=LED58-2
+Added Pin To Net: NetName=M2 Pin=LED59-1
+Added Pin To Net: NetName=+5VDC Pin=LED59-2
+Added Pin To Net: NetName=N2 Pin=LED60-1
+Added Pin To Net: NetName=+5VDC Pin=LED60-2
+Added Pin To Net: NetName=DP2 Pin=LED61-1
+Added Pin To Net: NetName=+5VDC Pin=LED61-2
+Added Pin To Net: NetName=A_3 Pin=LED62-1
+Added Pin To Net: NetName=+5VDC Pin=LED62-2
+Added Pin To Net: NetName=B_3 Pin=LED63-1
+Added Pin To Net: NetName=+5VDC Pin=LED63-2
+Added Pin To Net: NetName=C_3 Pin=LED64-1
+Added Pin To Net: NetName=+5VDC Pin=LED64-2
+Added Pin To Net: NetName=D_3 Pin=LED65-1
+Added Pin To Net: NetName=+5VDC Pin=LED65-2
+Added Pin To Net: NetName=E_3 Pin=LED66-1
+Added Pin To Net: NetName=+5VDC Pin=LED66-2
+Added Pin To Net: NetName=F_3 Pin=LED67-1
+Added Pin To Net: NetName=+5VDC Pin=LED67-2
+Added Pin To Net: NetName=G_3 Pin=LED68-1
+Added Pin To Net: NetName=+5VDC Pin=LED68-2
+Added Pin To Net: NetName=DP_3 Pin=LED69-1
+Added Pin To Net: NetName=+5VDC Pin=LED69-2
+Added Pin To Net: NetName=A_9 Pin=LED70-1
+Added Pin To Net: NetName=+5VDC Pin=LED70-2
+Added Pin To Net: NetName=B_9 Pin=LED71-1
+Added Pin To Net: NetName=+5VDC Pin=LED71-2
+Added Pin To Net: NetName=C_9 Pin=LED72-1
+Added Pin To Net: NetName=+5VDC Pin=LED72-2
+Added Pin To Net: NetName=D_9 Pin=LED73-1
+Added Pin To Net: NetName=+5VDC Pin=LED73-2
+Added Pin To Net: NetName=E_9 Pin=LED74-1
+Added Pin To Net: NetName=+5VDC Pin=LED74-2
+Added Pin To Net: NetName=F_9 Pin=LED75-1
+Added Pin To Net: NetName=+5VDC Pin=LED75-2
+Added Pin To Net: NetName=G_9 Pin=LED76-1
+Added Pin To Net: NetName=+5VDC Pin=LED76-2
+Added Pin To Net: NetName=DP_9 Pin=LED77-1
+Added Pin To Net: NetName=+5VDC Pin=LED77-2
+Added Pin To Net: NetName=A_4 Pin=LED78-1
+Added Pin To Net: NetName=+5VDC Pin=LED78-2
+Added Pin To Net: NetName=B_4 Pin=LED79-1
+Added Pin To Net: NetName=+5VDC Pin=LED79-2
+Added Pin To Net: NetName=C_4 Pin=LED80-1
+Added Pin To Net: NetName=+5VDC Pin=LED80-2
+Added Pin To Net: NetName=D_4 Pin=LED81-1
+Added Pin To Net: NetName=+5VDC Pin=LED81-2
+Added Pin To Net: NetName=E_4 Pin=LED82-1
+Added Pin To Net: NetName=+5VDC Pin=LED82-2
+Added Pin To Net: NetName=F_4 Pin=LED83-1
+Added Pin To Net: NetName=+5VDC Pin=LED83-2
+Added Pin To Net: NetName=G_4 Pin=LED84-1
+Added Pin To Net: NetName=+5VDC Pin=LED84-2
+Added Pin To Net: NetName=DP_4 Pin=LED85-1
+Added Pin To Net: NetName=+5VDC Pin=LED85-2
+Added Pin To Net: NetName=A_10 Pin=LED86-1
+Added Pin To Net: NetName=+5VDC Pin=LED86-2
+Added Pin To Net: NetName=B_10 Pin=LED87-1
+Added Pin To Net: NetName=+5VDC Pin=LED87-2
+Added Pin To Net: NetName=C_10 Pin=LED88-1
+Added Pin To Net: NetName=+5VDC Pin=LED88-2
+Added Pin To Net: NetName=D_10 Pin=LED89-1
+Added Pin To Net: NetName=+5VDC Pin=LED89-2
+Added Pin To Net: NetName=E_10 Pin=LED90-1
+Added Pin To Net: NetName=+5VDC Pin=LED90-2
+Added Pin To Net: NetName=F_10 Pin=LED91-1
+Added Pin To Net: NetName=+5VDC Pin=LED91-2
+Added Pin To Net: NetName=G_10 Pin=LED92-1
+Added Pin To Net: NetName=+5VDC Pin=LED92-2
+Added Pin To Net: NetName=DP_10 Pin=LED93-1
+Added Pin To Net: NetName=+5VDC Pin=LED93-2
+Added Pin To Net: NetName=A_5 Pin=LED94-1
+Added Pin To Net: NetName=+5VDC Pin=LED94-2
+Added Pin To Net: NetName=B_5 Pin=LED95-1
+Added Pin To Net: NetName=+5VDC Pin=LED95-2
+Added Pin To Net: NetName=C_5 Pin=LED96-1
+Added Pin To Net: NetName=+5VDC Pin=LED96-2
+Added Pin To Net: NetName=D_5 Pin=LED97-1
+Added Pin To Net: NetName=+5VDC Pin=LED97-2
+Added Pin To Net: NetName=E_5 Pin=LED98-1
+Added Pin To Net: NetName=+5VDC Pin=LED98-2
+Added Pin To Net: NetName=F_5 Pin=LED99-1
+Added Pin To Net: NetName=+5VDC Pin=LED99-2
+Added Pin To Net: NetName=G_5 Pin=LED100-1
+Added Pin To Net: NetName=+5VDC Pin=LED100-2
+Added Pin To Net: NetName=DP_5 Pin=LED101-1
+Added Pin To Net: NetName=+5VDC Pin=LED101-2
+Added Pin To Net: NetName=A_11 Pin=LED102-1
+Added Pin To Net: NetName=+5VDC Pin=LED102-2
+Added Pin To Net: NetName=B_11 Pin=LED103-1
+Added Pin To Net: NetName=+5VDC Pin=LED103-2
+Added Pin To Net: NetName=C_11 Pin=LED104-1
+Added Pin To Net: NetName=+5VDC Pin=LED104-2
+Added Pin To Net: NetName=D_11 Pin=LED105-1
+Added Pin To Net: NetName=+5VDC Pin=LED105-2
+Added Pin To Net: NetName=E_11 Pin=LED106-1
+Added Pin To Net: NetName=+5VDC Pin=LED106-2
+Added Pin To Net: NetName=F_11 Pin=LED107-1
+Added Pin To Net: NetName=+5VDC Pin=LED107-2
+Added Pin To Net: NetName=G_11 Pin=LED108-1
+Added Pin To Net: NetName=+5VDC Pin=LED108-2
+Added Pin To Net: NetName=DP_11 Pin=LED109-1
+Added Pin To Net: NetName=+5VDC Pin=LED109-2
+Added Pin To Net: NetName=A_6 Pin=LED110-1
+Added Pin To Net: NetName=+5VDC Pin=LED110-2
+Added Pin To Net: NetName=B_6 Pin=LED111-1
+Added Pin To Net: NetName=+5VDC Pin=LED111-2
+Added Pin To Net: NetName=C_6 Pin=LED112-1
+Added Pin To Net: NetName=+5VDC Pin=LED112-2
+Added Pin To Net: NetName=D_6 Pin=LED113-1
+Added Pin To Net: NetName=+5VDC Pin=LED113-2
+Added Pin To Net: NetName=E_6 Pin=LED114-1
+Added Pin To Net: NetName=+5VDC Pin=LED114-2
+Added Pin To Net: NetName=F_6 Pin=LED115-1
+Added Pin To Net: NetName=+5VDC Pin=LED115-2
+Added Pin To Net: NetName=G_6 Pin=LED116-1
+Added Pin To Net: NetName=+5VDC Pin=LED116-2
+Added Pin To Net: NetName=DP_6 Pin=LED117-1
+Added Pin To Net: NetName=+5VDC Pin=LED117-2
+Added Pin To Net: NetName=A_12 Pin=LED118-1
+Added Pin To Net: NetName=+5VDC Pin=LED118-2
+Added Pin To Net: NetName=B_12 Pin=LED119-1
+Added Pin To Net: NetName=+5VDC Pin=LED119-2
+Added Pin To Net: NetName=C_12 Pin=LED120-1
+Added Pin To Net: NetName=+5VDC Pin=LED120-2
+Added Pin To Net: NetName=D_12 Pin=LED121-1
+Added Pin To Net: NetName=+5VDC Pin=LED121-2
+Added Pin To Net: NetName=E_12 Pin=LED122-1
+Added Pin To Net: NetName=+5VDC Pin=LED122-2
+Added Pin To Net: NetName=F_12 Pin=LED123-1
+Added Pin To Net: NetName=+5VDC Pin=LED123-2
+Added Pin To Net: NetName=G_12 Pin=LED124-1
+Added Pin To Net: NetName=+5VDC Pin=LED124-2
+Added Pin To Net: NetName=DP_12 Pin=LED125-1
+Added Pin To Net: NetName=+5VDC Pin=LED125-2
+Added Pin To Net: NetName=Hired1 Pin=LED126-1
+Added Pin To Net: NetName=+5VDC Pin=LED126-2
+Added Pin To Net: NetName=Fare1 Pin=LED127-1
+Added Pin To Net: NetName=+5VDC Pin=LED127-2
+Added Pin To Net: NetName=Stopped1 Pin=LED128-1
+Added Pin To Net: NetName=+5VDC Pin=LED128-2
+Added Pin To Net: NetName=Hired2 Pin=LED129-1
+Added Pin To Net: NetName=+5VDC Pin=LED129-2
+Added Pin To Net: NetName=Fare2 Pin=LED130-1
+Added Pin To Net: NetName=+5VDC Pin=LED130-2
+Added Pin To Net: NetName=Stopped2 Pin=LED131-1
+Added Pin To Net: NetName=+5VDC Pin=LED131-2
+Added Pin To Net: NetName=Hired3 Pin=LED132-1
+Added Pin To Net: NetName=+5VDC Pin=LED132-2
+Added Pin To Net: NetName=Fare3 Pin=LED133-1
+Added Pin To Net: NetName=+5VDC Pin=LED133-2
+Added Pin To Net: NetName=Stopped3 Pin=LED134-1
+Added Pin To Net: NetName=+5VDC Pin=LED134-2
+Added Pin To Net: NetName=Hired4 Pin=LED135-1
+Added Pin To Net: NetName=+5VDC Pin=LED135-2
+Added Pin To Net: NetName=Stopped4 Pin=LED136-1
+Added Pin To Net: NetName=+5VDC Pin=LED136-2
+Added Pin To Net: NetName=Fare4 Pin=LED137-1
+Added Pin To Net: NetName=+5VDC Pin=LED137-2
+Added Pin To Net: NetName=Fare5 Pin=LED138-1
+Added Pin To Net: NetName=+5VDC Pin=LED138-2
+Added Pin To Net: NetName=Extras1 Pin=LED139-1
+Added Pin To Net: NetName=+5VDC Pin=LED139-2
+Added Pin To Net: NetName=Forhere1 Pin=LED140-1
+Added Pin To Net: NetName=+5VDC Pin=LED140-2
+Added Pin To Net: NetName=Fare6 Pin=LED141-1
+Added Pin To Net: NetName=+5VDC Pin=LED141-2
+Added Pin To Net: NetName=Extras2 Pin=LED142-1
+Added Pin To Net: NetName=+5VDC Pin=LED142-2
+Added Pin To Net: NetName=Forhere2 Pin=LED143-1
+Added Pin To Net: NetName=+5VDC Pin=LED143-2
+Added Pin To Net: NetName=Fare7 Pin=LED144-1
+Added Pin To Net: NetName=+5VDC Pin=LED144-2
+Added Pin To Net: NetName=Extras3 Pin=LED145-1
+Added Pin To Net: NetName=+5VDC Pin=LED145-2
+Added Pin To Net: NetName=Forhere3 Pin=LED146-1
+Added Pin To Net: NetName=+5VDC Pin=LED146-2
+Added Pin To Net: NetName=Fare8 Pin=LED147-1
+Added Pin To Net: NetName=+5VDC Pin=LED147-2
+Added Pin To Net: NetName=Extras4 Pin=LED148-1
+Added Pin To Net: NetName=+5VDC Pin=LED148-2
+Added Pin To Net: NetName=Extras5 Pin=LED149-1
+Added Pin To Net: NetName=+5VDC Pin=LED149-2
+Added Pin To Net: NetName=Taxi1 Pin=LED150-1
+Added Pin To Net: NetName=+5VDC Pin=LED150-2
+Added Pin To Net: NetName=Service1 Pin=LED151-1
+Added Pin To Net: NetName=+5VDC Pin=LED151-2
+Added Pin To Net: NetName=Extras6 Pin=LED152-1
+Added Pin To Net: NetName=+5VDC Pin=LED152-2
+Added Pin To Net: NetName=Taxi2 Pin=LED153-1
+Added Pin To Net: NetName=+5VDC Pin=LED153-2
+Added Pin To Net: NetName=Extras7 Pin=LED154-1
+Added Pin To Net: NetName=+5VDC Pin=LED154-2
+Added Pin To Net: NetName=Extras8 Pin=LED155-1
+Added Pin To Net: NetName=+5VDC Pin=LED155-2
+Added Pin To Net: NetName=Bed1 Pin=LED156-1
+Added Pin To Net: NetName=+5VDC Pin=LED156-2
+Added Pin To Net: NetName=NH1 Pin=LED157-1
+Added Pin To Net: NetName=+5VDC Pin=LED157-2
+Added Pin To Net: NetName=NH2 Pin=LED158-1
+Added Pin To Net: NetName=+5VDC Pin=LED158-2
+Added Pin To Net: NetName=Rate1 Pin=LED159-1
+Added Pin To Net: NetName=+5VDC Pin=LED159-2
+Added Pin To Net: NetName=Clock1 Pin=LED160-1
+Added Pin To Net: NetName=+5VDC Pin=LED160-2
+Added Pin To Net: NetName=Rate2 Pin=LED161-1
+Added Pin To Net: NetName=+5VDC Pin=LED161-2
+Added Pin To Net: NetName=EuroTOP1 Pin=LED162-1
+Added Pin To Net: NetName=+5VDC Pin=LED162-2
+Added Pin To Net: NetName=Rate3 Pin=LED163-1
+Added Pin To Net: NetName=+5VDC Pin=LED163-2
+Added Pin To Net: NetName=EuroTOP2 Pin=LED164-1
+Added Pin To Net: NetName=+5VDC Pin=LED164-2
+Added Pin To Net: NetName=EEM1 Pin=LED165-1
+Added Pin To Net: NetName=+5VDC Pin=LED165-2
+Added Pin To Net: NetName=Rate4 Pin=LED166-1
+Added Pin To Net: NetName=+5VDC Pin=LED166-2
+Added Pin To Net: NetName=EEM2 Pin=LED167-1
+Added Pin To Net: NetName=+5VDC Pin=LED167-2
+Added Pin To Net: NetName=/km1 Pin=LED168-1
+Added Pin To Net: NetName=+5VDC Pin=LED168-2
+Added Pin To Net: NetName=Distance1 Pin=LED169-1
+Added Pin To Net: NetName=NetLED169_2 Pin=LED169-2
+Added Pin To Net: NetName=/km2 Pin=LED170-1
+Added Pin To Net: NetName=+5VDC Pin=LED170-2
+Added Pin To Net: NetName=NFC1 Pin=LED171-1
+Added Pin To Net: NetName=+5VDC Pin=LED171-2
+Added Pin To Net: NetName=Distance2 Pin=LED172-1
+Added Pin To Net: NetName=NetLED169_2 Pin=LED172-2
+Added Pin To Net: NetName=Distance3 Pin=LED173-1
+Added Pin To Net: NetName=NetLED169_2 Pin=LED173-2
+Added Pin To Net: NetName=km1 Pin=LED174-1
+Added Pin To Net: NetName=+5VDC Pin=LED174-2
+Added Pin To Net: NetName=Distance4 Pin=LED175-1
+Added Pin To Net: NetName=NetLED169_2 Pin=LED175-2
+Added Pin To Net: NetName=km2 Pin=LED176-1
+Added Pin To Net: NetName=+5VDC Pin=LED176-2
+Added Pin To Net: NetName=RGB_Green Pin=LED177-1
+Added Pin To Net: NetName=+5VDC Pin=LED177-2
+Added Pin To Net: NetName=RGB_Red Pin=LED177-3
+Added Pin To Net: NetName=+5VDC Pin=LED177-4
+Added Pin To Net: NetName=RGB_Blue Pin=LED177-5
+Added Pin To Net: NetName=+5VDC Pin=LED177-6
+Added Pin To Net: NetName=Distance5 Pin=LED178-1
+Added Pin To Net: NetName=NetLED169_2 Pin=LED178-2
+Added Pin To Net: NetName=Distance6 Pin=LED179-1
+Added Pin To Net: NetName=NetLED169_2 Pin=LED179-2
+Added Pin To Net: NetName=EuroBOT1 Pin=LED180-1
+Added Pin To Net: NetName=+5VDC Pin=LED180-2
+Added Pin To Net: NetName=Distance7 Pin=LED181-1
+Added Pin To Net: NetName=NetLED169_2 Pin=LED181-2
+Added Pin To Net: NetName=EuroBOT2 Pin=LED182-1
+Added Pin To Net: NetName=+5VDC Pin=LED182-2
+Added Pin To Net: NetName=Distance8 Pin=LED183-1
+Added Pin To Net: NetName=NetLED169_2 Pin=LED183-2
+Added Pin To Net: NetName=Touch1 Pin=LED184-1
+Added Pin To Net: NetName=NetLED184_2 Pin=LED184-2
+Added Pin To Net: NetName=Touch2 Pin=LED185-1
+Added Pin To Net: NetName=NetLED184_2 Pin=LED185-2
+Added Pin To Net: NetName=Touch3 Pin=LED186-1
+Added Pin To Net: NetName=NetLED184_2 Pin=LED186-2
+Added Pin To Net: NetName=Touch4 Pin=LED187-1
+Added Pin To Net: NetName=NetLED184_2 Pin=LED187-2
+Added Pin To Net: NetName=Touch5 Pin=LED188-1
+Added Pin To Net: NetName=NetLED184_2 Pin=LED188-2
+Added Pin To Net: NetName=Touch6 Pin=LED189-1
+Added Pin To Net: NetName=NetLED184_2 Pin=LED189-2
+Added Pin To Net: NetName=NetQ6_1 Pin=Q6-1
+Added Pin To Net: NetName=DTR Pin=Q6-2
+Added Pin To Net: NetName=NetQ6_3 Pin=Q6-3
+Added Pin To Net: NetName=NetQ7_1 Pin=Q7-1
+Added Pin To Net: NetName=RTS Pin=Q7-2
+Added Pin To Net: NetName=NetQ7_3 Pin=Q7-3
+Added Pin To Net: NetName=GND Pin=R32-1
+Added Pin To Net: NetName=NetJ2_A5 Pin=R32-2
+Added Pin To Net: NetName=GND Pin=R33-1
+Added Pin To Net: NetName=NetJ2_B5 Pin=R33-2
+Added Pin To Net: NetName=EARTH Pin=R34-1
+Added Pin To Net: NetName=GND Pin=R34-2
+Added Pin To Net: NetName=NetR35_1 Pin=R35-1
+Added Pin To Net: NetName=+5VDC Pin=R35-2
+Added Pin To Net: NetName=NetQ6_1 Pin=R36-1
+Added Pin To Net: NetName=RTS Pin=R36-2
+Added Pin To Net: NetName=NetQ7_1 Pin=R37-1
+Added Pin To Net: NetName=DTR Pin=R37-2
+Added Pin To Net: NetName=DTR Pin=R38-1
+Added Pin To Net: NetName=NetQ6_1 Pin=R38-2
+Added Pin To Net: NetName=RTS Pin=R39-1
+Added Pin To Net: NetName=NetQ7_1 Pin=R39-2
+Added Pin To Net: NetName=+3V3DC Pin=R52-1
+Added Pin To Net: NetName=NetC43_2 Pin=R52-2
+Added Pin To Net: NetName=VMID Pin=R53-1
+Added Pin To Net: NetName=RX Pin=R53-2
+Added Pin To Net: NetName=RX Pin=R54-1
+Added Pin To Net: NetName=NetC41_2 Pin=R54-2
+Added Pin To Net: NetName=+3V3 Pin=R55-1
+Added Pin To Net: NetName=SSP0_DETECT Pin=R55-2
+Added Pin To Net: NetName=NetR56_1 Pin=R56-1
+Added Pin To Net: NetName=NetR56_2 Pin=R56-2
+Added Pin To Net: NetName=NetR57_1 Pin=R57-1
+Added Pin To Net: NetName=NetR57_2 Pin=R57-2
+Added Pin To Net: NetName=NetR77_1 Pin=R77-1
+Added Pin To Net: NetName=NetR78_1 Pin=R78-1
+Added Pin To Net: NetName=NetR79_1 Pin=R79-1
+Added Pin To Net: NetName=NetR80_1 Pin=R80-1
+Added Pin To Net: NetName=NetR81_1 Pin=R81-1
+Added Pin To Net: NetName=NetR82_1 Pin=R82-1
+Added Pin To Net: NetName=NetR83_1 Pin=R83-1
+Added Pin To Net: NetName=NetR84_1 Pin=R84-1
+Added Pin To Net: NetName=NetR85_1 Pin=R85-1
+Added Pin To Net: NetName=NetR86_1 Pin=R86-1
+Added Pin To Net: NetName=NetR87_1 Pin=R87-1
+Added Pin To Net: NetName=NetR88_1 Pin=R88-1
+Added Pin To Net: NetName=NetC34_1 Pin=U6-1
+Added Pin To Net: NetName=GND Pin=U6-2
+Added Pin To Net: NetName=+5VDC Pin=U6-3
+Added Pin To Net: NetName=NetR35_1 Pin=U6-4
+Added Pin To Net: NetName=+5VDC Pin=U6-5
+Added Pin To Net: NetName=+3V3DC Pin=U7-1
+Added Pin To Net: NetName=GND Pin=U7-2
+Added Pin To Net: NetName=+3V3DC Pin=U7-3
+Added Pin To Net: NetName=USB2UART_TX Pin=U7-4
+Added Pin To Net: NetName=USB2UART_RX Pin=U7-5
+Added Pin To Net: NetName=+3V3DC Pin=U7-6
+Added Pin To Net: NetName=USB_DBG_D_P Pin=U7-7
+Added Pin To Net: NetName=USB_DBG_D_N Pin=U7-8
+Added Pin To Net: NetName=USB_5V Pin=U7-9
+Added Pin To Net: NetName=DTR Pin=U7-12
+Added Pin To Net: NetName=RTS Pin=U7-13
+Added Pin To Net: NetName=GND Pin=U7-17
+Added Pin To Net: NetName=GND Pin=U8-1
+Added Pin To Net: NetName=+3V3DC Pin=U8-2
+Added Pin To Net: NetName=+3V3DC Pin=U8-3
+Added Pin To Net: NetName=GND Pin=U8-4
+Added Pin To Net: NetName=GND Pin=U8-5
+Added Pin To Net: NetName=NetC43_2 Pin=U8-6
+Added Pin To Net: NetName=GND Pin=U8-10
+Added Pin To Net: NetName=TX1 Pin=U8-11
+Added Pin To Net: NetName=+3V3DC Pin=U8-12
+Added Pin To Net: NetName=TX2 Pin=U8-13
+Added Pin To Net: NetName=GND Pin=U8-14
+Added Pin To Net: NetName=+3V3DC Pin=U8-15
+Added Pin To Net: NetName=VMID Pin=U8-16
+Added Pin To Net: NetName=RX Pin=U8-17
+Added Pin To Net: NetName=GND Pin=U8-18
+Added Pin To Net: NetName=OSCIN Pin=U8-21
+Added Pin To Net: NetName=OSCOUT Pin=U8-22
+Added Pin To Net: NetName=NetU8_23 Pin=U8-23
+Added Pin To Net: NetName=NetU8_24 Pin=U8-24
+Added Pin To Net: NetName=NetU8_29 Pin=U8-29
+Added Pin To Net: NetName=NetU8_30 Pin=U8-30
+Added Pin To Net: NetName=NetU8_31 Pin=U8-31
+Added Pin To Net: NetName=+3V3DC Pin=U8-32
+Added Pin To Net: NetName=GND Pin=U8-33
+Added Pin To Net: NetName=NetC57_2 Pin=U9-1
+Added Pin To Net: NetName=NetC58_2 Pin=U9-2
+Added Pin To Net: NetName=NetBT1_2 Pin=U9-3
+Added Pin To Net: NetName=GND Pin=U9-4
+Added Pin To Net: NetName=NetR57_1 Pin=U9-5
+Added Pin To Net: NetName=NetR56_1 Pin=U9-6
+Added Pin To Net: NetName=+3V3 Pin=U9-8
+Added Pin To Net: NetName=GND Pin=U13-1
+Added Pin To Net: NetName=LED_DR_DT Pin=U13-2
+Added Pin To Net: NetName=LED_DR_CLK Pin=U13-3
+Added Pin To Net: NetName=LED_DR_LATCH Pin=U13-4
+Added Pin To Net: NetName=A_1 Pin=U13-5
+Added Pin To Net: NetName=B_1 Pin=U13-6
+Added Pin To Net: NetName=C_1 Pin=U13-7
+Added Pin To Net: NetName=D_1 Pin=U13-8
+Added Pin To Net: NetName=E_1 Pin=U13-9
+Added Pin To Net: NetName=F_1 Pin=U13-10
+Added Pin To Net: NetName=G_1 Pin=U13-11
+Added Pin To Net: NetName=DP_1 Pin=U13-12
+Added Pin To Net: NetName=A_2 Pin=U13-13
+Added Pin To Net: NetName=B_2 Pin=U13-14
+Added Pin To Net: NetName=C_2 Pin=U13-15
+Added Pin To Net: NetName=D_2 Pin=U13-16
+Added Pin To Net: NetName=E_2 Pin=U13-17
+Added Pin To Net: NetName=F_2 Pin=U13-18
+Added Pin To Net: NetName=G_2 Pin=U13-19
+Added Pin To Net: NetName=DP_2 Pin=U13-20
+Added Pin To Net: NetName=LED_BLANK Pin=U13-21
+Added Pin To Net: NetName=LED_DATA_OUT1 Pin=U13-22
+Added Pin To Net: NetName=NetR77_1 Pin=U13-23
+Added Pin To Net: NetName=+5VDC Pin=U13-24
+Added Pin To Net: NetName=GND Pin=U14-1
+Added Pin To Net: NetName=LED_DATA_OUT3 Pin=U14-2
+Added Pin To Net: NetName=LED_DR_CLK Pin=U14-3
+Added Pin To Net: NetName=LED_DR_LATCH Pin=U14-4
+Added Pin To Net: NetName=A_7 Pin=U14-5
+Added Pin To Net: NetName=B_7 Pin=U14-6
+Added Pin To Net: NetName=C_7 Pin=U14-7
+Added Pin To Net: NetName=D_7 Pin=U14-8
+Added Pin To Net: NetName=E_7 Pin=U14-9
+Added Pin To Net: NetName=F_7 Pin=U14-10
+Added Pin To Net: NetName=G_7 Pin=U14-11
+Added Pin To Net: NetName=DP_7 Pin=U14-12
+Added Pin To Net: NetName=A_8 Pin=U14-13
+Added Pin To Net: NetName=B_8 Pin=U14-14
+Added Pin To Net: NetName=C_8 Pin=U14-15
+Added Pin To Net: NetName=D_8 Pin=U14-16
+Added Pin To Net: NetName=E_8 Pin=U14-17
+Added Pin To Net: NetName=F_8 Pin=U14-18
+Added Pin To Net: NetName=G_8 Pin=U14-19
+Added Pin To Net: NetName=DP_8 Pin=U14-20
+Added Pin To Net: NetName=LED_BLANK Pin=U14-21
+Added Pin To Net: NetName=LED_DATA_OUT4 Pin=U14-22
+Added Pin To Net: NetName=NetR78_1 Pin=U14-23
+Added Pin To Net: NetName=+5VDC Pin=U14-24
+Added Pin To Net: NetName=GND Pin=U15-1
+Added Pin To Net: NetName=LED_DATA_OUT6 Pin=U15-2
+Added Pin To Net: NetName=LED_DR_CLK Pin=U15-3
+Added Pin To Net: NetName=LED_DR_LATCH Pin=U15-4
+Added Pin To Net: NetName=A1 Pin=U15-5
+Added Pin To Net: NetName=B1 Pin=U15-6
+Added Pin To Net: NetName=C1 Pin=U15-7
+Added Pin To Net: NetName=D1 Pin=U15-8
+Added Pin To Net: NetName=E1 Pin=U15-9
+Added Pin To Net: NetName=F1 Pin=U15-10
+Added Pin To Net: NetName=G1.1 Pin=U15-11
+Added Pin To Net: NetName=G1.2 Pin=U15-12
+Added Pin To Net: NetName=H1 Pin=U15-13
+Added Pin To Net: NetName=J1 Pin=U15-14
+Added Pin To Net: NetName=K1 Pin=U15-15
+Added Pin To Net: NetName=L1 Pin=U15-16
+Added Pin To Net: NetName=M1 Pin=U15-17
+Added Pin To Net: NetName=N1 Pin=U15-18
+Added Pin To Net: NetName=EEM1 Pin=U15-19
+Added Pin To Net: NetName=EEM2 Pin=U15-20
+Added Pin To Net: NetName=LED_BLANK Pin=U15-21
+Added Pin To Net: NetName=LED_DATA_OUT7 Pin=U15-22
+Added Pin To Net: NetName=NetR79_1 Pin=U15-23
+Added Pin To Net: NetName=+5VDC Pin=U15-24
+Added Pin To Net: NetName=GND Pin=U16-1
+Added Pin To Net: NetName=LED_DATA_OUT1 Pin=U16-2
+Added Pin To Net: NetName=LED_DR_CLK Pin=U16-3
+Added Pin To Net: NetName=LED_DR_LATCH Pin=U16-4
+Added Pin To Net: NetName=A_3 Pin=U16-5
+Added Pin To Net: NetName=B_3 Pin=U16-6
+Added Pin To Net: NetName=C_3 Pin=U16-7
+Added Pin To Net: NetName=D_3 Pin=U16-8
+Added Pin To Net: NetName=E_3 Pin=U16-9
+Added Pin To Net: NetName=F_3 Pin=U16-10
+Added Pin To Net: NetName=G_3 Pin=U16-11
+Added Pin To Net: NetName=DP_3 Pin=U16-12
+Added Pin To Net: NetName=A_4 Pin=U16-13
+Added Pin To Net: NetName=B_4 Pin=U16-14
+Added Pin To Net: NetName=C_4 Pin=U16-15
+Added Pin To Net: NetName=D_4 Pin=U16-16
+Added Pin To Net: NetName=E_4 Pin=U16-17
+Added Pin To Net: NetName=F_4 Pin=U16-18
+Added Pin To Net: NetName=G_4 Pin=U16-19
+Added Pin To Net: NetName=DP_4 Pin=U16-20
+Added Pin To Net: NetName=LED_BLANK Pin=U16-21
+Added Pin To Net: NetName=LED_DATA_OUT2 Pin=U16-22
+Added Pin To Net: NetName=NetR80_1 Pin=U16-23
+Added Pin To Net: NetName=+5VDC Pin=U16-24
+Added Pin To Net: NetName=GND Pin=U17-1
+Added Pin To Net: NetName=LED_DATA_OUT4 Pin=U17-2
+Added Pin To Net: NetName=LED_DR_CLK Pin=U17-3
+Added Pin To Net: NetName=LED_DR_LATCH Pin=U17-4
+Added Pin To Net: NetName=A_9 Pin=U17-5
+Added Pin To Net: NetName=B_9 Pin=U17-6
+Added Pin To Net: NetName=C_9 Pin=U17-7
+Added Pin To Net: NetName=D_9 Pin=U17-8
+Added Pin To Net: NetName=E_9 Pin=U17-9
+Added Pin To Net: NetName=F_9 Pin=U17-10
+Added Pin To Net: NetName=G_9 Pin=U17-11
+Added Pin To Net: NetName=DP_9 Pin=U17-12
+Added Pin To Net: NetName=A_10 Pin=U17-13
+Added Pin To Net: NetName=B_10 Pin=U17-14
+Added Pin To Net: NetName=C_10 Pin=U17-15
+Added Pin To Net: NetName=D_10 Pin=U17-16
+Added Pin To Net: NetName=E_10 Pin=U17-17
+Added Pin To Net: NetName=F_10 Pin=U17-18
+Added Pin To Net: NetName=G_10 Pin=U17-19
+Added Pin To Net: NetName=DP_10 Pin=U17-20
+Added Pin To Net: NetName=LED_BLANK Pin=U17-21
+Added Pin To Net: NetName=LED_DATA_OUT5 Pin=U17-22
+Added Pin To Net: NetName=NetR81_1 Pin=U17-23
+Added Pin To Net: NetName=+5VDC Pin=U17-24
+Added Pin To Net: NetName=GND Pin=U18-1
+Added Pin To Net: NetName=LED_DATA_OUT7 Pin=U18-2
+Added Pin To Net: NetName=LED_DR_CLK Pin=U18-3
+Added Pin To Net: NetName=LED_DR_LATCH Pin=U18-4
+Added Pin To Net: NetName=A2 Pin=U18-5
+Added Pin To Net: NetName=B2 Pin=U18-6
+Added Pin To Net: NetName=C2 Pin=U18-7
+Added Pin To Net: NetName=D2 Pin=U18-8
+Added Pin To Net: NetName=E2 Pin=U18-9
+Added Pin To Net: NetName=F2 Pin=U18-10
+Added Pin To Net: NetName=G2.1 Pin=U18-11
+Added Pin To Net: NetName=G2.2 Pin=U18-12
+Added Pin To Net: NetName=H2 Pin=U18-13
+Added Pin To Net: NetName=J2 Pin=U18-14
+Added Pin To Net: NetName=K2 Pin=U18-15
+Added Pin To Net: NetName=L2 Pin=U18-16
+Added Pin To Net: NetName=M2 Pin=U18-17
+Added Pin To Net: NetName=N2 Pin=U18-18
+Added Pin To Net: NetName=DP2 Pin=U18-19
+Added Pin To Net: NetName=LED_BLANK Pin=U18-21
+Added Pin To Net: NetName=NetU18_22 Pin=U18-22
+Added Pin To Net: NetName=NetR82_1 Pin=U18-23
+Added Pin To Net: NetName=+5VDC Pin=U18-24
+Added Pin To Net: NetName=GND Pin=U19-1
+Added Pin To Net: NetName=LED_DATA_OUT5 Pin=U19-2
+Added Pin To Net: NetName=LED_DR_CLK Pin=U19-3
+Added Pin To Net: NetName=LED_DR_LATCH Pin=U19-4
+Added Pin To Net: NetName=A_11 Pin=U19-5
+Added Pin To Net: NetName=B_11 Pin=U19-6
+Added Pin To Net: NetName=C_11 Pin=U19-7
+Added Pin To Net: NetName=D_11 Pin=U19-8
+Added Pin To Net: NetName=E_11 Pin=U19-9
+Added Pin To Net: NetName=F_11 Pin=U19-10
+Added Pin To Net: NetName=G_11 Pin=U19-11
+Added Pin To Net: NetName=DP_11 Pin=U19-12
+Added Pin To Net: NetName=A_12 Pin=U19-13
+Added Pin To Net: NetName=B_12 Pin=U19-14
+Added Pin To Net: NetName=C_12 Pin=U19-15
+Added Pin To Net: NetName=D_12 Pin=U19-16
+Added Pin To Net: NetName=E_12 Pin=U19-17
+Added Pin To Net: NetName=F_12 Pin=U19-18
+Added Pin To Net: NetName=G_12 Pin=U19-19
+Added Pin To Net: NetName=DP_12 Pin=U19-20
+Added Pin To Net: NetName=LED_BLANK Pin=U19-21
+Added Pin To Net: NetName=LED_DATA_OUT6 Pin=U19-22
+Added Pin To Net: NetName=NetR83_1 Pin=U19-23
+Added Pin To Net: NetName=+5VDC Pin=U19-24
+Added Pin To Net: NetName=GND Pin=U20-1
+Added Pin To Net: NetName=LED_DATA_OUT2 Pin=U20-2
+Added Pin To Net: NetName=LED_DR_CLK Pin=U20-3
+Added Pin To Net: NetName=LED_DR_LATCH Pin=U20-4
+Added Pin To Net: NetName=A_5 Pin=U20-5
+Added Pin To Net: NetName=B_5 Pin=U20-6
+Added Pin To Net: NetName=C_5 Pin=U20-7
+Added Pin To Net: NetName=D_5 Pin=U20-8
+Added Pin To Net: NetName=E_5 Pin=U20-9
+Added Pin To Net: NetName=F_5 Pin=U20-10
+Added Pin To Net: NetName=G_5 Pin=U20-11
+Added Pin To Net: NetName=DP_5 Pin=U20-12
+Added Pin To Net: NetName=A_6 Pin=U20-13
+Added Pin To Net: NetName=B_6 Pin=U20-14
+Added Pin To Net: NetName=C_6 Pin=U20-15
+Added Pin To Net: NetName=D_6 Pin=U20-16
+Added Pin To Net: NetName=E_6 Pin=U20-17
+Added Pin To Net: NetName=F_6 Pin=U20-18
+Added Pin To Net: NetName=G_6 Pin=U20-19
+Added Pin To Net: NetName=DP_6 Pin=U20-20
+Added Pin To Net: NetName=LED_BLANK Pin=U20-21
+Added Pin To Net: NetName=LED_DATA_OUT3 Pin=U20-22
+Added Pin To Net: NetName=NetR84_1 Pin=U20-23
+Added Pin To Net: NetName=+5VDC Pin=U20-24
+Added Pin To Net: NetName=GND Pin=U21-1
+Added Pin To Net: NetName=NetU18_22 Pin=U21-2
+Added Pin To Net: NetName=Fare1 Pin=U21-5
+Added Pin To Net: NetName=Fare2 Pin=U21-6
+Added Pin To Net: NetName=Fare3 Pin=U21-7
+Added Pin To Net: NetName=Fare4 Pin=U21-8
+Added Pin To Net: NetName=Fare5 Pin=U21-9
+Added Pin To Net: NetName=Fare6 Pin=U21-10
+Added Pin To Net: NetName=Fare7 Pin=U21-11
+Added Pin To Net: NetName=Fare8 Pin=U21-12
+Added Pin To Net: NetName=Extras1 Pin=U21-13
+Added Pin To Net: NetName=Extras2 Pin=U21-14
+Added Pin To Net: NetName=Extras3 Pin=U21-15
+Added Pin To Net: NetName=Extras4 Pin=U21-16
+Added Pin To Net: NetName=Extras5 Pin=U21-17
+Added Pin To Net: NetName=Extras6 Pin=U21-18
+Added Pin To Net: NetName=Extras7 Pin=U21-19
+Added Pin To Net: NetName=Extras8 Pin=U21-20
+Added Pin To Net: NetName=LED_DATA_OUT9 Pin=U21-22
+Added Pin To Net: NetName=NetR85_1 Pin=U21-23
+Added Pin To Net: NetName=+5VDC Pin=U21-24
+Added Pin To Net: NetName=GND Pin=U22-1
+Added Pin To Net: NetName=LED_DATA_OUT11 Pin=U22-2
+Added Pin To Net: NetName=NH1 Pin=U22-5
+Added Pin To Net: NetName=NH2 Pin=U22-6
+Added Pin To Net: NetName=EuroTOP1 Pin=U22-7
+Added Pin To Net: NetName=EuroTOP2 Pin=U22-8
+Added Pin To Net: NetName=/km1 Pin=U22-9
+Added Pin To Net: NetName=/km2 Pin=U22-10
+Added Pin To Net: NetName=km1 Pin=U22-11
+Added Pin To Net: NetName=km2 Pin=U22-12
+Added Pin To Net: NetName=EuroBOT1 Pin=U22-13
+Added Pin To Net: NetName=EuroBOT2 Pin=U22-14
+Added Pin To Net: NetName=Bed1 Pin=U22-15
+Added Pin To Net: NetName=Clock1 Pin=U22-16
+Added Pin To Net: NetName=NFC1 Pin=U22-17
+Added Pin To Net: NetName=RGB_Blue Pin=U22-18
+Added Pin To Net: NetName=RGB_Red Pin=U22-19
+Added Pin To Net: NetName=RGB_Green Pin=U22-20
+Added Pin To Net: NetName=NetR86_1 Pin=U22-23
+Added Pin To Net: NetName=+5VDC Pin=U22-24
+Added Pin To Net: NetName=GND Pin=U23-1
+Added Pin To Net: NetName=LED_DATA_OUT9 Pin=U23-2
+Added Pin To Net: NetName=Hired1 Pin=U23-5
+Added Pin To Net: NetName=Hired2 Pin=U23-6
+Added Pin To Net: NetName=Hired3 Pin=U23-7
+Added Pin To Net: NetName=Hired4 Pin=U23-8
+Added Pin To Net: NetName=Stopped1 Pin=U23-9
+Added Pin To Net: NetName=Stopped2 Pin=U23-10
+Added Pin To Net: NetName=Stopped3 Pin=U23-11
+Added Pin To Net: NetName=Stopped4 Pin=U23-12
+Added Pin To Net: NetName=Rate1 Pin=U23-13
+Added Pin To Net: NetName=Rate2 Pin=U23-14
+Added Pin To Net: NetName=Rate3 Pin=U23-15
+Added Pin To Net: NetName=Rate4 Pin=U23-16
+Added Pin To Net: NetName=Forhere1 Pin=U23-17
+Added Pin To Net: NetName=Forhere2 Pin=U23-18
+Added Pin To Net: NetName=Forhere3 Pin=U23-19
+Added Pin To Net: NetName=Service1 Pin=U23-20
+Added Pin To Net: NetName=LED_DATA_OUT10 Pin=U23-22
+Added Pin To Net: NetName=NetR87_1 Pin=U23-23
+Added Pin To Net: NetName=+5VDC Pin=U23-24
+Added Pin To Net: NetName=GND Pin=U24-1
+Added Pin To Net: NetName=LED_DATA_OUT10 Pin=U24-2
+Added Pin To Net: NetName=Distance1 Pin=U24-5
+Added Pin To Net: NetName=Distance2 Pin=U24-6
+Added Pin To Net: NetName=Distance3 Pin=U24-7
+Added Pin To Net: NetName=Distance4 Pin=U24-8
+Added Pin To Net: NetName=Distance5 Pin=U24-9
+Added Pin To Net: NetName=Distance6 Pin=U24-10
+Added Pin To Net: NetName=Distance7 Pin=U24-11
+Added Pin To Net: NetName=Distance8 Pin=U24-12
+Added Pin To Net: NetName=Touch1 Pin=U24-13
+Added Pin To Net: NetName=Touch2 Pin=U24-14
+Added Pin To Net: NetName=Touch3 Pin=U24-15
+Added Pin To Net: NetName=Touch4 Pin=U24-16
+Added Pin To Net: NetName=Touch5 Pin=U24-17
+Added Pin To Net: NetName=Touch6 Pin=U24-18
+Added Pin To Net: NetName=Taxi1 Pin=U24-19
+Added Pin To Net: NetName=Taxi2 Pin=U24-20
+Added Pin To Net: NetName=LED_DATA_OUT11 Pin=U24-22
+Added Pin To Net: NetName=NetR88_1 Pin=U24-23
+Added Pin To Net: NetName=+5VDC Pin=U24-24
+Added Pin To Net: NetName=NetC58_2 Pin=XTAL1-1
+Added Pin To Net: NetName=NetC57_2 Pin=XTAL1-2
+Added Pin To Net: NetName=OSCIN Pin=Y1-1
+Added Pin To Net: NetName=GND Pin=Y1-2
+Added Pin To Net: NetName=OSCOUT Pin=Y1-3
+Added Pin To Net: NetName=GND Pin=Y1-4
+Add Net: Net with name "LED_BLANK" already exists
+Add Net: Net with name "LED_DR_CLK" already exists
+Add Net: Net with name "LED_DR_LATCH" already exists
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component BT1 DS1092-04-B6P
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component C33 CL10A105KA8NNNC
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component C34 CL21A226MPCLRNC
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component C35 CL21A226MPCLRNC
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component C36 CL21A226MPCLRNC
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component C37 CL10B104KB8NNNL
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component C38 CL10B104KB8NNNL
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component C39 CL10B104KB8NNNL
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component C40 CL10B104KB8NNNL
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component C41 CAP
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component C42 CAP
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component C43 CAP
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component C44 CAP
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component C45 CL10C150JB8NNNC
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component C46 CL10C470JB8NNNC
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component C47 CL10C181JB8NNNC
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component C48 CL10C100CB8NNNC
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component C49 CL10C470JB8NNNC
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component C50 CL10C181JB8NNNC
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component C51 CL10C100CB8NNNC
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component C52 CL10C150JB8NNNC
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component C53 CL10C180JB8NNNC
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component C54 CL10C180JB8NNNC
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component C55 CAP
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component C56 CAP
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component C57 CL10C180JB8NNNC
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component C58 CL10C180JB8NNNC
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component C79 CAP
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component C80 CAP
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component C81 CAP
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component C82 CAP
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component C83 CAP
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component C84 CAP
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component C85 CAP
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component C86 CAP
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component C87 CAP
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component C88 CAP
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component C89 CAP
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component C90 CAP
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component D13 PMEG4010EGWJ
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component D14 ATV02W5V0B-HF
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component D15 ATV02W5V0B-HF
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component D16 ATV02W5V0B-HF
+Added Member To Class: ClassName=TOP Member=Component J1 DF12NB(3.0)-60DS-0.5V(51)
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component J2 TYPE-C 16PIN 2MD(073)
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component J3 10118194-0001LF
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component J4 microsd
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component L4 LQM18PN2R2NC0L
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component L5 LQM18PN2R2NC0L
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED1 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED2 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED3 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED4 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED5 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED6 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED7 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED8 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED9 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED10 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED11 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED12 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED13 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED14 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED15 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED16 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED17 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED18 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED19 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED20 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED21 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED22 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED23 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED24 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED25 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED26 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED27 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED28 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED29 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED30 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED31 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED32 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED33 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED34 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED35 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED36 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED37 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED38 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED39 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED40 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED41 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED42 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED43 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED44 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED45 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED46 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED47 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED48 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED49 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED50 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED51 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED52 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED53 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED54 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED55 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED56 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED57 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED58 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED59 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED60 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED61 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED62 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED63 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED64 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED65 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED66 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED67 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED68 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED69 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED70 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED71 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED72 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED73 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED74 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED75 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED76 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED77 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED78 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED79 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED80 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED81 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED82 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED83 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED84 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED85 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED86 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED87 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED88 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED89 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED90 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED91 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED92 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED93 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED94 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED95 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED96 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED97 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED98 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED99 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED100 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED101 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED102 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED103 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED104 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED105 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED106 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED107 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED108 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED109 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED110 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED111 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED112 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED113 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED114 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED115 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED116 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED117 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED118 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED119 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED120 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED121 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED122 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED123 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED124 YLED0402R
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component LED125 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED126 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED127 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED128 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED129 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED130 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED131 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED132 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED133 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED134 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED135 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED136 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED137 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED138 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED139 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED140 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED141 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED142 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED143 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED144 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED145 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED146 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED147 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED148 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED149 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED150 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED151 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED152 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED153 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED154 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED155 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED156 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED157 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED158 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED159 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED160 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED161 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED162 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED163 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED164 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED165 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED166 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED167 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED168 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED169 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED170 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED171 LTW-C283DS5
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED172 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED173 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED174 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED175 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED176 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED177 L1MC-RGB0028000MP0
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED178 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED179 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED180 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED181 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED182 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED183 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED184 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED185 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED186 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED187 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED188 YLED0402R
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component LED189 YLED0402R
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component Q6 MMBTA42_R1_00001
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component Q7 MMBTA42_R1_00001
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component R32 RC0402JR-0710KL
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component R33 RC0402JR-0710KL
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component R34 RES
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component R35 RC0402JR-0710KL
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component R36 RC0402JR-0710KL
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component R37 RC0402JR-0710KL
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component R38 0603SAF4702T5E
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component R39 0603SAF4702T5E
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component R52 RES
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component R53 0603SAJ0821T5E
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component R54 RC0603FR-075K1L
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component R55 RES
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component R56 0603SAF3300T5E
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component R57 0603SAF3300T5E
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component R77 RC0603FR-133K6L
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component R78 RC0603FR-133K6L
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component R79 RC0603FR-133K6L
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component R80 RC0603FR-133K6L
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component R81 RC0603FR-133K6L
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component R82 RC0603FR-133K6L
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component R83 RC0603FR-133K6L
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component R84 RC0603FR-133K6L
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component R85 RC0603FR-133K6L
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component R86 RC0603FR-133K6L
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component R87 RC0603FR-133K6L
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component R88 RC0603FR-133K6L
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component U6 DIO7002AST5
+Added Member To Class: ClassName=U_05_USB_UART_Service Member=Component U7 CH343P
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component U8 MFRC52201HN1,115
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component U9 MCP79410T-I/MS
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component U13 CAT4016HV6-GT2
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component U14 CAT4016HV6-GT2
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component U15 CAT4016HV6-GT2
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component U16 CAT4016HV6-GT2
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component U17 CAT4016HV6-GT2
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component U18 CAT4016HV6-GT2
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component U19 CAT4016HV6-GT2
+Added Member To Class: ClassName=U_08_Display_Leds Member=Component U20 CAT4016HV6-GT2
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component U21 CAT4016HV6-GT2
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component U22 CAT4016HV6-GT2
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component U23 CAT4016HV6-GT2
+Added Member To Class: ClassName=U_09_Display_Leds-2 Member=Component U24 CAT4016HV6-GT2
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component XTAL1 R38-32.768-12.5-EXT-5PPM
+Added Member To Class: ClassName=U_06_RFID_RTC_Storage Member=Component Y1 ECS-271.2-10-37-CKM-TR
+Added Rule: Name=Schematic Supply Nets
+Added Rule: Name=Schematic Supply Nets_1
+Added Rule: Name=Schematic Supply Nets_2
+Added Rule: Name=Schematic Supply Nets_3
+Added Rule: Name=Schematic Supply Nets_4
+Added Rule: Name=Schematic Supply Nets_5
+Added Rule: Name=Schematic Supply Nets_6

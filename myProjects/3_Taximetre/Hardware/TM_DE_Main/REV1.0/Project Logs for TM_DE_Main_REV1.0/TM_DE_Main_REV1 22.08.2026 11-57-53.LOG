@@ -1,0 +1,63 @@
+Removed Pin From Net: NetName=GND Pin=BT1-1
+Change Footprint: Footprint Not Found BAT_BLP2016SM-G
+Change Component Comment : Designator=BT1 Old Comment=DS1092-04-B6P New Comment=BLP2016SM-G
+Change component parameters: Designator = "J4" ("J4"); Footprint = "microSD_2"; UniqueID = "\BJSFSYIH\IVBZQRRR" ("\BJSFSYIH\IVBZQRRR")
+Change component parameters (AddParameter): Name = "Ordering"; Value = "https://www.ozdisan.com/konnektor-baglanti-elemanlari/sim-sd-kart-konnektorleri/sd-kart-konnektorleri/L-KLS1-TF-003-H1-85-R"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number"; Value = "L-KLS1-TF-003-H1.85-R"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Price"; Value = "0,26439"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Unit"; Value = "USD"; VariantName = "[No Variations]"
+Change component parameters: Designator = "SW1" ("SW1"); Footprint = "RA_TACT_SWITCH"; UniqueID = "\GXBTWSGM\LINTPQDF" ("\GXBTWSGM\LINTPQDF")
+Change component parameters (AddParameter): Name = "Ordering"; Value = "https://www.ozdisan.com/elektromekanik-komponentler/sivicler-anahtarlar/tact-sivicler/TC-0203T-A00"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number"; Value = "TC-0203T-A00"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Price"; Value = "0,06795"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Published"; Value = "24-Mar-1999"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Publisher"; Value = "Altium Limited"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Unit"; Value = "USD"; VariantName = "[No Variations]"
+Change component parameters: Designator = "U10" ("U10"); Footprint = "XCVR_EC25AFA-512-STD"; UniqueID = "\QUIKDCOM\YEAUWJOO" ("\QUIKDCOM\YEAUWJOO")
+Change component parameters (AddParameter): Name = "Availability"; Value = "In Stock"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Check_prices"; Value = "https://www.snapeda.com/parts/EC25AFA-512-STD/Quectel/view-part/?ref=eda"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MF"; Value = "Quectel"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MP"; Value = "EC25AFA-512-STD"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "Custom Quectel"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Price"; Value = "None"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Purchase-URL"; Value = "https://pricing.snapeda.com/search/part/EC25AFA-512-STD/?ref=eda"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "SnapEDA_Link"; Value = "https://www.snapeda.com/parts/EC25AFA-512-STD/Quectel/view-part/?ref=snap"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Value"; Value = ""; VariantName = "[No Variations]"
+Change component parameters: Designator = "BT1" ("BT1"); Footprint = "DB1092"; UniqueID = "\BJSFSYIH\CHPGEKCG" ("\BJSFSYIH\CHPGEKCG")
+Change component parameters (AddParameter): Name = "Digi-Key_Part_Number"; Value = "BLP2016SM-GCT-ND"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MF"; Value = "MPD"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MP"; Value = "BLP2016SM-G"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "Non-Standard MPD"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "SnapEDA_Link"; Value = "https://www.snapeda.com/parts/BLP2016SM-G/MPD/view-part/4614401/?ref=snap"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Value"; Value = ""; VariantName = "[No Variations]"
+Add Pin To Net: Unknown Pin: Pin BT1-NEG
+Add Pin To Net: Unknown Pin: Pin Q1-4
+Add Pin To Net: Unknown Pin: Pin Q1-5
+Add Pin To Net: Unknown Pin: Pin Q1-6
+Add Pin To Net: Unknown Pin: Pin Q1-7
+Add Pin To Net: Unknown Pin: Pin Q1-8
+Add Pin To Net: Unknown Pin: Pin Q2-4
+Add Pin To Net: Unknown Pin: Pin Q2-5
+Add Pin To Net: Unknown Pin: Pin Q2-6
+Add Pin To Net: Unknown Pin: Pin Q2-7
+Add Pin To Net: Unknown Pin: Pin Q2-8
+Add Net: Net with name "LED_BLANK" already exists
+Add Net: Net with name "LED_DR_CLK" already exists
+Add Net: Net with name "LED_DR_LATCH" already exists
+Added Pin To Net: NetName=NetBT1_POS Pin=U9-3
+Added Net: Name=NetBT1_POS
+Added Rule: Name=Schematic Supply Nets
+Added Rule: Name=Schematic Supply Nets_1
+Added Rule: Name=Schematic Supply Nets_2
+Added Rule: Name=Schematic Supply Nets_3
+Added Rule: Name=Schematic Supply Nets_4
+Added Rule: Name=Schematic Supply Nets_5
+Added Rule: Name=Schematic Supply Nets_6
+Added Rule: Name=Schematic Supply Nets_7
+Added Rule: Name=Schematic Supply Nets_8
+Added Rule: Name=Schematic Supply Nets_9
+Added Rule: Name=Schematic Supply Nets_10
+Added Rule: Name=Schematic Supply Nets_11
+Added Rule: Name=Schematic Supply Nets_12
+Added Rule: Name=Schematic Supply Nets_13
+Added Rule: Name=Schematic Supply Nets_14
