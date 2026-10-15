@@ -270,8 +270,8 @@ static int gatt_svr_chr_access(uint16_t conn_handle, uint16_t attr_handle,
                         memset(&new_cfg, 0, sizeof(new_cfg));
                         strncpy(new_cfg.wifi_ssid, wifi_ssid, sizeof(new_cfg.wifi_ssid) - 1);
                         strncpy(new_cfg.wifi_pass, wifi_pass, sizeof(new_cfg.wifi_pass) - 1);
-                        strncpy(new_cfg.mqtt_uri, "mqtt://mqtt.onloi.com:1883", sizeof(new_cfg.mqtt_uri) - 1);
-                        new_cfg.mqtt_port = 1883;
+                        strncpy(new_cfg.mqtt_uri, "mqtts://mqtt.api.onloi.com:8883", sizeof(new_cfg.mqtt_uri) - 1);
+                        new_cfg.mqtt_port = 8883; // TLS (Protocol Step 10)
                         uint8_t mac[6];
                         esp_read_mac(mac, ESP_MAC_WIFI_STA);
                         snprintf(new_cfg.device_id, sizeof(new_cfg.device_id), "%02X%02X%02X%02X%02X%02X",
@@ -302,28 +302,38 @@ static int gatt_svr_chr_access(uint16_t conn_handle, uint16_t attr_handle,
                 }
                 
                 uint8_t *resp_payload = malloc(512);
-                uint16_t pt_len = 0;
+                uint16_t pt_len = 1; // Byte 0 reserved for actual added count
+                uint8_t added_count = 0;
                 if (resp_payload != NULL) {
-                    resp_payload[pt_len++] = (uint8_t)ap_count;
                     for (int i = 0; i < ap_count; i++) {
+                        uint8_t s_len = strlen((char *)ap_records[i].ssid);
+                        if (s_len == 0) continue; // Skip hidden SSIDs
+                        // Prevent BLE MTU overflow: Keep total payload <= 180 bytes (frame <= 196 bytes)
+                        if (pt_len + 6 + 1 + 1 + 1 + s_len > 180) {
+                            ESP_LOGW(TAG, "Reached safe BLE payload limit (%d bytes), truncating AP list at %d APs", pt_len, added_count);
+                            break;
+                        }
                         memcpy(&resp_payload[pt_len], ap_records[i].bssid, 6);
                         pt_len += 6;
                         resp_payload[pt_len++] = (uint8_t)ap_records[i].rssi;
                         resp_payload[pt_len++] = (ap_records[i].primary <= 14) ? 0x01 : 0x02;
-                        uint8_t s_len = strlen((char *)ap_records[i].ssid);
                         resp_payload[pt_len++] = s_len;
-                        if (s_len > 0) {
-                            memcpy(&resp_payload[pt_len], ap_records[i].ssid, s_len);
-                            pt_len += s_len;
-                        }
+                        memcpy(&resp_payload[pt_len], ap_records[i].ssid, s_len);
+                        pt_len += s_len;
+                        added_count++;
                     }
+                    resp_payload[0] = added_count; // Set final count
                     
                     uint8_t *tx_buf = malloc(pt_len + 32);
                     if (tx_buf != NULL) {
                         uint16_t tx_len = ble_frame_build_resp(0x03, rx_frame.seq, 0x00, resp_payload, pt_len, tx_buf);
                         struct os_mbuf *om = ble_hs_mbuf_from_flat(tx_buf, tx_len);
-                        ble_gatts_notify_custom(conn_handle, tx_handle, om);
-                        ESP_LOGI(TAG, "Sent GET_SSIDS Response (count=%d, pt_len=%d)", ap_count, pt_len);
+                        int rc = ble_gatts_notify_custom(conn_handle, tx_handle, om);
+                        if (rc != 0) {
+                            ESP_LOGE(TAG, "Failed to send GET_SSIDS notify: rc=%d", rc);
+                        } else {
+                            ESP_LOGI(TAG, "Sent GET_SSIDS Response (count=%d, pt_len=%d, tx_len=%d)", added_count, pt_len, tx_len);
+                        }
                         free(tx_buf);
                     }
                     free(resp_payload);
@@ -371,8 +381,8 @@ static int gatt_svr_chr_access(uint16_t conn_handle, uint16_t attr_handle,
                         strncpy(new_cfg->wifi_ssid, wifi_ssid, sizeof(new_cfg->wifi_ssid) - 1);
                         strncpy(new_cfg->wifi_pass, wifi_pass, sizeof(new_cfg->wifi_pass) - 1);
                         if (strlen(new_cfg->mqtt_uri) == 0) {
-                            strncpy(new_cfg->mqtt_uri, "mqtts://mqtt.onloi.com:8883", sizeof(new_cfg->mqtt_uri) - 1);
-                            new_cfg->mqtt_port = 8883; // TLS
+                            strncpy(new_cfg->mqtt_uri, "mqtts://mqtt.api.onloi.com:8883", sizeof(new_cfg->mqtt_uri) - 1);
+                            new_cfg->mqtt_port = 8883; // TLS (Protocol Step 10)
                         }
                         
                         uint8_t mac[6];
@@ -450,11 +460,11 @@ static int ble_server_gap_event(struct ble_gap_event *event, void *arg)
         
         gateway_config_t config;
         config_manager_load(&config);
-        if (!config.is_configured) {
-            ESP_LOGI(TAG, "Wi-Fi not configured yet. Restarting BLE advertising.");
+        if (!s_is_claimed) {
+            ESP_LOGI(TAG, "Gateway is not claimed yet. Restarting BLE peripheral advertising.");
             ble_server_start_adv();
         } else {
-            ESP_LOGI(TAG, "Gateway is fully configured. BLE peripheral advertising remains OFF.");
+            ESP_LOGI(TAG, "Gateway is claimed. BLE peripheral advertising remains OFF.");
         }
         break;
     case BLE_GAP_EVENT_SUBSCRIBE:

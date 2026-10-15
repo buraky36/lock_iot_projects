@@ -15,17 +15,18 @@ typedef struct {
     char mqtt_uri[64];
     int mqtt_port;
     char mqtt_username[64];
-    char mqtt_password[64];
-    char device_id[32];
-    char device_secret[64];
+    char mqtt_password[128];
+    char device_id[32];      // mqtt.clientId from the claim response
+    char device_secret[128]; // deviceSecret (used for HMAC AUTH_TAG)
     uint16_t session_epoch;
 } api_claim_response_t;
 
 /**
- * @brief Post to /v1/gateways/claim to register the gateway and get MQTT credentials
+ * @brief Post to /v1/devices/claim (Protocol Step 9) to get MQTT credentials
  * 
  * @param device_id Optional: The device ID if known (or MAC derived)
  * @param device_code Model code (e.g., "OKGWX1")
+ * @param provisioning_token Raw 32-byte token received over BLE (PROVISION 0x02); sent as base64url
  * @param out_response Struct to hold the parsed response
  * @return esp_err_t ESP_OK on success
  */

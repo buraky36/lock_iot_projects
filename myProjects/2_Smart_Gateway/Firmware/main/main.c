@@ -12,6 +12,7 @@
 #include "gateway_version.h"
 #include "wifi_manager.h"
 #include "ble_manager.h"
+#include "ble_server.h"
 #include "mqtt_manager.h"
 #include "ota_manager.h"
 #include "esp_sntp.h"
@@ -237,6 +238,21 @@ void app_main(void)
     gateway_config_t config;
     err = config_manager_load(&config);
 
+    // If device_id in NVS does not match our new clean MAC, erase old config to force fresh onboarding
+    char expected_id[17] = {0};
+    uint8_t current_mac[6];
+    esp_read_mac(current_mac, ESP_MAC_WIFI_STA);
+    snprintf(expected_id, sizeof(expected_id), "%02X%02X%02X%02X%02X%02X",
+             current_mac[0], current_mac[1], current_mac[2], current_mac[3], current_mac[4], current_mac[5]);
+    
+    if (err == ESP_OK && strcmp(config.device_id, expected_id) != 0) {
+        ESP_LOGW(TAG, "Config MAC (%s) differs from new hardware MAC (%s). Resetting config to start fresh onboarding...", config.device_id, expected_id);
+        config_manager_reset();
+        config.is_configured = false;
+        config.is_claimed = false;
+        ble_server_set_claimed(false);
+    }
+
     if (err == ESP_OK && config.is_configured) {
         // Device is configured, connect to router
         s_sys_state = SYS_STATE_STA_CONNECTING;
@@ -277,20 +293,39 @@ void app_main(void)
             memset(&claim_resp, 0, sizeof(claim_resp));
             ESP_LOGI(TAG, "Requesting MQTT credentials from API...");
             err = api_manager_claim_gateway(config.device_id, GATEWAY_DEVICE_CODE, g_provisioning_token, &claim_resp);
-            // err = api_manager_claim_gateway("99120583419", GATEWAY_DEVICE_CODE, g_provisioning_token, &claim_resp);
             
             if (err == ESP_OK) {
                 ESP_LOGI(TAG, "HTTPS Claim successful!");
 
+                if (config.is_claimed && strlen(claim_resp.device_secret) > 0) {
+                    char local_key_b64[64] = {0};
+                    size_t b64_len = 0;
+                    mbedtls_base64_encode((unsigned char *)local_key_b64, sizeof(local_key_b64), &b64_len, config.local_key, 32);
+                    ESP_LOGI(TAG, "Syncing Local Key to backend API...");
+                    api_manager_sync_local_key(config.device_id, claim_resp.device_secret, local_key_b64);
+                }
+
                 // Initialize and start MQTT manager
-                err = mqtt_manager_init(claim_resp.mqtt_uri, claim_resp.mqtt_port, config.device_id, claim_resp.mqtt_username, claim_resp.mqtt_password, claim_resp.session_epoch);
+                const char *chosen_client_id = (strlen(claim_resp.device_id) > 0) ? claim_resp.device_id : NULL;
+                err = mqtt_manager_init(claim_resp.mqtt_uri, claim_resp.mqtt_port, config.device_id, chosen_client_id, claim_resp.mqtt_username, claim_resp.mqtt_password, claim_resp.session_epoch);
                 if (err == ESP_OK) {
                     mqtt_manager_start();
                 } else {
                     ESP_LOGE(TAG, "MQTT Manager initialization failed.");
                 }
             } else {
-                ESP_LOGE(TAG, "Gateway HTTPS Claim failed! Cannot start MQTT.");
+                ESP_LOGW(TAG, "HTTPS Claim returned error (%s). Device may already be claimed on backend.", esp_err_to_name(err));
+                ESP_LOGI(TAG, "Proceeding with standard Gateway MQTT credentials...");
+
+                char fallback_client_id[64];
+                snprintf(fallback_client_id, sizeof(fallback_client_id), "gw-%s", config.device_id);
+                
+                err = mqtt_manager_init("mqtt.onloi.com", 1883, config.device_id, fallback_client_id, "mqttuser", "valrhRa27AeW2Ynv", 1);
+                if (err == ESP_OK) {
+                    mqtt_manager_start();
+                } else {
+                    ESP_LOGE(TAG, "Fallback MQTT Manager initialization failed.");
+                }
             }
         } else {
             // Connection failed

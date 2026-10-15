@@ -5,30 +5,30 @@ This document summarizes the key protocols, API endpoints, and MQTT behaviors id
 ## 1. Device Provisioning (HTTPS Claim API)
 When the device first boots and connects to Wi-Fi, it must claim itself on the Backend API to receive its MQTT credentials and authentication tokens.
 
-- **Endpoint:** `POST https://api.onloi.com/v1/gateways/claim` (Note: Access Controller may use `/v1/devices/claim` depending on the backend routes).
+- **Endpoint:** `POST https://api.onloi.com/v1/devices/claim` (Protocol Step 9)
 - **Headers:** `Content-Type: application/json`
 - **Payload Example:**
   ```json
   {
-    "deviceId": "99120583417",
-    "deviceCode": "OG0610",
-    "firmwareVersion": "1.3.0"
+    "deviceId": "78356203936",
+    "deviceCode": "OK0310",
+    "provisioningToken": "<token from Step 6, base64url>"
   }
   ```
   *(**Critical Note:** The `deviceId` must match exactly what the App passes during the BLE onboarding phase. Sending an unformatted/unknown MAC address like `F0F5BD0DC3B8` causes a `500 Internal Server Error` on the backend).*
 
-- **Success Response (HTTP 200/201):**
+- **Success Response (HTTP 200):**
   ```json
   {
     "mqtt": {
-      "host": "mqtt.onloi.com",
-      "port": 1883,
-      "clientId": "gw-99120583417",
-      "username": "gw-99120583417",
-      "password": "<mqtt_password>",
-      "topicPrefix": "/gateway/99120583417"
+      "host": "mqtt.api.onloi.com",
+      "port": 8883,
+      "clientId": "onloi_d_78356203936",
+      "username": "78356203936",
+      "password": "<secret>"
     },
-    "gatewayAuthToken": "<jwt_or_base64_token>"
+    "deviceSecret": "<32 byte - used for HMAC>",
+    "sessionEpoch": 1
   }
   ```
 
@@ -42,14 +42,16 @@ After successfully claiming the device, the firmware must sync its local encrypt
 - **Payload:** Base64 encoded Local Key.
 - **Success Status Codes:** HTTP `200`, `201`, or **`204 (No Content)`**. Firmware must handle `204` as a success without trying to parse a JSON body.
 
-## 3. MQTT Broker Connection (Critical ACL Rules)
-The MQTT connection relies strictly on the credentials provided by the API.
+## 3. MQTT Broker Connection (Protocol Steps 10-12)
+The MQTT connection relies strictly on the credentials provided by the claim API.
 
-- **Client ID:** Must match the `clientId` provided in the JSON (`gw-99120583417`).
-- **Username & Password:** Must match exactly.
-- **Topic ACLs & Last Will Testament (LWT):** 
-  - The backend returns a strict `"topicPrefix"` (e.g., `/gateway/99120583417`).
-  - **CRITICAL:** If the firmware attempts to use a Last Will and Testament (LWT) topic that deviates from this exact prefix (for example, `/gateway/gw-99120583417/status`), the MQTT Broker (EMQX/Mosquitto) will instantly drop the connection with `Connection refused, not authorized`. All publish/subscribe topics must strictly start with the `topicPrefix`.
+- **Transport:** TLS is mandatory (`mqtt.api.onloi.com:8883`).
+- **Client ID / Username / Password:** Used exactly as returned in the claim response (`onloi_d_<deviceId>` / `<deviceId>` / password).
+- **Session:** `cleanSession: false`, `keepAlive: 30 s`.
+- **Last Will:** `onloi/v1/d/<deviceId>/lifecycle`, `retain=true` (firmware sends an empty payload to clear the retained REGISTRATION).
+- **Subscriptions (QoS 1):** `onloi/v1/d/<deviceId>/cmd`, `/reply`, `/config`.
+- **Registration:** After CONNACK, publish `REGISTRATION (0x34)` EVENT frame to `onloi/v1/d/<deviceId>/lifecycle` (QoS 1, retain=true).
+- **Gateway-specific JSON topics** (`/gateway/<deviceId>/scan_report`, `command`, `ota`, `sub_ota`, `device_claim`, `device_unclaim`, `key_rotate`, `status`, `notify`) are not part of protocol.txt and are kept as-is for now.
 
 ## 4. BLE Onboarding & App Interaction
 When the device is unconfigured (Factory Reset state), it broadcasts as a BLE Peripheral.
