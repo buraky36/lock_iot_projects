@@ -70,4 +70,15 @@ esp_err_t ble_manager_start(void);
  */
 esp_err_t ble_manager_stop(void);
 
+/**
+ * @brief Manually trigger or restart BLE scanning (e.g. on button short-press)
+ */
+void ble_manager_trigger_scan(void);
+
+/**
+ * @brief Check if BLE manager is currently scanning
+ * @return true if scanning, false otherwise
+ */
+bool ble_manager_is_scanning(void);
+
 #endif // BLE_MANAGER_H

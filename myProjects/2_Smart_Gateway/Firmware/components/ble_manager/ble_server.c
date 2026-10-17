@@ -33,6 +33,12 @@ static const ble_uuid128_t gatt_tx_uuid =
 static uint16_t tx_handle;
 static uint16_t conn_handle;
 static bool s_is_claimed = false;
+static bool s_is_app_connected = false;
+
+bool ble_server_is_app_connected(void)
+{
+    return s_is_app_connected;
+}
 
 void ble_server_set_claimed(bool claimed)
 {
@@ -449,7 +455,10 @@ static int ble_server_gap_event(struct ble_gap_event *event, void *arg)
         ESP_LOGI(TAG, "Peripheral connected; status=%d", event->connect.status);
         if (event->connect.status == 0) {
             conn_handle = event->connect.conn_handle;
+            s_is_app_connected = true;
+            ESP_LOGI(TAG, "App successfully connected via BLE.");
         } else {
+            s_is_app_connected = false;
             if (!s_is_claimed) {
                 ble_server_start_adv();
             }
@@ -457,6 +466,7 @@ static int ble_server_gap_event(struct ble_gap_event *event, void *arg)
         break;
     case BLE_GAP_EVENT_DISCONNECT:
         ESP_LOGI(TAG, "Peripheral disconnected; reason=%d", event->disconnect.reason);
+        s_is_app_connected = false;
         
         gateway_config_t config;
         config_manager_load(&config);

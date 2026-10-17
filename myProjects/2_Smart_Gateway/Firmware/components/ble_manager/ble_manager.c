@@ -4,6 +4,7 @@
 #include "crypto_manager.h"
 #include "esp_log.h"
 #include "esp_mac.h"
+#include "esp_timer.h"
 #include "gateway_version.h"
 #include "host/ble_hs.h"
 #include "host/util/util.h"
@@ -12,6 +13,46 @@
 #include "nimble/nimble_port_freertos.h"
 #include "services/gap/ble_svc_gap.h"
 #include <string.h>
+
+#define SCAN_RATE_LIMIT_MS 3000
+#define SCAN_CACHE_ENTRIES 32
+
+typedef struct {
+  uint8_t mac[BLE_MAC_LEN];
+  int64_t last_report_time_ms;
+  bool is_used;
+} scan_rate_limit_entry_t;
+
+static scan_rate_limit_entry_t s_scan_cache[SCAN_CACHE_ENTRIES];
+
+static bool should_throttle_scan_report(const uint8_t *mac, int64_t now_ms) {
+  int oldest_idx = 0;
+  int64_t oldest_time = INT64_MAX;
+
+  for (int i = 0; i < SCAN_CACHE_ENTRIES; i++) {
+    if (s_scan_cache[i].is_used &&
+        memcmp(s_scan_cache[i].mac, mac, BLE_MAC_LEN) == 0) {
+      if ((now_ms - s_scan_cache[i].last_report_time_ms) < SCAN_RATE_LIMIT_MS) {
+        return true; // Throttle / skip duplicate within 3s
+      }
+      s_scan_cache[i].last_report_time_ms = now_ms;
+      return false; // Time elapsed, allow report
+    }
+    if (!s_scan_cache[i].is_used) {
+      oldest_idx = i;
+      oldest_time = 0;
+    } else if (s_scan_cache[i].last_report_time_ms < oldest_time) {
+      oldest_time = s_scan_cache[i].last_report_time_ms;
+      oldest_idx = i;
+    }
+  }
+
+  // New device: save in cache and allow report
+  memcpy(s_scan_cache[oldest_idx].mac, mac, BLE_MAC_LEN);
+  s_scan_cache[oldest_idx].last_report_time_ms = now_ms;
+  s_scan_cache[oldest_idx].is_used = true;
+  return false;
+}
 
 // External MQTT callbacks
 extern void mqtt_manager_publish_notification(const uint8_t *mac,
@@ -41,6 +82,7 @@ static uint8_t s_own_addr_type;
 static bool s_scanning = false;
 static bool s_connected = false;
 static uint16_t s_conn_handle = 0;
+static bool s_ble_synced = false;
 
 static int ble_gap_event(struct ble_gap_event *event, void *arg);
 
@@ -313,12 +355,11 @@ static void ble_app_scan(void) {
     return;
   }
 
-  ESP_LOGI(TAG, "Starting BLE active scanning...");
+  ESP_LOGI(TAG, "Starting BLE continuous scanning...");
 
   memset(&disc_params, 0, sizeof(disc_params));
-  disc_params.filter_duplicates = 1;
-  disc_params.passive = 0; // Active scanning: sends SCAN_REQ to retrieve scan
-                           // response packets (deviceCode & Name)
+  disc_params.filter_duplicates = 0; // Continuous scan reports
+  disc_params.passive = 0;           // Active scanning: sends SCAN_REQ to retrieve scan response
   disc_params.itvl = 0;
   disc_params.window = 0;
   disc_params.filter_policy = 0;
@@ -370,19 +411,25 @@ static int ble_gap_event(struct ble_gap_event *event, void *arg) {
     memcpy(report.data, event->disc.data, report.data_len);
     report.is_onloi_beacon = false;
 
-    // 1. Parse Manufacturer Data: 0x4F 0x4B (OK) + 6 byte deviceCode + 1 byte
-    // claimed
+    // 1. Parse Manufacturer Data:
+    // Case A: 0x4F 0x4B at offset 0 (standard Onloi beacon: [0x4F, 0x4B, code[0..5], claimed])
     if (fields.mfg_data != NULL && fields.mfg_data_len >= 9) {
       if (fields.mfg_data[0] == 0x4F && fields.mfg_data[1] == 0x4B) {
         report.is_onloi_beacon = true;
         memcpy(report.device_code, &fields.mfg_data[2], 6);
         report.device_code[6] = '\0';
         report.claimed = (fields.mfg_data[8] == 0x01);
+      } else if (fields.mfg_data_len >= 11 && fields.mfg_data[2] == 0x4F &&
+                 fields.mfg_data[3] == 0x4B) {
+        // Case B: Company ID (2 bytes) followed by 0x4F 0x4B
+        report.is_onloi_beacon = true;
+        memcpy(report.device_code, &fields.mfg_data[4], 6);
+        report.device_code[6] = '\0';
+        report.claimed = (fields.mfg_data[10] == 0x01);
       }
     }
 
-    // 2. Parse Service Data UUID16: 0xFFF0 (Onloi Smart Lock deviceCode in Scan
-    // Response)
+    // 2. Parse Service Data UUID16: 0xFFF0 (Onloi Smart Lock deviceCode in Scan Response)
     if (!report.is_onloi_beacon && fields.svc_data_uuid16 != NULL &&
         fields.svc_data_uuid16_len >= 8) {
       uint16_t uuid16 =
@@ -394,28 +441,69 @@ static int ble_gap_event(struct ble_gap_event *event, void *arg) {
       }
     }
 
-    // 3. Parse Complete Local Name starting with OK, OD, OG, OB
+    // 3. Parse Complete or Shortened Local Name starting with OK, OD, OG, OB or ONLOI
     if (!report.is_onloi_beacon && fields.name != NULL &&
-        fields.name_len >= 6) {
-      if (fields.name[0] == 'O' &&
+        fields.name_len >= 2) {
+      if (fields.name_len >= 6 && fields.name[0] == 'O' &&
           (fields.name[1] == 'K' || fields.name[1] == 'D' ||
            fields.name[1] == 'G' || fields.name[1] == 'B')) {
         report.is_onloi_beacon = true;
         memcpy(report.device_code, fields.name, 6);
         report.device_code[6] = '\0';
+      } else if (fields.name_len >= 5 && memcmp(fields.name, "ONLOI", 5) == 0) {
+        report.is_onloi_beacon = true;
+        size_t cplen = fields.name_len > 6 ? 6 : fields.name_len;
+        memcpy(report.device_code, fields.name, cplen);
+        report.device_code[cplen] = '\0';
       }
     }
 
-    ESP_LOGD(TAG,
-             "[SCAN] Discovered Beacon: MAC=" MACSTR
-             ", RSSI=%d, Onloi=%d, Code=%s, Claimed=%d",
-             MAC2STR(report.mac), report.rssi, report.is_onloi_beacon,
-             report.is_onloi_beacon ? report.device_code : "N/A",
+    // 4. Raw packet fallback search for "OK" signature (0x4F, 0x4B)
+    if (!report.is_onloi_beacon && event->disc.length_data >= 9) {
+      for (int i = 0; i <= event->disc.length_data - 9; i++) {
+        if (event->disc.data[i] == 0x4F && event->disc.data[i + 1] == 0x4B) {
+          bool ascii_ok = true;
+          for (int c = 0; c < 6; c++) {
+            char ch = (char)event->disc.data[i + 2 + c];
+            if (ch < 32 || ch > 126) {
+              ascii_ok = false;
+              break;
+            }
+          }
+          if (ascii_ok) {
+            report.is_onloi_beacon = true;
+            memcpy(report.device_code, &event->disc.data[i + 2], 6);
+            report.device_code[6] = '\0';
+            report.claimed = (event->disc.data[i + 8] == 0x01);
+            break;
+          }
+        }
+      }
+    }
+
+    // Only process and enqueue Onloi beacons!
+    // Discard random non-Onloi BLE devices so the queue and MQTT never clog
+    if (!report.is_onloi_beacon) {
+      break;
+    }
+
+    // Apply rate-limiting so we don't spam MQTT every 100ms
+    int64_t now_ms = esp_timer_get_time() / 1000;
+    if (should_throttle_scan_report(report.mac, now_ms)) {
+      break;
+    }
+
+    ESP_LOGI(TAG,
+             "[SCAN] Discovered Onloi Beacon: MAC=" MACSTR
+             ", RSSI=%d, Code=%s, Claimed=%d",
+             MAC2STR(report.mac), report.rssi, report.device_code,
              report.claimed);
 
     // Send to MQTT Queue without blocking
     if (ble_scan_queue != NULL) {
-      xQueueSend(ble_scan_queue, &report, 0);
+      if (xQueueSend(ble_scan_queue, &report, 0) != pdTRUE) {
+        ESP_LOGW(TAG, "[SCAN] Scan queue full, dropping beacon report");
+      }
     }
     break;
   }
@@ -484,6 +572,11 @@ static int ble_gap_event(struct ble_gap_event *event, void *arg) {
     ble_app_scan();
     break;
 
+  case BLE_GAP_EVENT_DISC_COMPLETE:
+    ESP_LOGI(TAG, "BLE scan discovery completed; reason=%d", event->disc_complete.reason);
+    s_scanning = false;
+    break;
+
   default:
     break;
   }
@@ -499,6 +592,7 @@ static void ble_on_sync(void) {
     return;
   }
 
+  s_ble_synced = true;
   ESP_LOGI(TAG, "BLE Host synced. Starting default scan.");
   ble_app_scan();
 
@@ -507,6 +601,7 @@ static void ble_on_sync(void) {
 }
 
 static void ble_on_reset(int reason) {
+  s_ble_synced = false;
   ESP_LOGW(TAG, "BLE Host reset; reason=%d", reason);
 }
 
@@ -924,7 +1019,7 @@ static void ble_host_task(void *param) {
 esp_err_t ble_manager_init(void) {
   ESP_LOGI(TAG, "Initializing NimBLE Stack...");
 
-  ble_scan_queue = xQueueCreate(10, sizeof(ble_scan_report_t));
+  ble_scan_queue = xQueueCreate(20, sizeof(ble_scan_report_t));
   ble_cmd_queue = xQueueCreate(5, sizeof(ble_lock_cmd_t));
   s_channel_ready_sem = xSemaphoreCreateBinary();
   s_write_sem = xSemaphoreCreateBinary();
@@ -976,6 +1071,32 @@ esp_err_t ble_manager_start(void) {
 
 esp_err_t ble_manager_stop(void) {
   ESP_LOGI(TAG, "Stopping BLE Manager...");
+  s_ble_synced = false;
   ble_app_scan_cancel();
   return nimble_port_stop();
+}
+
+bool ble_manager_is_scanning(void) {
+  return s_scanning;
+}
+
+void ble_manager_trigger_scan(void) {
+  if (!s_ble_synced) {
+    ESP_LOGW(TAG, "BLE Host is not synced yet. Cannot trigger scan.");
+    return;
+  }
+
+  ESP_LOGI(TAG, "Manual BLE scan triggered by button.");
+  // Reset scan throttle cache so all beacons/locks are immediately re-discovered
+  memset(s_scan_cache, 0, sizeof(s_scan_cache));
+
+  if (s_connected) {
+    ESP_LOGW(TAG, "Currently connected to peripheral, scan will resume upon disconnect.");
+    return;
+  }
+
+  if (s_scanning) {
+    ble_app_scan_cancel();
+  }
+  ble_app_scan();
 }

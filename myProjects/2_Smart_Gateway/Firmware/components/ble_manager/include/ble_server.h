@@ -33,6 +33,12 @@ void ble_server_set_claimed(bool claimed);
  */
 bool ble_server_is_claimed(void);
 
+/**
+ * @brief Check if mobile app is connected to Gateway via BLE GATT server
+ * @return true if connected, false otherwise
+ */
+bool ble_server_is_app_connected(void);
+
 #ifdef __cplusplus
 }
 #endif

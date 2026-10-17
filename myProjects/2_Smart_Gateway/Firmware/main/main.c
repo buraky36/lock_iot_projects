@@ -34,10 +34,24 @@ static const char *TAG = "CORE_MGR";
 
 uint8_t g_provisioning_token[32] = {0};
 
-// GPIO Configs based on C6 Guide
-#define LED_WIFI      GPIO_NUM_7   // Red LED
-#define LED_BLE       GPIO_NUM_6   // Blue LED
+// Release / DevKit Configuration Profile (0 = Debug/DevKit mode, 1 = Release mode)
+#ifndef CONFIG_RELEASE_MODE
+#define CONFIG_RELEASE_MODE 0
+#endif
+
+#if CONFIG_RELEASE_MODE
+// Production / Release Pinout (ESP32-C6)
+#define LED_WIFI      GPIO_NUM_2   // WiFi Status LED (Solid ON when connected to Wi-Fi with IP)
+#define LED_BLE       GPIO_NUM_3   // Bluetooth Status LED (Solid ON when mobile app is connected via BLE)
+#define KEY_SW        GPIO_NUM_4   // Switch/Reset Key (Short press: trigger BLE scan, 5s hold: Factory Reset)
+#else
+// DevKit Test Pinout
+#define LED_WIFI      GPIO_NUM_7   // DevKit Red LED
+#define LED_BLE       GPIO_NUM_6   // DevKit Blue LED
 #define KEY_SW        GPIO_NUM_9   // DevKit BOOT Button
+#define LED1_GPIO     GPIO_NUM_8   // Mechanical Test LED 1
+#define LED2_GPIO     GPIO_NUM_10  // Mechanical Test LED 2
+#endif
 
 typedef enum {
     SYS_STATE_UNCONFIGURED = 0,
@@ -47,11 +61,15 @@ typedef enum {
 } system_state_t;
 
 static system_state_t s_sys_state = SYS_STATE_UNCONFIGURED;
+static volatile int s_ble_scan_indication_ticks = 0;
 
 // GPIO Initialization
 static void init_gpios(void)
 {
     ESP_LOGI(TAG, "Initializing Status LEDs and Configuration Button...");
+    ESP_LOGI(TAG, "Active Profile: [%s] | WiFi LED: GPIO%d, BLE LED: GPIO%d, Switch/Reset: GPIO%d",
+             CONFIG_RELEASE_MODE ? "RELEASE" : "DEVKIT",
+             LED_WIFI, LED_BLE, KEY_SW);
     
 #if CONFIG_USE_RGB_LED
     led_strip_config_t strip_config = {
@@ -79,7 +97,25 @@ static void init_gpios(void)
     gpio_set_level(LED_BLE, 0);
 #endif
 
-    // Button config
+#if !CONFIG_RELEASE_MODE && !CONFIG_USE_RGB_LED && defined(LED1_GPIO) && defined(LED2_GPIO)
+    // Mechanical Test LEDs (GPIO8 & GPIO10) configuration for DevKit only
+    gpio_config_t test_led_conf = {
+        .pin_bit_mask = (1ULL << LED1_GPIO) | (1ULL << LED2_GPIO),
+        .mode = GPIO_MODE_OUTPUT,
+        .pull_up_en = GPIO_PULLUP_DISABLE,
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        .intr_type = GPIO_INTR_DISABLE
+    };
+    gpio_config(&test_led_conf);
+
+    // Keep test LEDs continuously ON (High level)
+    gpio_set_level(LED1_GPIO, 1);
+    gpio_set_level(LED2_GPIO, 1);
+    ESP_LOGI(TAG, "Mechanical Test LEDs configured and turned ON: LED1 (GPIO%d)=1, LED2 (GPIO%d)=1",
+             LED1_GPIO, LED2_GPIO);
+#endif
+
+    // Button config (Active-low with internal pullup)
     gpio_config_t btn_conf = {
         .pin_bit_mask = (1ULL << KEY_SW),
         .mode = GPIO_MODE_INPUT,
@@ -90,93 +126,111 @@ static void init_gpios(void)
     gpio_config(&btn_conf);
 }
 
-// LED Status blink task
+// LED Status indicator task
 static void led_indicator_task(void *pvParameters)
 {
+    int wifi_connecting_ticks = 0;
     while (1) {
+#if CONFIG_USE_RGB_LED
+        // Short-press BLE scan feedback: flash Magenta/Purple
+        if (s_ble_scan_indication_ticks > 0) {
+            s_ble_scan_indication_ticks--;
+            if (s_ble_scan_indication_ticks % 2 == 0) {
+                led_strip_set_pixel(led_strip, 0, 50, 0, 50); // Purple/Magenta
+                led_strip_refresh(led_strip);
+            } else {
+                led_strip_clear(led_strip);
+            }
+            vTaskDelay(pdMS_TO_TICKS(100));
+            continue;
+        }
+
         switch (s_sys_state) {
             case SYS_STATE_UNCONFIGURED:
-#if CONFIG_USE_RGB_LED
                 led_strip_set_pixel(led_strip, 0, 0, 0, 50); // Blue
                 led_strip_refresh(led_strip);
                 vTaskDelay(pdMS_TO_TICKS(500));
                 led_strip_clear(led_strip);
                 vTaskDelay(pdMS_TO_TICKS(500));
-#else
-                gpio_set_level(LED_WIFI, 1);
-                vTaskDelay(pdMS_TO_TICKS(500));
-                gpio_set_level(LED_WIFI, 0);
-                vTaskDelay(pdMS_TO_TICKS(500));
-                gpio_set_level(LED_BLE, 0);
-#endif
                 break;
                 
             case SYS_STATE_STA_CONNECTING:
-#if CONFIG_USE_RGB_LED
                 led_strip_set_pixel(led_strip, 0, 50, 50, 0); // Yellow
                 led_strip_refresh(led_strip);
                 vTaskDelay(pdMS_TO_TICKS(200));
                 led_strip_clear(led_strip);
                 vTaskDelay(pdMS_TO_TICKS(200));
-#else
-                gpio_set_level(LED_WIFI, 1);
-                vTaskDelay(pdMS_TO_TICKS(150));
-                gpio_set_level(LED_WIFI, 0);
-                vTaskDelay(pdMS_TO_TICKS(150));
-#endif
                 break;
                 
             case SYS_STATE_STA_CONNECTED:
-#if CONFIG_USE_RGB_LED
-                led_strip_set_pixel(led_strip, 0, 0, 50, 0); // Green
+                // Solid Green for Wi-Fi connected with IP, or Cyan if app is also connected via BLE
+                if (ble_server_is_app_connected()) {
+                    led_strip_set_pixel(led_strip, 0, 0, 50, 50); // Cyan (Wi-Fi + BLE App)
+                } else {
+                    led_strip_set_pixel(led_strip, 0, 0, 50, 0); // Green
+                }
                 led_strip_refresh(led_strip);
-                vTaskDelay(pdMS_TO_TICKS(1000));
-#else
-                gpio_set_level(LED_WIFI, 1);
-                gpio_set_level(LED_BLE, 1);
-                vTaskDelay(pdMS_TO_TICKS(1000));
-                gpio_set_level(LED_BLE, 0);
-                vTaskDelay(pdMS_TO_TICKS(1000));
-#endif
+                vTaskDelay(pdMS_TO_TICKS(500));
                 break;
                 
             case SYS_STATE_STA_FAILED:
-#if CONFIG_USE_RGB_LED
                 led_strip_set_pixel(led_strip, 0, 50, 0, 0); // Red
                 led_strip_refresh(led_strip);
                 vTaskDelay(pdMS_TO_TICKS(500));
                 led_strip_clear(led_strip);
                 vTaskDelay(pdMS_TO_TICKS(500));
-#else
-                gpio_set_level(LED_WIFI, 1);
-                vTaskDelay(pdMS_TO_TICKS(100));
-                gpio_set_level(LED_WIFI, 0);
-                vTaskDelay(pdMS_TO_TICKS(100));
-                gpio_set_level(LED_WIFI, 1);
-                vTaskDelay(pdMS_TO_TICKS(100));
-                gpio_set_level(LED_WIFI, 0);
-                vTaskDelay(pdMS_TO_TICKS(1000));
-#endif
                 break;
         }
+#else
+        // 1. Wi-Fi Status LED (GPIO2 in Release mode)
+        // Solid ON when Wi-Fi is successfully connected and obtained an IP
+        if (wifi_manager_is_connected()) {
+            gpio_set_level(LED_WIFI, 1);
+            wifi_connecting_ticks = 0;
+        } else if (s_sys_state == SYS_STATE_STA_CONNECTING) {
+            wifi_connecting_ticks++;
+            // Blink every 200ms (2 ticks of 100ms) while connecting
+            gpio_set_level(LED_WIFI, (wifi_connecting_ticks / 2) % 2);
+        } else {
+            // Unconfigured, disconnected, or failed
+            gpio_set_level(LED_WIFI, 0);
+            wifi_connecting_ticks = 0;
+        }
+
+        // 2. Bluetooth Status LED (GPIO3 in Release mode)
+        // Solid ON when mobile app is connected to the Gateway via BLE
+        if (ble_server_is_app_connected()) {
+            gpio_set_level(LED_BLE, 1);
+        } else if (s_ble_scan_indication_ticks > 0) {
+            // Flash 3 times when short-press triggers/refreshes BLE scan
+            s_ble_scan_indication_ticks--;
+            gpio_set_level(LED_BLE, s_ble_scan_indication_ticks % 2);
+        } else {
+            gpio_set_level(LED_BLE, 0);
+        }
+
+        vTaskDelay(pdMS_TO_TICKS(100));
+#endif
     }
 }
 
-// Check for factory reset button long-press (5 seconds)
+// Check for switch/reset key actions:
+// - Short press (< 4.5 seconds): Trigger/restart BLE scan
+// - Long press (>= 5 seconds): Factory reset configuration and reboot
 static void button_monitor_task(void *pvParameters)
 {
     int press_ticks = 0;
-    ESP_LOGI(TAG, "Button Monitor Task started.");
+    ESP_LOGI(TAG, "Button Monitor Task started on GPIO%d.", KEY_SW);
     
     while (1) {
         // Active-low button
         if (gpio_get_level(KEY_SW) == 0) {
             press_ticks++;
             if (press_ticks % 10 == 0) {
-                ESP_LOGW(TAG, "Config button pressed for %d seconds...", press_ticks / 10);
+                ESP_LOGW(TAG, "Switch/Reset button held for %d seconds...", press_ticks / 10);
             }
             
-            // Pressed for 5 seconds (50 * 100ms)
+            // Pressed for 5 seconds (50 * 100ms) -> Factory Reset
             if (press_ticks >= 50) {
                 ESP_LOGE(TAG, "Factory reset button held for 5 seconds! Resetting configuration...");
                 
@@ -196,6 +250,12 @@ static void button_monitor_task(void *pvParameters)
                 esp_restart();
             }
         } else {
+            // Button released: check for short press (< 4.5 seconds)
+            if (press_ticks >= 1 && press_ticks < 45) {
+                ESP_LOGI(TAG, "Short press detected (%d ms). Triggering BLE scan...", press_ticks * 100);
+                ble_manager_trigger_scan();
+                s_ble_scan_indication_ticks = 6; // Quick 3-blink feedback on BLE LED
+            }
             press_ticks = 0;
         }
         vTaskDelay(pdMS_TO_TICKS(100));
@@ -204,9 +264,18 @@ static void button_monitor_task(void *pvParameters)
 
 void app_main(void)
 {
+    // Native hardware MAC address is used (custom virtual MAC disabled per user request)
+    // uint8_t custom_mac[6] = {0xF0, 0xF5, 0xBD, 0x0D, 0xC3, 0xD0};
+    // esp_base_mac_addr_set(custom_mac);
+
+    uint8_t native_mac[6];
+    esp_read_mac(native_mac, ESP_MAC_WIFI_STA);
+
     const esp_app_desc_t *app_desc = esp_app_get_description();
     ESP_LOGI(TAG, "==================================================");
     ESP_LOGI(TAG, "  Barfas Smart BLE Gateway v%s starting  ", app_desc->version);
+    ESP_LOGI(TAG, "  Hardware MAC: %02X:%02X:%02X:%02X:%02X:%02X",
+             native_mac[0], native_mac[1], native_mac[2], native_mac[3], native_mac[4], native_mac[5]);
     ESP_LOGI(TAG, "==================================================");
 
     init_gpios();

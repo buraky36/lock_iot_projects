@@ -628,7 +628,7 @@ static void mqtt_publisher_task(void *pvParameters) {
               report.mac[1], report.mac[2], report.mac[3], report.mac[4],
               report.mac[5]);
 
-      char hex_data[64] = {0};
+      char hex_data[128] = {0};
       bytes_to_hex(report.data, report.data_len, hex_data);
 
       cJSON_AddStringToObject(root, "mac", mac_str);
@@ -642,7 +642,8 @@ static void mqtt_publisher_task(void *pvParameters) {
 
       char *json_str = cJSON_PrintUnformatted(root);
       if (json_str != NULL) {
-        ESP_LOGD(TAG, "[PUBLISH] Sending scan report: %s", json_str);
+        ESP_LOGI(TAG, "[MQTT-SCAN] Published scan report (%s): %s",
+                 report.device_code, json_str);
         esp_mqtt_client_publish(client, s_pub_scan_topic, json_str, 0, 1, 0);
         if (strlen(s_alt_pub_scan_topic) > 0 &&
             strcmp(s_pub_scan_topic, s_alt_pub_scan_topic) != 0) {
