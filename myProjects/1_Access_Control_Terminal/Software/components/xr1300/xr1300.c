@@ -4,80 +4,66 @@
 #include "hw_config.h"
 #include <string.h>
 #include "esp_timer.h"
+#include "esp_log.h"
 
 #define XR1300_UART_NUM UART_NUM_1
 #define XR1300_TXD_PIN PIN_QR_TX
 #define XR1300_RXD_PIN PIN_QR_RX
-#define RX_BUF_SIZE 1024
+#define RX_BUF_SIZE 2048
 
-static QueueHandle_t xr1300_uart_queue = NULL;
 static QueueHandle_t xr1300_event_queue = NULL;
 static TaskHandle_t xr1300_task_handle = NULL;
 static bool uart_installed = false;
 volatile bool xr1300_is_responsive = false;
 
 static void xr1300_task(void *arg) {
-  uart_event_t event;
-  uint8_t temp_buf[512];
-  int rx_idx = 0;
+  uint8_t raw_buf[256];
+  static char last_qr[64] = {0};
+  static int64_t last_qr_time_ms = 0;
 
   while (1) {
-    // Wait for UART event. After first byte arrives, use 20 ms burst-end
-    // detection timeout.
-    TickType_t timeout = (rx_idx > 0) ? pdMS_TO_TICKS(20) : portMAX_DELAY;
+    // Wait for the very first byte (blocks indefinitely with 0% CPU consumption)
+    int len = uart_read_bytes(XR1300_UART_NUM, raw_buf, 1, portMAX_DELAY);
+    if (len > 0) {
+      int total_len = 1;
+      // Gather the rest of the barcode burst with a 30ms inter-byte silence timeout
+      while (total_len < (int)sizeof(raw_buf) - 1) {
+        int r = uart_read_bytes(XR1300_UART_NUM, raw_buf + total_len,
+                                sizeof(raw_buf) - 1 - total_len,
+                                pdMS_TO_TICKS(30));
+        if (r <= 0) break; // Silence for 30ms -> burst is complete
+        total_len += r;
+      }
+      raw_buf[total_len] = '\0';
+      xr1300_is_responsive = true;
 
-    if (xQueueReceive(xr1300_uart_queue, (void *)&event, timeout)) {
-      switch (event.type) {
-
-      case UART_DATA: {
-        // Give the hardware buffer 5 ms to settle before reading.
-        // timeout=0 could miss bytes if the scheduler context-switched
-        // between the ISR queuing the event and this read.
-        int len =
-            uart_read_bytes(XR1300_UART_NUM, temp_buf + rx_idx,
-                            sizeof(temp_buf) - 1 - rx_idx, pdMS_TO_TICKS(5));
-        if (len > 0) {
-          xr1300_is_responsive = true;
-          rx_idx += len;
-        }
-        break;
+      // Clean trailing CR, LF, spaces
+      while (total_len > 0 && (raw_buf[total_len - 1] == '\r' || raw_buf[total_len - 1] == '\n' || raw_buf[total_len - 1] == ' ')) {
+        raw_buf[--total_len] = '\0';
       }
 
-      case UART_FIFO_OVF:
-      case UART_BUFFER_FULL:
-        // Real hardware errors — discard accumulated data and reset.
-        printf("[QR XR1300] UART error (type=%d), flushing.\n", event.type);
-        uart_flush_input(XR1300_UART_NUM);
-        xQueueReset(xr1300_uart_queue);
-        rx_idx = 0;
-        break;
-
-      default:
-        // UART_BREAK, UART_PATTERN_DET, etc. — benign, ignore.
-        // Previously these caused a full flush which silently discarded
-        // valid in-flight QR data.
-        break;
+      // Filter printable ASCII characters
+      char clean_str[64] = {0};
+      int c_len = 0;
+      for (int i = 0; i < total_len && c_len < (int)sizeof(clean_str) - 1; i++) {
+        if (raw_buf[i] >= 32 && raw_buf[i] <= 126) {
+          clean_str[c_len++] = (char)raw_buf[i];
+        }
       }
-    } else {
-      // Timeout: no new event for 20 ms → burst is complete.
-      if (rx_idx > 0) {
-        temp_buf[rx_idx] = '\0';
-        printf("[QR XR1300] RAW Rx (%d bytes): %s\n", rx_idx, temp_buf);
+      clean_str[c_len] = '\0';
 
-        // Strip non-printable characters (\r, \n, control codes).
-        char clean_str[64] = {0};
-        int out_idx = 0;
-        for (int i = 0; i < rx_idx; i++) {
-          uint8_t c = temp_buf[i];
-          if (c >= 32 && c <= 126 && out_idx < (int)sizeof(clean_str) - 1) {
-            clean_str[out_idx++] = (char)c;
-          }
+      if (c_len > 0) {
+        int64_t now_ms = esp_timer_get_time() / 1000;
+        // Suppress identical scan repetition within 1.5 seconds so camera doesn't flood server
+        if (strcmp(last_qr, clean_str) == 0 && (now_ms - last_qr_time_ms < 1500)) {
+          continue;
         }
 
-        if (out_idx > 0) {
-          xQueueSend(xr1300_event_queue, clean_str, 0);
-        }
-        rx_idx = 0;
+        strncpy(last_qr, clean_str, sizeof(last_qr) - 1);
+        last_qr_time_ms = now_ms;
+
+        printf("[QR XR1300] RAW Rx (%d bytes): %s\n", c_len, clean_str);
+        xQueueSend(xr1300_event_queue, clean_str, 0);
       }
     }
   }
@@ -85,9 +71,8 @@ static void xr1300_task(void *arg) {
 
 bool xr1300_init(void) {
   if (uart_installed) {
-      // UART is already installed. Since we bypass liveness check, just return true.
-      xr1300_is_responsive = true;
-      return true;
+    xr1300_is_responsive = true;
+    return true;
   }
 
   const uart_config_t uart_config = {
@@ -99,46 +84,36 @@ bool xr1300_init(void) {
       .source_clk = UART_SCLK_APB,
   };
 
+  // Install UART driver with direct ring buffer
+  uart_driver_install(XR1300_UART_NUM, RX_BUF_SIZE, 0, 0, NULL, 0);
+
   uart_param_config(XR1300_UART_NUM, &uart_config);
   uart_set_pin(XR1300_UART_NUM, XR1300_TXD_PIN, XR1300_RXD_PIN,
                UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
-
   uart_set_line_inverse(XR1300_UART_NUM, UART_SIGNAL_INV_DISABLE);
 
-  // Install UART driver with an event queue
-  uart_driver_install(XR1300_UART_NUM, RX_BUF_SIZE * 2, RX_BUF_SIZE * 2, 20,
-                      &xr1300_uart_queue, 0);
+  // Critical for instant response:
+  // Set RX full threshold to 1 so the very first incoming byte generates an interrupt immediately
+  uart_set_rx_full_threshold(XR1300_UART_NUM, 1);
+  uart_set_rx_timeout(XR1300_UART_NUM, 10);
 
-  // Send first init command to test if module is alive
-  printf("[QR XR1300] Init at 9600 baud (TX=GPIO%d, RX=GPIO%d)...\n",
+  // Send factory reset command to XR1300 once to clear any previously configured delays
+  const char *factory_reset_cmd = "$010200-BF34\r\n";
+  uart_write_bytes(XR1300_UART_NUM, factory_reset_cmd, strlen(factory_reset_cmd));
+  vTaskDelay(pdMS_TO_TICKS(200));
+  uart_flush_input(XR1300_UART_NUM);
+
+  printf("[QR XR1300] Init at 9600 baud (TX=GPIO%d, RX=GPIO%d) - Fast burst mode active\n",
          XR1300_TXD_PIN, XR1300_RXD_PIN);
-         
-  // The XR1300 module accepts config commands but does not reply with ACKs.
-  // Therefore, we bypass the liveness check to prevent false hardware warnings.
-  bool is_alive = true;
-  
-  printf("[QR XR1300] Module is assumed ALIVE (Bypassing ACK check)\n");
 
-  // Create the application event queue for parsed QR strings
-  xr1300_event_queue =
-      xQueueCreate(5, 64); // Holds up to 5 QR strings of max 64 chars
+  xr1300_event_queue = xQueueCreate(5, 64);
 
-  // Create the background task for UART processing
-  xTaskCreate(xr1300_task, "xr1300_task", 4096, NULL, 5, &xr1300_task_handle);
+  // Create real-time background task pinned to Core 0
+  xTaskCreatePinnedToCore(xr1300_task, "xr1300_task", 4096, NULL, 5, &xr1300_task_handle, 0);
 
-  const char *init_cmds[] = {
-      "$1003F2-388B\r\n", // Same barcode delay 3s
-      "$010207-26A3\r\n"  // Save settings
-  };
-
-  for (int i = 0; i < 2; i++) {
-    uart_write_bytes(XR1300_UART_NUM, init_cmds[i], strlen(init_cmds[i]));
-    vTaskDelay(pdMS_TO_TICKS(250));
-  }
-  
   uart_installed = true;
-  xr1300_is_responsive = is_alive;
-  return is_alive;
+  xr1300_is_responsive = true;
+  return true;
 }
 
 // Non-blocking poll from the queue

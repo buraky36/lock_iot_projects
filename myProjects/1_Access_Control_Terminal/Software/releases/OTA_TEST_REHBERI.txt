@@ -1,0 +1,55 @@
+================================================================================
+ONLOI SMART LOCK - OTA TEST VE KURULUM REHBERİ (V2.0.0 -> V2.0.1)
+================================================================================
+
+Bu paket, OTA (Over-The-Air) güncelleme özelliğini test etmek için hazırlanmıştır.
+
+1. ADIM: CİHAZA FİZİKSEL (USB KABLO İLE) V2.0.0 YÜKLEME
+--------------------------------------------------------------------------------
+Backend yazılımcısı arkadaşınız elindeki cihaza İLK OLARAK V2.0.0 versiyonunu
+fiziksel olarak USB kablosu üzerinden yüklemelidir.
+
+Kullanılacak Dosya:
+- releases/V2.0.0/OE0110_PIN_QR/full_firmware_OE0110.bin
+  (Tüm bölümleri; bootloader, yeni 2 slotlu OTA partition tablosu, ota_data_initial
+   ve firmware.bin'i tek dosyada 0x0 adresinde birleştirilmiş olarak içerir).
+
+Yükleme Komutu (Örnek COM Port: COM3):
+  esptool.py --chip esp32 --port COM3 --baud 921600 write_flash 0x0 full_firmware_OE0110.bin
+
+Yükleme tamamlandıktan sonra cihaz:
+- Boot eder, MQTT'ye bağlanır.
+- Backend'e REGISTRATION (0x34) ve FIRMWARE_INFO (0x3A) gönderir.
+- Gönderdiği versiyon bilgisi: 0x00020000 ("v2.0.0") olacaktır.
+
+
+2. ADIM: V2.0.1 FIRMWARE'İNİ SUNUCUYA YÜKLEME (OTA DOSYASI)
+--------------------------------------------------------------------------------
+OTA güncellemesinde cihaz tüm flash'ı değil, SADECE uygulama partition'ını indirir.
+
+Sunucuya Yüklenecek Dosya:
+- releases/V2.0.1/OE0110_PIN_QR/firmware.bin
+  (Versiyon: 0x00020001 / "v2.0.1")
+
+Bu dosya backend'in HTTP veya HTTPS sunucusuna yerleştirilir (Örn: https://sunucu/ota/firmware_v2.0.1.bin).
+
+
+3. ADIM: BACKEND'DEN OTA GÜNCELLEMESİNİ BAŞLATMA
+--------------------------------------------------------------------------------
+Backend, cihaza MQTT üzerinden FIRMWARE_UPDATE (CMD: 0x53) komutu gönderir:
+- Topic: onloi/v1/d/{deviceId}/cmd
+- MSG_TYPE: COMMAND (0x04) | CMD: 0x53
+- Target Version: 0x00020001
+- Target: 0x01 (Unit 1 / ESP32)
+- URL: https://sunucu/ota/firmware_v2.0.1.bin
+- SHA256 / Checksum (veya 0)
+
+4. ADIM: DOĞRULAMA
+--------------------------------------------------------------------------------
+1) Cihaz indirme sırasında FIRMWARE_STATUS (0x39) ile yüzde ilerlemesini (%0-%100)
+   backend'e raporlar.
+2) İndirme ve CRC doğrulaması bitince otomatik reset atar.
+3) Cihaz ota_1 partition'ından V2.0.1 olarak ayağa kalkar.
+4) MQTT'ye bağlandığında FIRMWARE_STATUS (0x39 - COMPLETED) ve FIRMWARE_INFO (0x3A)
+   yayınlar ve versiyonun 0x00020001 ("v2.0.1") olduğunu teyit eder.
+================================================================================

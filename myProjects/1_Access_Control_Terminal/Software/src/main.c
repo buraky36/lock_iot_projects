@@ -24,12 +24,13 @@
 // ============================================================
 // Firmware Version
 // ============================================================
-#define FW_VERSION_MAJOR  1
-#define FW_VERSION_MINOR  6
-#define FW_VERSION_PATCH  4
-#define FW_VERSION_STR    "v1.6.5"
+#define FW_VERSION_MAJOR  2
+#define FW_VERSION_MINOR  0
+#define FW_VERSION_PATCH  1
+#define FW_VERSION_STR    "v2.0.1"
 #define FW_BUILD_DATE     __DATE__
 #define FW_BUILD_TIME     __TIME__
+#define HW_BOARD_REVISION 1
 // ============================================================
 
 char device_code_str[32] = {0};
@@ -39,6 +40,23 @@ char ble_name_str[64] = {0};
 #endif
 uint8_t active_hw_version = COMPILE_HW_VERSION;
 bool has_hw_warning = false;
+
+uint16_t app_get_product_id(void) {
+    if (active_hw_version == HW_VERSION_PIN_QR) return 0x0110;
+    if (active_hw_version == HW_VERSION_PIN_RFID) return 0x0111;
+    if (active_hw_version == HW_VERSION_RFID_ONLY) return 0x0112;
+    return 0x0110;
+}
+
+uint8_t app_get_hardware_revision(void) {
+    return HW_BOARD_REVISION;
+}
+
+uint32_t app_get_firmware_version(void) {
+    return ((uint32_t)(FW_VERSION_MAJOR & 0xFF) << 16) |
+           ((uint32_t)(FW_VERSION_MINOR & 0xFF) << 8) |
+           ((uint32_t)(FW_VERSION_PATCH & 0xFF));
+}
 
 static void app_generate_hw_info(void) {
     uint8_t mac[6];
@@ -95,6 +113,17 @@ static void serial_cli_task(void *pvParameters) {
                     }
                     printf("Total Masters: %d\n", cfg.master_card_count);
                     printf("--- END OF LIST ---\n");
+                } else if (strcmp(buf, "buraky36_ota_info") == 0) {
+                    printf("\n--- FIRMWARE & HARDWARE INFO ---\n");
+                    printf("Firmware Version: 0x%08lX (%s)\n", (unsigned long)app_get_firmware_version(), FW_VERSION_STR);
+                    printf("Product ID      : 0x%04X (%s)\n", app_get_product_id(), device_code_str);
+                    printf("Hardware Rev    : 0x%02X\n", app_get_hardware_revision());
+                    printf("Device Code     : %s\n", device_code_str);
+                    printf("Sending unsolicited FIRMWARE_INFO (0x3A) via MQTT...\n");
+                    api_client_send_firmware_info(0, 1);
+                } else if (strcmp(buf, "buraky36_ota_req") == 0) {
+                    printf("\n[CLI] Sending FIRMWARE_UPDATE_REQUEST (0x38) via MQTT...\n");
+                    api_client_send_firmware_update_request();
                 }
                 pos = 0;
             }
@@ -118,7 +147,10 @@ void app_main(void) {
   hal_shift_reg_init(); // MUST be before touch and RFID due to RST pins
   nv_storage_init();
   
-  bool has_tsm12 = hal_touch_init();
+  bool has_tsm12 = false;
+  if (active_hw_version != HW_VERSION_RFID_ONLY) {
+      has_tsm12 = hal_touch_init();
+  }
   
   // MFRC522 RST is driven by Shift Register U2 QG (MASK_U2_RFID_RST).
   // After hal_shift_reg_init() all outputs are 0x00 → RST is LOW (active reset).
@@ -127,9 +159,15 @@ void app_main(void) {
   hal_shift_reg_set_rfid_rst(true);
   vTaskDelay(pdMS_TO_TICKS(50)); // 50ms: safe margin after hard reset release
 
-  bool has_mfrc522 = mfrc522_init();
+  bool has_mfrc522 = false;
+  if (active_hw_version != HW_VERSION_PIN_QR) {
+      has_mfrc522 = mfrc522_init();
+  }
 
-  bool has_qr = hal_qr_init();
+  bool has_qr = false;
+  if (active_hw_version == HW_VERSION_PIN_QR) {
+      has_qr = hal_qr_init();
+  }
 
   printf("FIRMWARE COMPILED FOR HARDWARE VERSION: %d\n", active_hw_version);
   
@@ -218,17 +256,16 @@ void app_main(void) {
   uint8_t current_mode = app_get_working_mode();
   bool mode_changed = false;
   
-  if (active_hw_version == HW_VERSION_RFID_ONLY && current_mode != 3) {
-      printf("Enforcing Reader Mode for RFID-Only hardware.\n");
-      current_mode = 3;
-      mode_changed = true;
-  }
-  
   if (active_hw_version == HW_VERSION_RFID_ONLY) {
+      if (current_mode != 3) {
+          printf("Enforcing Reader Mode for RFID-Only hardware.\n");
+          current_mode = 3;
+          mode_changed = true;
+      }
       int in1_state = gpio_get_level(PIN_DIGITAL_IN1);
       printf("RFID-Only Wiegand Output Format is set to: %d-bit (IN1 Level: %d)\n", (in1_state == 1) ? 34 : 26, in1_state);
-  } else if (active_hw_version == HW_VERSION_PIN_RFID && current_mode == 3) {
-      printf("Reader Mode not supported on PIN+RFID hardware. Enforcing Standalone.\n");
+  } else if ((active_hw_version == HW_VERSION_PIN_RFID || active_hw_version == HW_VERSION_PIN_QR) && current_mode == 3) {
+      printf("Reader Mode not supported on PIN+RFID / PIN+QR hardware. Enforcing Standalone.\n");
       current_mode = 1;
       mode_changed = true;
   }

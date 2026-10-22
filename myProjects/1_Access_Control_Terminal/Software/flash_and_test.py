@@ -4,11 +4,11 @@ import time
 import subprocess
 import serial
 
-PORT = "COM4"
+PORT = "COM11"
 BAUD = 115200
 ESPTOOL_PATH = r"C:\Users\gentek-ideapad\.platformio\packages\tool-esptoolpy\esptool.py"
 PYTHON_PATH = r"C:\Users\gentek-ideapad\.platformio\penv\Scripts\python.exe"
-BIN_PATH = os.path.join(os.path.dirname(__file__), "output", "full_firmware_OE0110.bin")
+BIN_PATH = os.path.join(os.path.dirname(__file__), "output", "OE0110_PIN_QR", "full_firmware_OE0110.bin")
 
 def wait_for_bootloader(timeout_sec=30):
     print(f"\n[1/3] ESP32 Bootloader Bekleniyor (COM4)...")

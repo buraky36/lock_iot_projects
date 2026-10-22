@@ -502,8 +502,8 @@ void app_state_machine_tick(void) {
     if (elapsed_ms >= 3000) { // Wait for animation to finish
       nv_storage_delete_all_users();
       nv_storage_clear_master_credentials();
-
       wifi_manager_clear_credentials();
+      nv_storage_clear_onloi_mqtt_config();
 
       memset(&config, 0, sizeof(config));
       strcpy(config.master_code, "123456");
@@ -553,6 +553,7 @@ void app_state_machine_tick(void) {
         input_len = 0;
         hal_io_buzzer_beep(2700, 50, 1);
       } else if (key == '#') {
+        hal_io_buzzer_beep(2700, 50, 1);
         input_buffer[input_len] = '\0';
         if (is_entering_master) {
           if (strcmp(input_buffer, config.master_code) == 0 ||
@@ -740,6 +741,7 @@ void app_state_machine_tick(void) {
       if (hal_shift_reg_is_blocking_anim_playing())
         break;
       hal_shift_reg_wakeup_keypad();
+      hal_io_buzzer_beep(2700, 80, 1); // Immediate 80ms prompt beep on QR scan
       if (strcmp(qr_str, "USERLISTPLEASE") == 0) {
         app_dump_user_list();
       } else if (is_entering_master &&
@@ -1559,8 +1561,8 @@ void app_state_machine_tick(void) {
             if (val == 7 || val == 8 || val == 9) {
               uint8_t new_mode = (val == 7) ? 1 : ((val == 8) ? 2 : 3);
               
-              if (active_hw_version == HW_VERSION_PIN_RFID && new_mode == 3) {
-                  ESP_LOGW(TAG, "Reader Mode is not supported on PIN+RFID hardware");
+              if ((active_hw_version == HW_VERSION_PIN_RFID || active_hw_version == HW_VERSION_PIN_QR) && new_mode == 3) {
+                  ESP_LOGW(TAG, "Reader Mode is not supported on PIN+RFID or PIN+QR hardware");
               } else {
                   uint8_t old_mode = config.working_mode;
                   config.working_mode = new_mode;
@@ -1642,9 +1644,9 @@ void app_state_machine_tick(void) {
     // High-Speed RF/QR Handlers
     uint32_t rfid_uid = 0;
     bool rfid_ok = false;
-#if ACTIVE_HW_VERSION != HW_VERSION_PIN_QR
-    rfid_ok = mfrc522_check_card(&rfid_uid);
-#endif
+    if (active_hw_version != HW_VERSION_PIN_QR) {
+        rfid_ok = mfrc522_check_card(&rfid_uid);
+    }
     bool weigand_ok = hal_wiegand_available();
     if (rfid_ok || weigand_ok) {
       hal_shift_reg_wakeup_keypad();

@@ -1,5 +1,4 @@
 #include "api_client.h"
-#include "esp_http_client.h"
 #include "mqtt_client.h"
 #include "esp_log.h"
 #include "cJSON.h"
@@ -16,7 +15,6 @@
 #include <sys/time.h>
 
 static const char *TAG = "API_CLIENT";
-static const char *CLAIM_URL = "https://api.onloi.com/v1/devices/claim";
 
 #define SOF_BYTE 0x4F
 #define VER_BYTE 0x02
@@ -126,6 +124,105 @@ static void send_mqtt_ack(uint32_t requestId, uint8_t ackPhase, uint8_t cmdEcho,
     publish_mqtt_frame(MSG_TYPE_ACK, CMD_ACK, payload, 7, topic_ack, false);
 }
 
+void api_client_send_firmware_status(uint32_t requestId, uint8_t target, uint8_t state, uint8_t progressPct, uint8_t errorCode, uint32_t bytesTransferred, uint32_t reportedVersion) {
+    if (!mqtt_connected || mqtt_client == NULL) return;
+
+    uint8_t payload[16];
+    payload[0] = (requestId >> 24) & 0xFF;
+    payload[1] = (requestId >> 16) & 0xFF;
+    payload[2] = (requestId >> 8) & 0xFF;
+    payload[3] = requestId & 0xFF;
+    payload[4] = target;
+    payload[5] = state;
+    payload[6] = progressPct;
+    payload[7] = errorCode;
+    payload[8] = (bytesTransferred >> 24) & 0xFF;
+    payload[9] = (bytesTransferred >> 16) & 0xFF;
+    payload[10] = (bytesTransferred >> 8) & 0xFF;
+    payload[11] = bytesTransferred & 0xFF;
+    payload[12] = (reportedVersion >> 24) & 0xFF;
+    payload[13] = (reportedVersion >> 16) & 0xFF;
+    payload[14] = (reportedVersion >> 8) & 0xFF;
+    payload[15] = reportedVersion & 0xFF;
+
+    publish_mqtt_frame(MSG_TYPE_EVENT, CMD_FIRMWARE_STATUS, payload, 16, topic_event, false);
+    ESP_LOGI(TAG, "Sent FIRMWARE_STATUS: Req=0x%08lX, Target=0x%02X, State=0x%02X, Pct=%d%%, Err=0x%02X, Bytes=%lu, Ver=0x%08lX",
+             (unsigned long)requestId, target, state, progressPct, errorCode, (unsigned long)bytesTransferred, (unsigned long)reportedVersion);
+}
+
+void api_client_send_firmware_info(uint32_t requestId, uint8_t count) {
+    if (!mqtt_connected || mqtt_client == NULL) return;
+
+    size_t payload_len = 5 + (count * 24);
+    uint8_t payload[32]; // 5 + 1 * 24 = 29 bytes for single ESP32
+    if (payload_len > sizeof(payload)) return;
+
+    payload[0] = (requestId >> 24) & 0xFF;
+    payload[1] = (requestId >> 16) & 0xFF;
+    payload[2] = (requestId >> 8) & 0xFF;
+    payload[3] = requestId & 0xFF;
+    payload[4] = count;
+
+    if (count > 0) {
+        payload[5] = OTA_TARGET_UNIT1_ESP;
+        memset(&payload[6], 0, 16);
+        strncpy((char *)&payload[6], device_id_str, 16);
+
+        uint32_t ver = app_get_firmware_version();
+        payload[22] = (ver >> 24) & 0xFF;
+        payload[23] = (ver >> 16) & 0xFF;
+        payload[24] = (ver >> 8) & 0xFF;
+        payload[25] = ver & 0xFF;
+
+        uint16_t prod_id = app_get_product_id();
+        payload[26] = (prod_id >> 8) & 0xFF;
+        payload[27] = prod_id & 0xFF;
+
+        payload[28] = app_get_hardware_revision();
+    }
+
+    publish_mqtt_frame(MSG_TYPE_EVENT, CMD_FIRMWARE_INFO, payload, payload_len, topic_event, false);
+    ESP_LOGI(TAG, "Sent FIRMWARE_INFO: Req=0x%08lX, Count=%d", (unsigned long)requestId, count);
+}
+
+void api_client_send_firmware_update_request(void) {
+    if (!mqtt_connected || mqtt_client == NULL) {
+        ESP_LOGW(TAG, "Cannot send FIRMWARE_UPDATE_REQUEST: MQTT not connected");
+        return;
+    }
+
+    uint8_t payload[12];
+    uint32_t req_id = mqtt_seq;
+    payload[0] = (req_id >> 24) & 0xFF;
+    payload[1] = (req_id >> 16) & 0xFF;
+    payload[2] = (req_id >> 8) & 0xFF;
+    payload[3] = req_id & 0xFF;
+
+    payload[4] = OTA_TARGET_UNIT1_ESP;
+
+    uint32_t ver = app_get_firmware_version();
+    payload[5] = (ver >> 24) & 0xFF;
+    payload[6] = (ver >> 16) & 0xFF;
+    payload[7] = (ver >> 8) & 0xFF;
+    payload[8] = ver & 0xFF;
+
+    uint16_t prod_id = app_get_product_id();
+    payload[9] = (prod_id >> 8) & 0xFF;
+    payload[10] = prod_id & 0xFF;
+
+    payload[11] = app_get_hardware_revision();
+
+    publish_mqtt_frame(MSG_TYPE_EVENT, CMD_FIRMWARE_UPDATE_REQUEST, payload, 12, topic_event, false);
+    ESP_LOGI(TAG, "Sent FIRMWARE_UPDATE_REQUEST: Req=0x%08lX, Ver=0x%08lX, Prod=0x%04X, Rev=0x%02X",
+             (unsigned long)req_id, (unsigned long)ver, prod_id, payload[11]);
+}
+
+static void api_client_on_ota_status(uint32_t request_id, uint8_t target, uint8_t state,
+                                    uint8_t progress_pct, uint8_t error_code,
+                                    uint32_t bytes_transferred, uint32_t reported_version) {
+    api_client_send_firmware_status(request_id, target, state, progress_pct, error_code, bytes_transferred, reported_version);
+}
+
 static void process_mqtt_message(const char *topic, size_t topic_len, const char *data, size_t data_len) {
     if (data_len < 19) return;
     const uint8_t *frame = (const uint8_t *)data;
@@ -168,6 +265,7 @@ static void process_mqtt_message(const char *topic, size_t topic_len, const char
             send_mqtt_ack(requestId, 0x03, CMD_REMOTE_CLOSE, 0x00); // COMPLETED
         } else if (cmd == CMD_FACTORY_RESET) {
             send_mqtt_ack(requestId, 0x01, CMD_FACTORY_RESET, 0x00);
+            send_mqtt_ack(requestId, 0x03, CMD_FACTORY_RESET, 0x00);
             app_set_state(STATE_FACTORY_RESET);
         } else if (cmd == CMD_WIFI_RESET) {
             send_mqtt_ack(requestId, 0x01, CMD_WIFI_RESET, 0x00);
@@ -177,6 +275,7 @@ static void process_mqtt_message(const char *topic, size_t topic_len, const char
             esp_restart();
         } else if (cmd == CMD_DISCONNECTED) {
             send_mqtt_ack(requestId, 0x01, CMD_DISCONNECTED, 0x00);
+            wifi_manager_clear_credentials();
             api_client_reset_claim_status();
             send_mqtt_ack(requestId, 0x03, CMD_DISCONNECTED, 0x00);
             vTaskDelay(pdMS_TO_TICKS(500));
@@ -187,6 +286,106 @@ static void process_mqtt_message(const char *topic, size_t topic_len, const char
             app_set_state(STATE_ONLINE_CARD_ENROLL);
             send_mqtt_ack(requestId, 0x03, CMD_NFC_ENROLL_START, 0x00); // COMPLETED
             api_client_send_nfc_enroll_ready_event();
+        } else if (cmd == CMD_GET_FIRMWARE_INFO) {
+            send_mqtt_ack(requestId, 0x01, CMD_GET_FIRMWARE_INFO, 0x00); // RECEIVED
+            if (payload_len >= 5) {
+                uint8_t target = payload[4];
+                ESP_LOGI(TAG, "GET_FIRMWARE_INFO received. Target: 0x%02X", target);
+                if (target == OTA_TARGET_ALL_LOCAL || target == OTA_TARGET_UNIT1_ESP) {
+                    api_client_send_firmware_info(requestId, 1);
+                } else {
+                    ESP_LOGW(TAG, "GET_FIRMWARE_INFO: Target 0x%02X unsupported (device is single ESP32)", target);
+                    api_client_send_firmware_info(requestId, 0);
+                    api_client_send_firmware_status(requestId, target, OTA_STATE_FAILED, 0, OTA_ERR_TARGET_INVALID, 0, 0);
+                }
+            } else {
+                api_client_send_firmware_info(requestId, 1);
+            }
+            send_mqtt_ack(requestId, 0x03, CMD_GET_FIRMWARE_INFO, 0x00); // COMPLETED
+        } else if (cmd == CMD_FIRMWARE_UPDATE) {
+            send_mqtt_ack(requestId, 0x01, CMD_FIRMWARE_UPDATE, 0x00); // RECEIVED
+            if (payload_len < 85) {
+                ESP_LOGE(TAG, "FIRMWARE_UPDATE payload too small: %d", payload_len);
+                api_client_send_firmware_status(requestId, OTA_TARGET_UNIT1_ESP, OTA_STATE_FAILED, 0, OTA_ERR_PAYLOAD_INVALID, 0, 0);
+            } else {
+                uint8_t target = payload[4];
+                uint16_t product_id = ((uint16_t)payload[5] << 8) | payload[6];
+                uint8_t hw_rev = payload[7];
+                uint32_t fw_ver = ((uint32_t)payload[31] << 24) | ((uint32_t)payload[32] << 16) | ((uint32_t)payload[33] << 8) | payload[34];
+                uint32_t fw_len = ((uint32_t)payload[35] << 24) | ((uint32_t)payload[36] << 16) | ((uint32_t)payload[37] << 8) | payload[38];
+                const uint8_t *sha256 = &payload[39];
+                uint32_t fw_crc = ((uint32_t)payload[71] << 24) | ((uint32_t)payload[72] << 16) | ((uint32_t)payload[73] << 8) | payload[74];
+
+                uint64_t url_expires_at = 0;
+                for (int i = 0; i < 8; i++) {
+                    url_expires_at = (url_expires_at << 8) | payload[75 + i];
+                }
+
+                uint16_t url_len = ((uint16_t)payload[83] << 8) | payload[84];
+                if (payload_len < 85 + url_len || url_len == 0) {
+                    ESP_LOGE(TAG, "FIRMWARE_UPDATE invalid url_len %d (payload_len %d)", url_len, payload_len);
+                    api_client_send_firmware_status(requestId, target, OTA_STATE_FAILED, 0, OTA_ERR_PAYLOAD_INVALID, 0, 0);
+                } else if (target != OTA_TARGET_UNIT1_ESP) {
+                    // Protocol Section 2.2: Unsupported target -> TARGET_INVALID (0x04)
+                    ESP_LOGE(TAG, "FIRMWARE_UPDATE rejected: target 0x%02X unsupported (device is single ESP32)", target);
+                    api_client_send_firmware_status(requestId, target, OTA_STATE_FAILED, 0, OTA_ERR_TARGET_INVALID, 0, 0);
+                } else if (product_id != 0 && product_id != app_get_product_id()) {
+                    ESP_LOGE(TAG, "FIRMWARE_UPDATE rejected: product_id mismatch (got 0x%04X, expected 0x%04X)",
+                             product_id, app_get_product_id());
+                    api_client_send_firmware_status(requestId, target, OTA_STATE_FAILED, 0, OTA_ERR_PRODUCT_ID_MISMATCH, 0, 0);
+                } else if (hw_rev != 0 && hw_rev != app_get_hardware_revision()) {
+                    ESP_LOGE(TAG, "FIRMWARE_UPDATE rejected: hw_rev mismatch (got 0x%02X, expected 0x%02X)",
+                             hw_rev, app_get_hardware_revision());
+                    api_client_send_firmware_status(requestId, target, OTA_STATE_FAILED, 0, OTA_ERR_HW_REV_MISMATCH, 0, 0);
+                } else {
+                    // Check URL expiration
+                    uint64_t now_ms = (uint64_t)(esp_timer_get_time() / 1000ULL) + time_offset_ms;
+                    if (url_expires_at != 0 && time_offset_ms != 0 && now_ms > url_expires_at) {
+                        ESP_LOGE(TAG, "FIRMWARE_UPDATE rejected: URL expired (now: %llu, exp: %llu)", now_ms, url_expires_at);
+                        api_client_send_firmware_status(requestId, target, OTA_STATE_FAILED, 0, OTA_ERR_URL_EXPIRED, 0, 0);
+                    } else {
+                        char *url_copy = malloc(url_len + 1);
+                        if (!url_copy) {
+                            api_client_send_firmware_status(requestId, target, OTA_STATE_FAILED, 0, OTA_ERR_FLASH_WRITE, 0, 0);
+                        } else {
+                            memcpy(url_copy, &payload[85], url_len);
+                            url_copy[url_len] = '\0';
+
+                            // Acknowledge acceptance: State ACCEPTED (0x01)
+                            api_client_send_firmware_status(requestId, target, OTA_STATE_ACCEPTED, 0, OTA_ERR_NONE, 0, 0);
+
+                            ota_update_params_t ota_params = {
+                                .request_id = requestId,
+                                .firmware_target = target,
+                                .firmware_version = fw_ver,
+                                .plain_fw_length = fw_len,
+                                .plain_fw_crc32 = fw_crc,
+                                .has_crc32 = (fw_crc != 0),
+                                .url = url_copy,
+                            };
+                            memcpy(ota_params.plain_fw_sha256, sha256, 32);
+                            ota_params.has_sha256 = false;
+                            for (int i = 0; i < 32; i++) {
+                                if (sha256[i] != 0) {
+                                    ota_params.has_sha256 = true;
+                                    break;
+                                }
+                            }
+
+                            if (!ota_manager_start_update(&ota_params)) {
+                                free(url_copy);
+                                api_client_send_firmware_status(requestId, target, OTA_STATE_FAILED, 0, OTA_ERR_ALREADY_IN_PROGRESS, 0, 0);
+                            }
+                        }
+                    }
+                }
+            }
+        } else if (cmd == CMD_FIRMWARE_ABORT) {
+            send_mqtt_ack(requestId, 0x01, CMD_FIRMWARE_ABORT, 0x00);
+            uint8_t reason = (payload_len >= 5) ? payload[4] : 0x01;
+            ESP_LOGI(TAG, "FIRMWARE_ABORT received for Req: 0x%08lX (reason: 0x%02X)", (unsigned long)requestId, reason);
+            ota_manager_abort(requestId, reason);
+            send_mqtt_ack(requestId, 0x03, CMD_FIRMWARE_ABORT, 0x00);
         } else if (cmd == CMD_OTA_START) {
             send_mqtt_ack(requestId, 0x01, CMD_OTA_START, 0x00);
             
@@ -196,10 +395,8 @@ static void process_mqtt_message(const char *topic, size_t topic_len, const char
                 if (url_len > sizeof(url) - 1) url_len = sizeof(url) - 1;
                 memcpy(url, &payload[4], url_len);
                 
-                ESP_LOGI(TAG, "OTA Start command received. URL: %s", url);
-                if (ota_manager_start(url)) {
-                    // We don't send COMPLETED yet. Device will reboot upon success.
-                } else {
+                ESP_LOGI(TAG, "Legacy OTA Start command received. URL: %s", url);
+                if (!ota_manager_start(url)) {
                     send_mqtt_ack(requestId, 0x03, CMD_OTA_START, 0x01); // Failed to start
                 }
             } else {
@@ -273,6 +470,9 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
             
             api_client_send_get_time();
             
+            // Send unsolicited FIRMWARE_INFO (0x3A) with requestId = 0 on connect
+            api_client_send_firmware_info(0, 1);
+            
             uint8_t offline_log_count = 0;
             nv_storage_get_offline_logs(NULL, &offline_log_count);
             if (offline_log_count > 0) {
@@ -293,6 +493,10 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 
 static void start_mqtt(void) {
     if (mqtt_client != NULL) return;
+    if (strlen(s_mqtt_cfg.host) == 0) {
+        ESP_LOGW(TAG, "Cannot start MQTT: broker host is empty");
+        return;
+    }
 
     snprintf(topic_cmd, sizeof(topic_cmd), "onloi/v1/d/%s/cmd", device_id_str);
     snprintf(topic_reply, sizeof(topic_reply), "onloi/v1/d/%s/reply", device_id_str);
@@ -301,14 +505,21 @@ static void start_mqtt(void) {
     snprintf(topic_event, sizeof(topic_event), "onloi/v1/d/%s/event", device_id_str);
     snprintf(topic_ack, sizeof(topic_ack), "onloi/v1/d/%s/ack", device_id_str);
 
+    if (strlen(s_mqtt_cfg.client_id) == 0) {
+        snprintf(s_mqtt_cfg.client_id, sizeof(s_mqtt_cfg.client_id), "onloi_d_%s", device_id_str);
+    }
+
+    bool use_tls = (s_mqtt_cfg.flags & 0x01) || (s_mqtt_cfg.port == 8883);
+
     esp_mqtt_client_config_t mqtt_cfg = {
         .broker.address.hostname = s_mqtt_cfg.host,
         .broker.address.port = s_mqtt_cfg.port,
-        .broker.address.transport = (s_mqtt_cfg.port == 8883) ? MQTT_TRANSPORT_OVER_SSL : MQTT_TRANSPORT_OVER_TCP,
-        .broker.verification.crt_bundle_attach = (s_mqtt_cfg.port == 8883) ? esp_crt_bundle_attach : NULL,
+        .broker.address.transport = use_tls ? MQTT_TRANSPORT_OVER_SSL : MQTT_TRANSPORT_OVER_TCP,
+        .broker.verification.crt_bundle_attach = use_tls ? esp_crt_bundle_attach : NULL,
         .credentials.client_id = s_mqtt_cfg.client_id,
         .credentials.username = s_mqtt_cfg.username,
         .credentials.authentication.password = s_mqtt_cfg.password,
+        .session.disable_clean_session = 1,
         .session.keepalive = 30,
         .session.last_will.topic = topic_lifecycle,
         .session.last_will.msg = "",
@@ -317,105 +528,27 @@ static void start_mqtt(void) {
         .session.last_will.retain = 1
     };
 
-    ESP_LOGI(TAG, "Starting MQTT: Host: %s, Port: %d", s_mqtt_cfg.host, s_mqtt_cfg.port);
+    ESP_LOGI(TAG, "Starting MQTT: Host: %s, Port: %d, TLS: %d, ClientId: %s, User: %s",
+             s_mqtt_cfg.host, s_mqtt_cfg.port, use_tls, s_mqtt_cfg.client_id, s_mqtt_cfg.username);
     mqtt_client = esp_mqtt_client_init(&mqtt_cfg);
     esp_mqtt_client_register_event(mqtt_client, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
     esp_mqtt_client_start(mqtt_client);
 }
 
-static esp_err_t _http_event_handle(esp_http_client_event_t *evt) {
-    return ESP_OK;
-}
-
-static bool s_claim_in_progress = false;
-
-static void execute_claim_task(void *pvParameters) {
-    char *prov_token = (char *)pvParameters;
-
-    cJSON *root = cJSON_CreateObject();
-    cJSON_AddStringToObject(root, "deviceId", device_id_str);
-    cJSON_AddStringToObject(root, "deviceCode", device_code_str);
-    cJSON_AddStringToObject(root, "provisioningToken", prov_token);
-    char *post_data = cJSON_PrintUnformatted(root);
-    cJSON_Delete(root);
-
-    ESP_LOGI(TAG, "Claim Request: %s", post_data);
-
-    esp_http_client_config_t config = {
-        .url = CLAIM_URL,
-        .event_handler = _http_event_handle,
-        .transport_type = HTTP_TRANSPORT_OVER_SSL,
-        .crt_bundle_attach = esp_crt_bundle_attach,
-    };
-    
-    esp_http_client_handle_t client = esp_http_client_init(&config);
-    esp_http_client_set_method(client, HTTP_METHOD_POST);
-    esp_http_client_set_header(client, "Content-Type", "application/json");
-    esp_http_client_set_post_field(client, post_data, strlen(post_data));
-
-    esp_err_t err = esp_http_client_open(client, strlen(post_data));
-    if (err == ESP_OK) {
-        esp_http_client_write(client, post_data, strlen(post_data));
-        esp_http_client_fetch_headers(client);
-
-        int status_code = esp_http_client_get_status_code(client);
-        if (status_code == 200 || status_code == 201) {
-            char *resp_buf = calloc(1, 1024);
-            if (resp_buf) {
-                int read_len = esp_http_client_read_response(client, resp_buf, 1023);
-                if (read_len > 0) {
-                    ESP_LOGI(TAG, "Claim Response: %s", resp_buf);
-                    cJSON *res = cJSON_Parse(resp_buf);
-                    if (res) {
-                cJSON *mqtt = cJSON_GetObjectItem(res, "mqtt");
-                if (mqtt) {
-                    strncpy(s_mqtt_cfg.host, cJSON_GetObjectItem(mqtt, "host")->valuestring, 127);
-                    s_mqtt_cfg.port = cJSON_GetObjectItem(mqtt, "port")->valueint;
-                    strncpy(s_mqtt_cfg.client_id, cJSON_GetObjectItem(mqtt, "clientId")->valuestring, 63);
-                    strncpy(s_mqtt_cfg.username, cJSON_GetObjectItem(mqtt, "username")->valuestring, 63);
-                    strncpy(s_mqtt_cfg.password, cJSON_GetObjectItem(mqtt, "password")->valuestring, 63);
-                    strncpy(s_mqtt_cfg.secret, cJSON_GetObjectItem(res, "deviceSecret")->valuestring, 127);
-                    s_mqtt_cfg.session_epoch = cJSON_GetObjectItem(res, "sessionEpoch")->valueint;
-                    s_mqtt_cfg.is_claimed = true;
-
-                    nv_storage_save_onloi_mqtt_config(&s_mqtt_cfg);
-                    nv_storage_clear_prov_token();
-                    ESP_LOGI(TAG, "Claim successful! Configs saved.");
-                    start_mqtt();
-                    }
-                    cJSON_Delete(res);
-                    } // closes if (res)
-                } else {
-                    ESP_LOGE(TAG, "Failed to read response or response empty.");
-                }
-                free(resp_buf);
-            }
-        } else {
-            ESP_LOGE(TAG, "Claim Request Rejected by Server (HTTP %d)", status_code);
-            char *err_buf = calloc(1, 512);
-            if (err_buf) {
-                esp_http_client_read_response(client, err_buf, 511);
-                ESP_LOGE(TAG, "Server Error Response: %s", err_buf);
-                free(err_buf);
-            }
-            // Clear token to prevent infinite loops on 400 Bad Request
-            if (status_code >= 400 && status_code < 500) {
-                nv_storage_clear_prov_token();
-                ESP_LOGW(TAG, "Invalid token cleared.");
-            }
-        }
-    } else {
-        ESP_LOGE(TAG, "Claim Request Failed entirely: %s", esp_err_to_name(err));
-    }
-    esp_http_client_cleanup(client);
-    free(post_data);
-    free(prov_token);
-    s_claim_in_progress = false;
-    vTaskDelete(NULL);
-}
-
 void api_client_init(void) {
     generate_device_id();
+    ota_manager_set_status_cb(api_client_on_ota_status);
+    nv_storage_get_onloi_mqtt_config(&s_mqtt_cfg);
+}
+
+void api_client_reload_config(void) {
+    if (nv_storage_get_onloi_mqtt_config(&s_mqtt_cfg) && s_mqtt_cfg.is_claimed) {
+        ESP_LOGI(TAG, "Cloud config reloaded: Host=%s, Port=%d, TLS=%d",
+                 s_mqtt_cfg.host, s_mqtt_cfg.port, (s_mqtt_cfg.flags & 0x01));
+        if (wifi_manager_is_connected() && mqtt_client == NULL) {
+            start_mqtt();
+        }
+    }
 }
 
 void api_client_reset_claim_status(void) {
@@ -425,9 +558,10 @@ void api_client_reset_claim_status(void) {
         mqtt_client = NULL;
     }
     s_mqtt_cfg.is_claimed = false;
+    memset(&s_mqtt_cfg, 0, sizeof(s_mqtt_cfg));
     mqtt_connected = false;
     nv_storage_clear_onloi_mqtt_config();
-    ESP_LOGI(TAG, "Claim status reset. Ready for new provision.");
+    ESP_LOGI(TAG, "Cloud config reset. Ready for new provision.");
 }
 
 void api_client_tick(void) {
@@ -438,19 +572,10 @@ void api_client_tick(void) {
         last_check = now;
         if (wifi_manager_is_connected()) {
             if (!s_mqtt_cfg.is_claimed) {
-                if (nv_storage_get_onloi_mqtt_config(&s_mqtt_cfg) && s_mqtt_cfg.is_claimed) {
+                if (nv_storage_get_onloi_mqtt_config(&s_mqtt_cfg) && s_mqtt_cfg.is_claimed && strlen(s_mqtt_cfg.host) > 0) {
                     start_mqtt();
-                } else {
-                    char token[65] = {0};
-                    if (nv_storage_get_prov_token(token, sizeof(token)) && strlen(token) > 0) {
-                        if (!s_claim_in_progress) {
-                            ESP_LOGI(TAG, "Found provisioning token, executing claim in background...");
-                            s_claim_in_progress = true;
-                            char *token_copy = strdup(token);
-                            xTaskCreate(execute_claim_task, "claim_task", 6144, token_copy, 5, NULL);
-                        }
-                    }
                 }
+                // If NVS is empty, stay in BLE setup mode. No hardcoded URL or HTTPS claim.
             } else if (mqtt_client == NULL) {
                 start_mqtt();
             }

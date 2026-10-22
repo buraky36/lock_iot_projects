@@ -57,9 +57,11 @@ typedef struct {
     char client_id[64];
     char username[64];
     char password[64];
-    char secret[128];
+    char secret[128];          // Hex string format for backward compatibility
     uint16_t session_epoch;
     bool is_claimed;
+    uint8_t flags;             // bit0: 1=TLS (MQTTS), 0=plain MQTT
+    uint8_t device_secret[32]; // 32-byte raw HMAC key
 } onloi_mqtt_config_t;
 
 bool nv_storage_save_onloi_mqtt_config(const onloi_mqtt_config_t *config);

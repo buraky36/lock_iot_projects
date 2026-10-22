@@ -14,6 +14,11 @@ extern char ble_name_str[64];
 // The active hardware version is determined dynamically at boot
 extern uint8_t active_hw_version;
 
+// Firmware / Hardware information getters
+uint16_t app_get_product_id(void);
+uint8_t app_get_hardware_revision(void);
+uint32_t app_get_firmware_version(void);
+
 // PIN DEFINITIONS
 
 // RFID (MFRC522)

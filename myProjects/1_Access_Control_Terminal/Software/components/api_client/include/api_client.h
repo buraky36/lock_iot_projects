@@ -14,8 +14,22 @@
 #define CMD_LOCAL_FACTORY_RESET 0x61
 #define CMD_OTA_START        0x60
 
-// Initialize API Client (Starts Claim process or MQTT)
+// Onloi Protocol v2.18 OTA Commands
+#define CMD_FIRMWARE_UPDATE_REQUEST 0x38
+#define CMD_FIRMWARE_STATUS         0x39
+#define CMD_FIRMWARE_INFO           0x3A
+#define CMD_FIRMWARE_UPDATE         0x53
+#define CMD_FIRMWARE_ABORT          0x5A
+#define CMD_GET_FIRMWARE_INFO       0x5C
+#define CMD_SERVER_DISCONNECT       0x59
+#define CMD_WIFI_RESET              0x58
+#define CMD_FACTORY_RESET           0x50
+
+// Initialize API Client
 void api_client_init(void);
+
+// Reload cloud configuration from NVS and start MQTT if online
+void api_client_reload_config(void);
 
 // To be called periodically from main loop
 void api_client_tick(void);
@@ -28,6 +42,11 @@ void api_client_send_lock_closed_event(void);
 void api_client_reset_claim_status(void);
 void api_client_send_offline_logs(void);
 void api_client_send_local_factory_reset_event(void);
+
+// OTA Event functions (Onloi Protocol v2.18)
+void api_client_send_firmware_status(uint32_t requestId, uint8_t target, uint8_t state, uint8_t progressPct, uint8_t errorCode, uint32_t bytesTransferred, uint32_t reportedVersion);
+void api_client_send_firmware_info(uint32_t requestId, uint8_t count);
+void api_client_send_firmware_update_request(void);
 
 // Sends an NFC enrolled event (0x23)
 void api_client_send_nfc_enrolled_event(uint32_t card_id);

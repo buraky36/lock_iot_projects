@@ -1,0 +1,55 @@
+================================================================================
+ACCESS CONTROL TERMINAL - TEKNİK SERVİS YAZILIM YÜKLEME KILAVUZU
+================================================================================
+
+1. YAZILIM VARYASYONLARI VE KLASÖR YAPISI
+--------------------------------------------------------------------------------
+Yazılımlar donanım tipine göre 3 klasör halinde hazırlanmıştır:
+
+[1] OE0110_PIN_QR     : Tuş Takımı (PIN) + QR Kod Okuyucu (Standalone / Controller)
+[2] OE0111_PIN_RFID   : Tuş Takımı (PIN) + Mifare RFID Kart Okuyucu (Standalone / Controller)
+[3] OE0112_RFID_ONLY  : Sadece RFID Kart Okuyucu (Wiegand Reader Modu)
+
+--------------------------------------------------------------------------------
+2. YÜKLEME YÖNTEMLERİ
+--------------------------------------------------------------------------------
+
+YÖNTEM A: TEK DOSYA İLE PRATİK YÜKLEME (ÖNERİLEN)
+ESP Flash Download Tool veya esptool ile sadece ilgili varyasyonun birleştirilmiş
+tek dosyasını 0x0 adresinden yükleyebilirsiniz:
+
+- OE0110 için : full_firmware_OE0110.bin   --> Flash Adresi: 0x0
+- OE0111 için : full_firmware_OE0111.bin   --> Flash Adresi: 0x0
+- OE0112 için : full_firmware_OE0112.bin   --> Flash Adresi: 0x0
+
+Flash Parametreleri:
+- SPI SPEED: 40MHz
+- SPI MODE : DIO
+- FLASH SIZE: 4MB (32Mbit) veya 32MB-C1
+
+--------------------------------------------------------------------------------
+
+YÖNTEM B: AYRI PARTITION DOSYALARI İLE YÜKLEME
+İlgili varyasyon klasörü içindeki dosyalar şu adreslere yazılmalıdır:
+
+Dosya Adı                 Flash Adresi    Açıklama
+------------------------  --------------  ----------------------------------------
+bootloader.bin            0x1000          ESP32 2nd Stage Bootloader
+partitions.bin            0x8000          Bölüntü Tablosu (Partition Table)
+ota_data_initial.bin      0x109000        OTA Boot Durum Verisi
+firmware.bin              0x110000        Uygulama Yazılımı (App Image - ota_0)
+
+--------------------------------------------------------------------------------
+3. ESPTOOL İLE KOMUT SATIRINDAN YÜKLEME ÖRNEKLERİ
+--------------------------------------------------------------------------------
+(Portunuzu COM9 yerine kendi COM portunuz olarak değiştirin)
+
+Tek Dosya Yükleme (Örnek: OE0110):
+  python esptool.py --chip esp32 --port COM9 --baud 460800 write_flash -z --flash_mode dio --flash_freq 40m --flash_size 4MB 0x0 OE0110_PIN_QR/full_firmware_OE0110.bin
+
+Ayrı Dosyalarla Yükleme (Örnek: OE0110):
+  python esptool.py --chip esp32 --port COM9 --baud 460800 write_flash -z --flash_mode dio --flash_freq 40m --flash_size 4MB 0x1000 OE0110_PIN_QR/bootloader.bin 0x8000 OE0110_PIN_QR/partitions.bin 0x109000 OE0110_PIN_QR/ota_data_initial.bin 0x110000 OE0110_PIN_QR/firmware.bin
+
+Tavsiye: Yeni karta yükleme yaparken veya cihaz donanım tipi değiştiğinde NVS alanındaki eski konfigürasyon kalıntılarını temizlemek için önceden hafızayı silmeniz önerilir:
+  python esptool.py --chip esp32 --port COM9 erase_flash
+================================================================================

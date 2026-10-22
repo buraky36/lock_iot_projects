@@ -38,6 +38,7 @@ void nv_storage_init(void) {
     // Ensure default config exists
     sys_config_t conf;
     nv_storage_get_config(&conf);
+    nv_storage_set_hw_version(active_hw_version);
 
     // Load or rebuild active users map
     nvs_handle_t handle;
@@ -162,7 +163,7 @@ void nv_storage_get_config(sys_config_t *config) {
     if (active_hw_version == HW_VERSION_RFID_ONLY) {
         config->working_mode = 3; // Default to Wiegand Reader Mode
     } else {
-        config->working_mode = 2; // Default to Controller Mode
+        config->working_mode = 1; // Default to Standalone Mode
     }
     config->door_open_detection = true;
     config->wiegand_format = 34;
@@ -177,6 +178,23 @@ void nv_storage_get_config(sys_config_t *config) {
             ESP_LOGW(TAG, "Failed reading config, using defaults");
         }
         nvs_close(handle);
+    }
+
+    // Hardware capability sanitization:
+    // RFID_ONLY is strictly Reader mode (3)
+    // PIN_RFID and PIN_QR hardware cannot be Reader mode (3), enforce Standalone (1)
+    if (active_hw_version == HW_VERSION_RFID_ONLY) {
+        if (config->working_mode != 3) {
+            ESP_LOGW(TAG, "Sanitizing working_mode -> 3 (Reader) for RFID_ONLY");
+            config->working_mode = 3;
+            nv_storage_set_config(config);
+        }
+    } else {
+        if (config->working_mode == 3) {
+            ESP_LOGW(TAG, "Sanitizing working_mode -> 1 (Standalone) for PIN hardware");
+            config->working_mode = 1;
+            nv_storage_set_config(config);
+        }
     }
 }
 
@@ -527,12 +545,14 @@ bool nv_storage_save_onloi_mqtt_config(const onloi_mqtt_config_t *config) {
 }
 
 bool nv_storage_get_onloi_mqtt_config(onloi_mqtt_config_t *config) {
+    if (!config) return false;
+    memset(config, 0, sizeof(onloi_mqtt_config_t));
     nvs_handle_t handle;
     if (nvs_open(NAMESPACE_CFG, NVS_READONLY, &handle) != ESP_OK) return false;
     size_t size = sizeof(onloi_mqtt_config_t);
     esp_err_t err = nvs_get_blob(handle, "mqtt_cfg", config, &size);
     nvs_close(handle);
-    if (err == ESP_OK && size == sizeof(onloi_mqtt_config_t)) {
+    if (err == ESP_OK && size > 0) {
         return true;
     }
     return false;
