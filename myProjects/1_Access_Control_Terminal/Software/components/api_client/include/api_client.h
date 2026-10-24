@@ -46,6 +46,7 @@ void api_client_send_local_factory_reset_event(void);
 // OTA Event functions (Onloi Protocol v2.18)
 void api_client_send_firmware_status(uint32_t requestId, uint8_t target, uint8_t state, uint8_t progressPct, uint8_t errorCode, uint32_t bytesTransferred, uint32_t reportedVersion);
 void api_client_send_firmware_info(uint32_t requestId, uint8_t count);
+void api_client_send_firmware_info_ex(uint32_t requestId, uint8_t count, const char *req_device_id, const char *custom_topic, uint8_t custom_msg_type);
 void api_client_send_firmware_update_request(void);
 
 // Sends an NFC enrolled event (0x23)

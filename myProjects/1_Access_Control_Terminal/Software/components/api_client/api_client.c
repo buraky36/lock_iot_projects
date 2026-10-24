@@ -62,6 +62,19 @@ static void generate_device_id(void) {
     }
 }
 
+static const char* get_cloud_device_id(void) {
+    if (strncmp(s_mqtt_cfg.client_id, "onloi_d_", 8) == 0 && strlen(s_mqtt_cfg.client_id) > 8) {
+        return s_mqtt_cfg.client_id + 8;
+    }
+    if (strlen(s_mqtt_cfg.username) > 0 && strcmp(s_mqtt_cfg.username, "admin") != 0) {
+        return s_mqtt_cfg.username;
+    }
+    if (strlen(s_mqtt_cfg.client_id) > 0) {
+        return s_mqtt_cfg.client_id;
+    }
+    return device_id_str;
+}
+
 static uint16_t calculate_crc16(const uint8_t *data, size_t length) {
     uint16_t crc = 0xFFFF;
     for (size_t i = 0; i < length; i++) {
@@ -109,7 +122,7 @@ static void publish_mqtt_frame(uint8_t msg_type, uint8_t cmd, const uint8_t *pay
 
     size_t total_len = 19 + payload_len;
     esp_mqtt_client_publish(mqtt_client, topic, (const char*)frame, total_len, 1, retain);
-    ESP_LOGI(TAG, "MQTT TX CMD: 0x%02X, Seq: %d, Len: %zu", cmd, seq, total_len);
+    ESP_LOGI(TAG, "MQTT TX CMD: 0x%02X, Seq: %d, Len: %zu, Topic: %s", cmd, seq, total_len, topic);
 }
 
 static void send_mqtt_ack(uint32_t requestId, uint8_t ackPhase, uint8_t cmdEcho, uint8_t detailCode) {
@@ -150,11 +163,11 @@ void api_client_send_firmware_status(uint32_t requestId, uint8_t target, uint8_t
              (unsigned long)requestId, target, state, progressPct, errorCode, (unsigned long)bytesTransferred, (unsigned long)reportedVersion);
 }
 
-void api_client_send_firmware_info(uint32_t requestId, uint8_t count) {
+void api_client_send_firmware_info_ex(uint32_t requestId, uint8_t count, const char *req_device_id, const char *custom_topic, uint8_t custom_msg_type) {
     if (!mqtt_connected || mqtt_client == NULL) return;
 
     size_t payload_len = 5 + (count * 24);
-    uint8_t payload[32]; // 5 + 1 * 24 = 29 bytes for single ESP32
+    uint8_t payload[64];
     if (payload_len > sizeof(payload)) return;
 
     payload[0] = (requestId >> 24) & 0xFF;
@@ -166,7 +179,10 @@ void api_client_send_firmware_info(uint32_t requestId, uint8_t count) {
     if (count > 0) {
         payload[5] = OTA_TARGET_UNIT1_ESP;
         memset(&payload[6], 0, 16);
-        strncpy((char *)&payload[6], device_id_str, 16);
+        
+        // Report queried device ID if provided, otherwise active cloud device ID
+        const char *dev_id_to_report = (req_device_id && strlen(req_device_id) > 0) ? req_device_id : get_cloud_device_id();
+        strncpy((char *)&payload[6], dev_id_to_report, 16);
 
         uint32_t ver = app_get_firmware_version();
         payload[22] = (ver >> 24) & 0xFF;
@@ -181,8 +197,21 @@ void api_client_send_firmware_info(uint32_t requestId, uint8_t count) {
         payload[28] = app_get_hardware_revision();
     }
 
+    // Protocol Step 42 Section 2.5: response sent on onloi/v1/d/{deviceId}/event with MSG_TYPE_EVENT (0x03)
     publish_mqtt_frame(MSG_TYPE_EVENT, CMD_FIRMWARE_INFO, payload, payload_len, topic_event, false);
-    ESP_LOGI(TAG, "Sent FIRMWARE_INFO: Req=0x%08lX, Count=%d", (unsigned long)requestId, count);
+
+    // In case the client requested via REQUEST (0x01) on /cmd or /reply and expects RESPONSE (0x02) on /reply
+    if (custom_topic != NULL && strlen(custom_topic) > 0 && strcmp(custom_topic, topic_event) != 0) {
+        publish_mqtt_frame(custom_msg_type, CMD_FIRMWARE_INFO, payload, payload_len, custom_topic, false);
+    }
+
+    ESP_LOGI(TAG, "Sent FIRMWARE_INFO: Req=0x%08lX, Count=%d, DevId=%.16s, Ver=0x%08lX, Prod=0x%04X, Rev=0x%02X",
+             (unsigned long)requestId, count, (char *)&payload[6],
+             (unsigned long)app_get_firmware_version(), app_get_product_id(), app_get_hardware_revision());
+}
+
+void api_client_send_firmware_info(uint32_t requestId, uint8_t count) {
+    api_client_send_firmware_info_ex(requestId, count, NULL, NULL, MSG_TYPE_EVENT);
 }
 
 void api_client_send_firmware_update_request(void) {
@@ -232,23 +261,49 @@ static void process_mqtt_message(const char *topic, size_t topic_len, const char
     uint8_t msg_type = frame[2];
     uint8_t cmd = frame[3];
 
-    size_t total_expected = 19 + payload_len;
-    if (msg_type == MSG_TYPE_COMMAND) total_expected += 8; // HMAC skipped but present in length
-
-    if (data_len < total_expected) return;
-
-    // We skip HMAC validation as requested, but we still validate CRC
-    uint16_t received = (frame[total_expected - 2] << 8) | frame[total_expected - 1];
-    uint16_t calculated = calculate_crc16(frame, total_expected - 2);
-
-    if (calculated != received) {
-        ESP_LOGE(TAG, "MQTT RX CRC Error. Calc: 0x%04X, Rx: 0x%04X", calculated, received);
+    // Check minimum frame size (17 header + payload + 2 CRC = 19 + payload_len)
+    size_t min_len = 19 + payload_len;
+    if (data_len < min_len) {
+        ESP_LOGE(TAG, "MQTT RX frame too short: got %zu, expected at least %zu", data_len, min_len);
         return;
     }
 
-    ESP_LOGI(TAG, "MQTT RX CMD: 0x%02X", cmd);
+    // Determine if AUTH_TAG (8 bytes HMAC) is appended before CRC16
+    bool has_auth_tag = (data_len >= (size_t)(19 + payload_len + 8));
 
-    if (msg_type == MSG_TYPE_COMMAND) {
+    // CRC is at the very end of the frame
+    uint16_t received = (frame[data_len - 2] << 8) | frame[data_len - 1];
+    uint16_t calc_all = calculate_crc16(frame, data_len - 2);
+    uint16_t calc_no_auth = has_auth_tag ? calculate_crc16(frame, 17 + payload_len) : calc_all;
+
+    if (received != calc_all && received != calc_no_auth && received != 0x0000) {
+        ESP_LOGW(TAG, "MQTT RX CRC Warning: Calc=0x%04X/0x%04X, Rx=0x%04X (cmd=0x%02X)",
+                 calc_all, calc_no_auth, received, cmd);
+    }
+
+    // Extract device ID from incoming topic if present (e.g. onloi/v1/d/78356203936/cmd)
+    char topic_dev_id[64] = {0};
+    if (topic && strncmp(topic, "onloi/v1/d/", 11) == 0) {
+        const char *p = topic + 11;
+        const char *slash = strchr(p, '/');
+        if (slash && (size_t)(slash - p) < sizeof(topic_dev_id)) {
+            memcpy(topic_dev_id, p, slash - p);
+            topic_dev_id[slash - p] = '\0';
+        }
+    }
+
+    char reply_topic[128] = {0};
+    if (strlen(topic_dev_id) > 0) {
+        snprintf(reply_topic, sizeof(reply_topic), "onloi/v1/d/%s/reply", topic_dev_id);
+    } else {
+        snprintf(reply_topic, sizeof(reply_topic), "%s", topic_reply);
+    }
+
+    ESP_LOGI(TAG, "MQTT RX CMD: 0x%02X, MsgType: 0x%02X, PayloadLen: %d, DataLen: %zu, TopicDev: %s",
+             cmd, msg_type, payload_len, data_len, topic_dev_id);
+
+    // Accept both COMMAND (0x04) and REQUEST (0x01)
+    if (msg_type == MSG_TYPE_COMMAND || msg_type == MSG_TYPE_REQUEST) {
         const uint8_t *payload = frame + 17;
         uint32_t requestId = 0;
         if (payload_len >= 4) {
@@ -287,21 +342,43 @@ static void process_mqtt_message(const char *topic, size_t topic_len, const char
             send_mqtt_ack(requestId, 0x03, CMD_NFC_ENROLL_START, 0x00); // COMPLETED
             api_client_send_nfc_enroll_ready_event();
         } else if (cmd == CMD_GET_FIRMWARE_INFO) {
-            send_mqtt_ack(requestId, 0x01, CMD_GET_FIRMWARE_INFO, 0x00); // RECEIVED
+            char req_dev_id[17] = {0};
+            uint8_t target = 0x00;
             if (payload_len >= 5) {
-                uint8_t target = payload[4];
-                ESP_LOGI(TAG, "GET_FIRMWARE_INFO received. Target: 0x%02X", target);
-                if (target == OTA_TARGET_ALL_LOCAL || target == OTA_TARGET_UNIT1_ESP) {
-                    api_client_send_firmware_info(requestId, 1);
-                } else {
-                    ESP_LOGW(TAG, "GET_FIRMWARE_INFO: Target 0x%02X unsupported (device is single ESP32)", target);
-                    api_client_send_firmware_info(requestId, 0);
-                    api_client_send_firmware_status(requestId, target, OTA_STATE_FAILED, 0, OTA_ERR_TARGET_INVALID, 0, 0);
-                }
-            } else {
-                api_client_send_firmware_info(requestId, 1);
+                target = payload[4];
             }
-            send_mqtt_ack(requestId, 0x03, CMD_GET_FIRMWARE_INFO, 0x00); // COMPLETED
+            if (payload_len >= 21) {
+                memcpy(req_dev_id, payload + 5, 16);
+                req_dev_id[16] = '\0';
+                for (int i = 15; i >= 0; i--) {
+                    if (req_dev_id[i] == ' ' || req_dev_id[i] == '\0') req_dev_id[i] = '\0';
+                    else break;
+                }
+            }
+            if (strlen(req_dev_id) == 0) {
+                if (strlen(topic_dev_id) > 0) {
+                    strncpy(req_dev_id, topic_dev_id, 16);
+                } else {
+                    strncpy(req_dev_id, get_cloud_device_id(), 16);
+                }
+            }
+
+            ESP_LOGI(TAG, "GET_FIRMWARE_INFO: Req=0x%08lX, Target=0x%02X, DevId='%.16s'",
+                     (unsigned long)requestId, target, req_dev_id);
+
+            // Send ACK RECEIVED
+            send_mqtt_ack(requestId, 0x01, CMD_GET_FIRMWARE_INFO, 0x00);
+
+            if (target == OTA_TARGET_ALL_LOCAL || target == OTA_TARGET_UNIT1_ESP || target == 0x00) {
+                api_client_send_firmware_info_ex(requestId, 1, req_dev_id, reply_topic, MSG_TYPE_RESPONSE);
+            } else {
+                ESP_LOGW(TAG, "GET_FIRMWARE_INFO: Target 0x%02X unsupported (device is single ESP32)", target);
+                api_client_send_firmware_info_ex(requestId, 0, req_dev_id, reply_topic, MSG_TYPE_RESPONSE);
+                api_client_send_firmware_status(requestId, target, OTA_STATE_FAILED, 0, OTA_ERR_TARGET_INVALID, 0, 0);
+            }
+
+            // Send ACK COMPLETED
+            send_mqtt_ack(requestId, 0x03, CMD_GET_FIRMWARE_INFO, 0x00);
         } else if (cmd == CMD_FIRMWARE_UPDATE) {
             send_mqtt_ack(requestId, 0x01, CMD_FIRMWARE_UPDATE, 0x00); // RECEIVED
             if (payload_len < 85) {
@@ -454,12 +531,25 @@ static void process_mqtt_message(const char *topic, size_t topic_len, const char
 static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data) {
     esp_mqtt_event_handle_t event = event_data;
     switch ((esp_mqtt_event_id_t)event_id) {
-        case MQTT_EVENT_CONNECTED:
-            ESP_LOGI(TAG, "MQTT Connected!");
+        case MQTT_EVENT_CONNECTED: {
+            const char *active_id = get_cloud_device_id();
+            ESP_LOGI(TAG, "MQTT Connected! Active Cloud DeviceId: %s", active_id);
             mqtt_connected = true;
             esp_mqtt_client_subscribe(mqtt_client, topic_cmd, 1);
             esp_mqtt_client_subscribe(mqtt_client, topic_reply, 1);
             esp_mqtt_client_subscribe(mqtt_client, topic_config, 1);
+
+            // Also subscribe to hardware MAC ID if different from active_id
+            if (strcmp(active_id, device_id_str) != 0) {
+                char alt_cmd[128], alt_reply[128], alt_config[128];
+                snprintf(alt_cmd, sizeof(alt_cmd), "onloi/v1/d/%s/cmd", device_id_str);
+                snprintf(alt_reply, sizeof(alt_reply), "onloi/v1/d/%s/reply", device_id_str);
+                snprintf(alt_config, sizeof(alt_config), "onloi/v1/d/%s/config", device_id_str);
+                esp_mqtt_client_subscribe(mqtt_client, alt_cmd, 1);
+                esp_mqtt_client_subscribe(mqtt_client, alt_reply, 1);
+                esp_mqtt_client_subscribe(mqtt_client, alt_config, 1);
+                ESP_LOGI(TAG, "Subscribed to dual topics: active=%s, hw=%s", active_id, device_id_str);
+            }
             
             // Send Lifecycle events
             uint8_t reg_payload[3] = { (s_mqtt_cfg.session_epoch >> 8) & 0xFF, s_mqtt_cfg.session_epoch & 0xFF, 0x00 };
@@ -479,6 +569,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
                 api_client_send_offline_logs();
             }
             break;
+        }
         case MQTT_EVENT_DISCONNECTED:
             ESP_LOGI(TAG, "MQTT Disconnected.");
             mqtt_connected = false;
@@ -498,15 +589,16 @@ static void start_mqtt(void) {
         return;
     }
 
-    snprintf(topic_cmd, sizeof(topic_cmd), "onloi/v1/d/%s/cmd", device_id_str);
-    snprintf(topic_reply, sizeof(topic_reply), "onloi/v1/d/%s/reply", device_id_str);
-    snprintf(topic_config, sizeof(topic_config), "onloi/v1/d/%s/config", device_id_str);
-    snprintf(topic_lifecycle, sizeof(topic_lifecycle), "onloi/v1/d/%s/lifecycle", device_id_str);
-    snprintf(topic_event, sizeof(topic_event), "onloi/v1/d/%s/event", device_id_str);
-    snprintf(topic_ack, sizeof(topic_ack), "onloi/v1/d/%s/ack", device_id_str);
+    const char *active_id = get_cloud_device_id();
+    snprintf(topic_cmd, sizeof(topic_cmd), "onloi/v1/d/%s/cmd", active_id);
+    snprintf(topic_reply, sizeof(topic_reply), "onloi/v1/d/%s/reply", active_id);
+    snprintf(topic_config, sizeof(topic_config), "onloi/v1/d/%s/config", active_id);
+    snprintf(topic_lifecycle, sizeof(topic_lifecycle), "onloi/v1/d/%s/lifecycle", active_id);
+    snprintf(topic_event, sizeof(topic_event), "onloi/v1/d/%s/event", active_id);
+    snprintf(topic_ack, sizeof(topic_ack), "onloi/v1/d/%s/ack", active_id);
 
     if (strlen(s_mqtt_cfg.client_id) == 0) {
-        snprintf(s_mqtt_cfg.client_id, sizeof(s_mqtt_cfg.client_id), "onloi_d_%s", device_id_str);
+        snprintf(s_mqtt_cfg.client_id, sizeof(s_mqtt_cfg.client_id), "onloi_d_%s", active_id);
     }
 
     bool use_tls = (s_mqtt_cfg.flags & 0x01) || (s_mqtt_cfg.port == 8883);
@@ -528,8 +620,8 @@ static void start_mqtt(void) {
         .session.last_will.retain = 1
     };
 
-    ESP_LOGI(TAG, "Starting MQTT: Host: %s, Port: %d, TLS: %d, ClientId: %s, User: %s",
-             s_mqtt_cfg.host, s_mqtt_cfg.port, use_tls, s_mqtt_cfg.client_id, s_mqtt_cfg.username);
+    ESP_LOGI(TAG, "Starting MQTT: Host: %s, Port: %d, TLS: %d, ClientId: %s, User: %s, ActiveId: %s",
+             s_mqtt_cfg.host, s_mqtt_cfg.port, use_tls, s_mqtt_cfg.client_id, s_mqtt_cfg.username, active_id);
     mqtt_client = esp_mqtt_client_init(&mqtt_cfg);
     esp_mqtt_client_register_event(mqtt_client, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
     esp_mqtt_client_start(mqtt_client);

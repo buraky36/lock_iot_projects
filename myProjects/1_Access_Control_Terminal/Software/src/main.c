@@ -26,8 +26,8 @@
 // ============================================================
 #define FW_VERSION_MAJOR  2
 #define FW_VERSION_MINOR  0
-#define FW_VERSION_PATCH  1
-#define FW_VERSION_STR    "v2.0.1"
+#define FW_VERSION_PATCH  5
+#define FW_VERSION_STR    "v2.0.5"
 #define FW_BUILD_DATE     __DATE__
 #define FW_BUILD_TIME     __TIME__
 #define HW_BOARD_REVISION 1
