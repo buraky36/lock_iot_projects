@@ -23,12 +23,12 @@ typedef struct {
     uint8_t alarm_time;
     bool sound_enabled;
     bool led_always_on;
-    uint8_t working_mode;       // Menu 6: 1=Standalone, 2=Controller, 3=Reader
-    bool is_online;             // Menu 6: Online or Offline
-    bool door_open_detection;   // Menu 7
-    uint8_t wiegand_format;     // Menu 9
-    uint8_t pin_wiegand_format; // Menu 9
-    bool wiegand_parity_en;     // Menu 9
+    uint8_t reserved_mode;      // Formerly working_mode (kept for NVS struct size compatibility)
+    bool is_online;             // Online or Offline
+    bool reserved_door_det;     // Formerly door_open_detection (kept for NVS struct size compatibility)
+    uint8_t reserved_0;         // Formerly wiegand_format (reserved for NVS layout backward compatibility)
+    uint8_t reserved_1;         // Formerly pin_wiegand_format (reserved for NVS layout backward compatibility)
+    bool reserved_2;            // Formerly wiegand_parity_en (reserved for NVS layout backward compatibility)
 } sys_config_t;
 
 void nv_storage_init(void);
@@ -88,6 +88,9 @@ bool nv_storage_find_master_by_wiegand34(uint32_t wg34_id, char *out_master);
 int32_t nv_storage_get_master_id(const char *cred);
 bool nv_storage_add_master_credential(uint16_t id, const char *cred);
 void nv_storage_clear_master_credentials(void);
+bool nv_storage_is_master_enroll_needed(void);
+void nv_storage_set_master_enroll_done(void);
+void nv_storage_clear_master_enroll_done(void);
 
 // User Ops
 bool nv_storage_add_user(const user_record_t *user);
@@ -99,5 +102,31 @@ bool nv_storage_find_user_by_pin(const char *input_pin_buffer, user_record_t *ou
 bool nv_storage_find_user_by_card(const char *card_id_str, user_record_t *out_user);
 bool nv_storage_find_user_by_qr(const char *qr_str, user_record_t *out_user);
 bool nv_storage_find_user_by_wiegand34(uint32_t wg34_id, user_record_t *out_user);
+
+// OSDP Configuration
+typedef struct {
+    uint8_t address;     // OSDP PD Address (0x00 - 0x7E, default: 0x00)
+    uint32_t baudrate;   // RS485 Baudrate (9600 - 115200, default: 9600)
+    bool enabled;        // OSDP PD enabled (default: true)
+} osdp_config_t;
+
+void nv_storage_get_osdp_config(osdp_config_t *cfg);
+void nv_storage_set_osdp_config(const osdp_config_t *cfg);
+
+// Active OTA Job Record (for power-loss recovery and post-boot verification)
+#define OTA_JOB_MAGIC 0x4F544131 // ASCII "OTA1"
+
+typedef struct {
+    uint32_t magic;          // Must match OTA_JOB_MAGIC
+    uint32_t request_id;     // MQTT command requestId
+    uint8_t target;          // Target component (0x01 = ESP32)
+    uint32_t target_version; // Target firmware version
+    char active_dev_id[32];  // Active device/topic ID
+    uint32_t crc32;          // CRC32 integrity check
+} ota_job_record_t;
+
+bool nv_storage_save_active_ota_job(uint32_t request_id, uint8_t target, uint32_t target_version, const char *active_dev_id);
+bool nv_storage_get_active_ota_job(ota_job_record_t *job);
+void nv_storage_clear_active_ota_job(void);
 
 #endif

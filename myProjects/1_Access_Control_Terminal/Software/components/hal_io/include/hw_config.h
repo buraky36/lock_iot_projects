@@ -3,10 +3,36 @@
 
 #include <stdint.h>
 
-// Hardware Versions
+// Hardware Versions (Compile / internal index)
 #define HW_VERSION_PIN_QR     1  // OE0110
 #define HW_VERSION_PIN_RFID   2  // OE0111
 #define HW_VERSION_RFID_ONLY  3  // OE0112
+
+// Hardware Product Codes
+#define PRODUCT_ID_PIN_QR     0x0110
+#define PRODUCT_ID_PIN_RFID   0x0111
+#define PRODUCT_ID_RFID_ONLY  0x0112
+
+// Capability flags derived from compilation version
+#if COMPILE_HW_VERSION == HW_VERSION_PIN_QR
+    #define HW_HAS_KEYPAD         1
+    #define HW_HAS_QR             1
+    #define HW_HAS_RFID           0
+    #define HW_HAS_MASTER_CODE    1
+    #define HW_BOOT_MASTER_ENROLL 0
+#elif COMPILE_HW_VERSION == HW_VERSION_PIN_RFID
+    #define HW_HAS_KEYPAD         1
+    #define HW_HAS_QR             0
+    #define HW_HAS_RFID           1
+    #define HW_HAS_MASTER_CODE    1
+    #define HW_BOOT_MASTER_ENROLL 0
+#elif COMPILE_HW_VERSION == HW_VERSION_RFID_ONLY
+    #define HW_HAS_KEYPAD         0
+    #define HW_HAS_QR             0
+    #define HW_HAS_RFID           1
+    #define HW_HAS_MASTER_CODE    0
+    #define HW_BOOT_MASTER_ENROLL 1
+#endif
 
 extern char device_code_str[32];
 extern char ble_name_str[64];

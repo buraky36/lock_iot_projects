@@ -1,0 +1,46 @@
+================================================================================
+ACCESS CONTROL TERMINAL - FLASH BELLEK ADRES REHBERİ
+MODEL: PIN + QR Controller (0x0110) | YAZILIM VERSİYONU: V2.0.10
+================================================================================
+
+1) TEK DOSYA İLE FLASH ETME (MERGED BINARY - FABRİKA YÜKLEMESİ İÇİN ÖNERİLEN)
+--------------------------------------------------------------------------------
+Dosya: full_firmware_OE0110.bin
+Adres: 0x0000 (Flash başlangıç adresi)
+
+Esptool Komutu:
+esptool.py --chip esp32 --port COMx --baud 921600 write_flash 0x0000 full_firmware_OE0110.bin
+
+ESP Flash Download Tool Ayarları:
+- Dosya: full_firmware_OE0110.bin  -> Adres: 0x0000 (Seçili / Checked)
+- SPI SPEED: 40MHz
+- SPI MODE: DIO
+- FLASH SIZE: 32Mbit-512KB (4MB)
+
+--------------------------------------------------------------------------------
+2) PARÇALI DOSYALAR İLE FLASH ETME (PARTITIONED BINARIES)
+--------------------------------------------------------------------------------
+- 0x1000   : bootloader.bin
+- 0x8000   : partitions.bin
+- 0x109000 : ota_data_initial.bin
+- 0x110000 : firmware.bin
+
+Esptool Komutu:
+esptool.py --chip esp32 --port COMx --baud 921600 write_flash \
+    0x1000   bootloader.bin \
+    0x8000   partitions.bin \
+    0x109000 ota_data_initial.bin \
+    0x110000 firmware.bin
+
+ESP Flash Download Tool Ayarları:
+- bootloader.bin       -> Adres: 0x1000
+- partitions.bin       -> Adres: 0x8000
+- ota_data_initial.bin -> Adres: 0x109000
+- firmware.bin         -> Adres: 0x110000
+
+--------------------------------------------------------------------------------
+3) ONLOI CLOUD / APP OTA GÜNCELLEMESİ İÇİN
+--------------------------------------------------------------------------------
+Dosya: firmware.bin
+(Sadece uygulama binary dosyası 'firmware.bin' Onloi Cloud veya HTTP OTA sunucusuna yüklenmelidir.)
+================================================================================

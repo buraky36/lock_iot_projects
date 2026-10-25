@@ -1,6 +1,7 @@
 #include "app_state_machine.h"
 #include "ble_prov.h"
 #include "api_client.h"
+#include "osdp_pd.h"
 #include "esp_event.h"
 #include "hal_io.h"
 #include "hal_qr.h"
@@ -26,8 +27,8 @@
 // ============================================================
 #define FW_VERSION_MAJOR  2
 #define FW_VERSION_MINOR  0
-#define FW_VERSION_PATCH  5
-#define FW_VERSION_STR    "v2.0.5"
+#define FW_VERSION_PATCH  10
+#define FW_VERSION_STR    "v2.0.10"
 #define FW_BUILD_DATE     __DATE__
 #define FW_BUILD_TIME     __TIME__
 #define HW_BOARD_REVISION 1
@@ -42,10 +43,10 @@ uint8_t active_hw_version = COMPILE_HW_VERSION;
 bool has_hw_warning = false;
 
 uint16_t app_get_product_id(void) {
-    if (active_hw_version == HW_VERSION_PIN_QR) return 0x0110;
-    if (active_hw_version == HW_VERSION_PIN_RFID) return 0x0111;
-    if (active_hw_version == HW_VERSION_RFID_ONLY) return 0x0112;
-    return 0x0110;
+    if (active_hw_version == HW_VERSION_PIN_QR) return PRODUCT_ID_PIN_QR;
+    if (active_hw_version == HW_VERSION_PIN_RFID) return PRODUCT_ID_PIN_RFID;
+    if (active_hw_version == HW_VERSION_RFID_ONLY) return PRODUCT_ID_RFID_ONLY;
+    return PRODUCT_ID_PIN_QR;
 }
 
 uint8_t app_get_hardware_revision(void) {
@@ -124,6 +125,12 @@ static void serial_cli_task(void *pvParameters) {
                 } else if (strcmp(buf, "buraky36_ota_req") == 0) {
                     printf("\n[CLI] Sending FIRMWARE_UPDATE_REQUEST (0x38) via MQTT...\n");
                     api_client_send_firmware_update_request();
+                } else if (strcmp(buf, "buraky36_osdp_info") == 0) {
+                    printf("\n--- OSDP PD STATUS ---\n");
+                    printf("Address : 0x%02X\n", osdp_pd_get_address());
+                    printf("Baudrate: %lu\n", (unsigned long)osdp_pd_get_baudrate());
+                    printf("Online  : %s\n", osdp_pd_is_online() ? "YES (ACU Polling)" : "NO");
+                    printf("----------------------\n");
                 }
                 pos = 0;
             }
@@ -252,50 +259,23 @@ void app_main(void) {
 #else
   // Logic initialization first to load config
   app_state_machine_init();
-  
-  uint8_t current_mode = app_get_working_mode();
-  bool mode_changed = false;
-  
-  if (active_hw_version == HW_VERSION_RFID_ONLY) {
-      if (current_mode != 3) {
-          printf("Enforcing Reader Mode for RFID-Only hardware.\n");
-          current_mode = 3;
-          mode_changed = true;
-      }
-      int in1_state = gpio_get_level(PIN_DIGITAL_IN1);
-      printf("RFID-Only Wiegand Output Format is set to: %d-bit (IN1 Level: %d)\n", (in1_state == 1) ? 34 : 26, in1_state);
-  } else if ((active_hw_version == HW_VERSION_PIN_RFID || active_hw_version == HW_VERSION_PIN_QR) && current_mode == 3) {
-      printf("Reader Mode not supported on PIN+RFID / PIN+QR hardware. Enforcing Standalone.\n");
-      current_mode = 1;
-      mode_changed = true;
-  }
-  
-  if (mode_changed) {
-      app_set_working_mode(current_mode);
-  }
 
-  if (current_mode != 3) {
-      // Network and BLE
-      wifi_manager_init();
-      ble_prov_init();
-      api_client_init();
-  } else {
-      printf("Wiegand Reader Mode Active: Wi-Fi and BLE are DISABLED for security and power saving.\n");
-  }
+  // Network, BLE and Cloud API are active on all variations
+  wifi_manager_init();
+  ble_prov_init();
+  api_client_init();
+  osdp_pd_init();
 
   xTaskCreate(serial_cli_task, "serial_cli", 4096, NULL, 5, NULL);
 
   // Main Super-Loop
   while (1) {
     // Run state machine tick which handles inputs, time and LED/Buzzer
-    // non-blocking io
     app_state_machine_tick();
     
-    if (current_mode != 3) {
-        wifi_manager_tick();
-        ble_prov_tick();
-        api_client_tick();
-    }
+    wifi_manager_tick();
+    ble_prov_tick();
+    api_client_tick();
 
     // Crucial for FreeRTOS: allow IDLE task to run and prevent WDT timeouts
     vTaskDelay(pdMS_TO_TICKS(10));

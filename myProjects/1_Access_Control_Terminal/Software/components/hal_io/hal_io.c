@@ -41,20 +41,42 @@ static void apply_led_color(led_color_t c) {
         led_strip_set_pixel(led_strip, 0, RGB_MAX, RGB_MAX, 0);
     } else if (c == LED_COLOR_WHITE) {
         led_strip_set_pixel(led_strip, 0, RGB_MAX, RGB_MAX, RGB_MAX);
+    } else if (c == LED_COLOR_LIME) {
+        // Lime = G:100%, R:30%, B:0
+        led_strip_set_pixel(led_strip, 0, RGB_MAX, RGB_MAX / 3, 0);
+    } else if (c == LED_COLOR_CYAN) {
+        // Cyan = G:100%, R:0, B:100%
+        led_strip_set_pixel(led_strip, 0, RGB_MAX, 0, RGB_MAX);
+    } else if (c == LED_COLOR_PURPLE) {
+        // Purple = G:0, R:30%, B:100%
+        led_strip_set_pixel(led_strip, 0, 0, RGB_MAX / 3, RGB_MAX);
+    } else if (c == LED_COLOR_MAGENTA) {
+        // Magenta = G:0, R:100%, B:100%
+        led_strip_set_pixel(led_strip, 0, 0, RGB_MAX, RGB_MAX);
     }
     led_strip_refresh(led_strip);
 }
 
 void hal_io_init(void) {
-    // Inputs (DigIn1 and DigIn2)
-    gpio_config_t in_conf = {
+    // DigIn1 (Exit Button): Pull-Down enabled
+    gpio_config_t in1_conf = {
         .intr_type = GPIO_INTR_DISABLE,
         .mode = GPIO_MODE_INPUT,
-        .pin_bit_mask = (1ULL<<DIGITAL_INPUT1_PIN) | (1ULL<<DIGITAL_INPUT2_PIN),
+        .pin_bit_mask = (1ULL << DIGITAL_INPUT1_PIN),
         .pull_down_en = 1,
         .pull_up_en = 0
     };
-    gpio_config(&in_conf);
+    gpio_config(&in1_conf);
+
+    // DigIn2 (Door Sensor): Pull-Down enabled (matches hardware pull-down circuit)
+    gpio_config_t in2_conf = {
+        .intr_type = GPIO_INTR_DISABLE,
+        .mode = GPIO_MODE_INPUT,
+        .pin_bit_mask = (1ULL << DIGITAL_INPUT2_PIN),
+        .pull_down_en = 1,
+        .pull_up_en = 0
+    };
+    gpio_config(&in2_conf);
 
     // WS2812B RGB LED Init
     led_strip_config_t strip_config = {
@@ -181,6 +203,10 @@ bool hal_io_read_door_sensor(void) {
         is_active = false;
     }
     return is_active;
+}
+
+int hal_io_read_in2_raw(void) {
+    return gpio_get_level(DIGITAL_INPUT2_PIN);
 }
 
 bool hal_io_read_exit_button(void) {

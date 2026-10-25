@@ -160,15 +160,11 @@ void nv_storage_get_config(sys_config_t *config) {
     config->alarm_time = 1;
     config->sound_enabled = true;
     config->led_always_on = true;
-    if (active_hw_version == HW_VERSION_RFID_ONLY) {
-        config->working_mode = 3; // Default to Wiegand Reader Mode
-    } else {
-        config->working_mode = 1; // Default to Standalone Mode
-    }
-    config->door_open_detection = true;
-    config->wiegand_format = 34;
-    config->pin_wiegand_format = 4;
-    config->wiegand_parity_en = true;
+    config->reserved_mode = 0;
+    config->reserved_door_det = 0;
+    config->reserved_0 = 34;
+    config->reserved_1 = 4;
+    config->reserved_2 = true;
 
     nvs_handle_t handle;
     if (nvs_open(NAMESPACE_CFG, NVS_READONLY, &handle) == ESP_OK) {
@@ -179,22 +175,33 @@ void nv_storage_get_config(sys_config_t *config) {
         }
         nvs_close(handle);
     }
+}
 
-    // Hardware capability sanitization:
-    // RFID_ONLY is strictly Reader mode (3)
-    // PIN_RFID and PIN_QR hardware cannot be Reader mode (3), enforce Standalone (1)
-    if (active_hw_version == HW_VERSION_RFID_ONLY) {
-        if (config->working_mode != 3) {
-            ESP_LOGW(TAG, "Sanitizing working_mode -> 3 (Reader) for RFID_ONLY");
-            config->working_mode = 3;
-            nv_storage_set_config(config);
-        }
-    } else {
-        if (config->working_mode == 3) {
-            ESP_LOGW(TAG, "Sanitizing working_mode -> 1 (Standalone) for PIN hardware");
-            config->working_mode = 1;
-            nv_storage_set_config(config);
-        }
+bool nv_storage_is_master_enroll_needed(void) {
+    nvs_handle_t handle;
+    uint8_t done = 0;
+    if (nvs_open(NAMESPACE_CFG, NVS_READONLY, &handle) == ESP_OK) {
+        nvs_get_u8(handle, "mst_done", &done);
+        nvs_close(handle);
+    }
+    return (done == 0);
+}
+
+void nv_storage_set_master_enroll_done(void) {
+    nvs_handle_t handle;
+    if (nvs_open(NAMESPACE_CFG, NVS_READWRITE, &handle) == ESP_OK) {
+        nvs_set_u8(handle, "mst_done", 1);
+        nvs_commit(handle);
+        nvs_close(handle);
+    }
+}
+
+void nv_storage_clear_master_enroll_done(void) {
+    nvs_handle_t handle;
+    if (nvs_open(NAMESPACE_CFG, NVS_READWRITE, &handle) == ESP_OK) {
+        nvs_erase_key(handle, "mst_done");
+        nvs_commit(handle);
+        nvs_close(handle);
     }
 }
 
@@ -575,3 +582,122 @@ uint16_t nv_storage_get_free_user_id(void) {
     }
     return 0; // Full
 }
+
+void nv_storage_get_osdp_config(osdp_config_t *cfg) {
+    if (!cfg) return;
+    cfg->address = 0x00;
+    cfg->baudrate = 9600;
+    cfg->enabled = true;
+
+    nvs_handle_t handle;
+    if (nvs_open(NAMESPACE_CFG, NVS_READONLY, &handle) == ESP_OK) {
+        uint8_t addr = 0;
+        if (nvs_get_u8(handle, "osdp_addr", &addr) == ESP_OK) {
+            cfg->address = addr;
+        }
+        uint32_t baud = 0;
+        if (nvs_get_u32(handle, "osdp_baud", &baud) == ESP_OK && baud > 0) {
+            cfg->baudrate = baud;
+        }
+        uint8_t en = 1;
+        if (nvs_get_u8(handle, "osdp_en", &en) == ESP_OK) {
+            cfg->enabled = (en != 0);
+        }
+        nvs_close(handle);
+    }
+}
+
+void nv_storage_set_osdp_config(const osdp_config_t *cfg) {
+    if (!cfg) return;
+    nvs_handle_t handle;
+    if (nvs_open(NAMESPACE_CFG, NVS_READWRITE, &handle) == ESP_OK) {
+        nvs_set_u8(handle, "osdp_addr", cfg->address);
+        nvs_set_u32(handle, "osdp_baud", cfg->baudrate);
+        nvs_set_u8(handle, "osdp_en", cfg->enabled ? 1 : 0);
+        nvs_commit(handle);
+        nvs_close(handle);
+    }
+}
+
+static uint32_t calculate_ota_crc32(const uint8_t *data, size_t len) {
+    uint32_t crc = 0xFFFFFFFF;
+    for (size_t i = 0; i < len; i++) {
+        crc ^= data[i];
+        for (int j = 0; j < 8; j++) {
+            crc = (crc >> 1) ^ (0xEDB88320 & (-(crc & 1)));
+        }
+    }
+    return ~crc;
+}
+
+bool nv_storage_save_active_ota_job(uint32_t request_id, uint8_t target, uint32_t target_version, const char *active_dev_id) {
+    if (request_id == 0 || target_version == 0) return false;
+
+    ota_job_record_t record;
+    memset(&record, 0, sizeof(record));
+    record.magic = OTA_JOB_MAGIC;
+    record.request_id = request_id;
+    record.target = target;
+    record.target_version = target_version;
+    if (active_dev_id) {
+        strncpy(record.active_dev_id, active_dev_id, sizeof(record.active_dev_id) - 1);
+    }
+    record.crc32 = calculate_ota_crc32((const uint8_t *)&record, offsetof(ota_job_record_t, crc32));
+
+    nvs_handle_t handle;
+    if (nvs_open(NAMESPACE_CFG, NVS_READWRITE, &handle) != ESP_OK) return false;
+    esp_err_t err = nvs_set_blob(handle, "ota_job", &record, sizeof(record));
+    if (err == ESP_OK) {
+        nvs_commit(handle);
+    }
+    nvs_close(handle);
+    ESP_LOGI(TAG, "Saved active OTA job: Req=0x%08lX, Target=0x%02X, Ver=0x%08lX, DevId=%s",
+             (unsigned long)request_id, target, (unsigned long)target_version, record.active_dev_id);
+    return err == ESP_OK;
+}
+
+bool nv_storage_get_active_ota_job(ota_job_record_t *job) {
+    if (!job) return false;
+    memset(job, 0, sizeof(ota_job_record_t));
+
+    nvs_handle_t handle;
+    if (nvs_open(NAMESPACE_CFG, NVS_READONLY, &handle) != ESP_OK) {
+        return false;
+    }
+
+    size_t size = sizeof(ota_job_record_t);
+    esp_err_t err = nvs_get_blob(handle, "ota_job", job, &size);
+    nvs_close(handle);
+
+    if (err != ESP_OK || size != sizeof(ota_job_record_t)) {
+        // Key does not exist: normal boot or fresh out-of-factory device
+        return false;
+    }
+
+    // Strict validation to prevent false recovery triggers on fresh factory devices or uninitialized flash:
+    if (job->magic != OTA_JOB_MAGIC) {
+        ESP_LOGW(TAG, "OTA job magic mismatch: 0x%08lX (expected 0x%08lX)", (unsigned long)job->magic, (unsigned long)OTA_JOB_MAGIC);
+        return false;
+    }
+    if (job->request_id == 0 || job->target_version == 0) {
+        return false;
+    }
+    uint32_t calc_crc = calculate_ota_crc32((const uint8_t *)job, offsetof(ota_job_record_t, crc32));
+    if (job->crc32 != calc_crc) {
+        ESP_LOGW(TAG, "OTA job CRC32 mismatch: 0x%08lX != 0x%08lX", (unsigned long)job->crc32, (unsigned long)calc_crc);
+        return false;
+    }
+
+    return true;
+}
+
+void nv_storage_clear_active_ota_job(void) {
+    nvs_handle_t handle;
+    if (nvs_open(NAMESPACE_CFG, NVS_READWRITE, &handle) == ESP_OK) {
+        nvs_erase_key(handle, "ota_job");
+        nvs_commit(handle);
+        nvs_close(handle);
+        ESP_LOGI(TAG, "Cleared active OTA job from NVS");
+    }
+}
+

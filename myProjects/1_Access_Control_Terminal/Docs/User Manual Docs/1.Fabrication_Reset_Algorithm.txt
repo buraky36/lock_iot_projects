@@ -1,0 +1,21 @@
+[Boot Başlangıcı (0-20 sn)]
+         │
+         ▼
+IN2 pini 12V (HIGH) mi? ──(HAYIR - Boşta/GND)──► Normal çalışmaya devam et (Reset YOK)
+         │
+     (EVET - 12V)
+         ▼
+10 saniye boyunca kesintisiz 12V'ta kaldı mı?
+         │
+     (EVET)
+         ▼
+[SESLİ & GÖRSEL İKAZ]: Buzzer uzun öter + Sarı LED hızlı yanıp söner
+"Lütfen 3 saniye içinde 12V bağlantısını kesin!"
+         │
+         ├─────────────────────────────────────────┐
+         ▼                                         ▼
+[3 sn içinde 12V KESİLDİ (LOW oldu)]     [3 sn geçti ama HALA 12V]
+         │                                         │
+         ▼                                         ▼
+"Bilinçli kullanıcı onayı alındı"       "Kapı sensörü açık kalmış veya arıza var"
+✅ FABRİKA SIFIRLAMASI ÇALIŞTIRILIR     ❌ RESET İPTAL EDİLİR (Veriler korunur)

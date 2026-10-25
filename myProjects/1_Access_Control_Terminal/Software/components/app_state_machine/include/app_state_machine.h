@@ -28,8 +28,6 @@ void app_trigger_door_open(void);
 void app_trigger_door_close(void);
 void app_trigger_alarm(void);
 void app_trigger_access_denied(void);
-uint8_t app_get_working_mode(void);
-void app_set_working_mode(uint8_t mode);
 
 // Poll inputs explicitly from sensors
 void app_poll_sensors(void);

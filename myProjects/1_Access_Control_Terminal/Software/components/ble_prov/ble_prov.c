@@ -41,6 +41,8 @@ static bool s_pending_scan_response = false;
 static uint16_t s_pending_scan_seq = 0;
 static bool s_should_stop_ble = false;
 static uint32_t s_stop_ble_time = 0;
+static int64_t s_last_ble_activity_time_ms = 0;
+#define BLE_CONN_IDLE_TIMEOUT_MS 10000 // 10 seconds timeout for inactive BLE connections
 
 // 6E400001-B5A3-F393-E0A9-E50E24DCCA9E
 static const ble_uuid128_t gatt_svr_svc_uuid =
@@ -104,7 +106,7 @@ static void send_ble_response(uint8_t cmd, uint16_t seq, uint8_t status, const u
     size_t total_len = 19 + payload_len;
     const size_t MTU_CHUNK = 19;
 
-    ESP_LOGI(TAG, "Sending BLE Response CMD: 0x%02X, Seq: %d, TotalLen: %zu", cmd, seq, total_len);
+    // ESP_LOGI(TAG, "Sending BLE Response CMD: 0x%02X, Seq: %d, TotalLen: %zu", cmd, seq, total_len); // [V2.0.6 log cleanup]
 
     for (size_t pos = 0; pos < total_len; pos += MTU_CHUNK) {
         size_t chunkSize = (total_len - pos < MTU_CHUNK) ? (total_len - pos) : MTU_CHUNK;
@@ -115,7 +117,8 @@ static void send_ble_response(uint8_t cmd, uint16_t seq, uint8_t status, const u
 }
 
 static void handle_ble_command(uint8_t cmd, uint16_t seq, const uint8_t *payload, uint16_t payload_len) {
-    ESP_LOGI(TAG, "BLE Command 0x%02X Seq %d", cmd, seq);
+    s_last_ble_activity_time_ms = esp_timer_get_time() / 1000;
+    // ESP_LOGI(TAG, "BLE Command 0x%02X Seq %d", cmd, seq); // [V2.0.6 log cleanup]
     switch (cmd) {
         case CMD_HANDSHAKE: {
             uint8_t resp_payload[24] = {0};
@@ -283,6 +286,7 @@ static void handle_ble_command(uint8_t cmd, uint16_t seq, const uint8_t *payload
 static int gatts_access_rx_cb(uint16_t conn, uint16_t attr_handle,
                            struct ble_gatt_access_ctxt *ctxt, void *arg) {
     if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
+        s_last_ble_activity_time_ms = esp_timer_get_time() / 1000;
         uint16_t mbuf_len = OS_MBUF_PKTLEN(ctxt->om);
         if (ble_rx_len + mbuf_len > sizeof(ble_rx_buffer)) {
             ble_rx_len = 0; // Overflow, reset
@@ -362,10 +366,14 @@ static int ble_gap_event(struct ble_gap_event *event, void *arg) {
         case BLE_GAP_EVENT_CONNECT:
             ESP_LOGI(TAG, "Connected");
             conn_handle = event->connect.conn_handle;
+            s_last_ble_activity_time_ms = esp_timer_get_time() / 1000;
+            ble_rx_len = 0;
             break;
         case BLE_GAP_EVENT_DISCONNECT:
             ESP_LOGI(TAG, "Disconnected");
             conn_handle = BLE_HS_CONN_HANDLE_NONE;
+            ble_rx_len = 0;
+            s_pending_scan_response = false;
             struct ble_gap_adv_params adv_params;
             memset(&adv_params, 0, sizeof(adv_params));
             adv_params.conn_mode = BLE_GAP_CONN_MODE_UND;
@@ -447,6 +455,20 @@ void ble_prov_init(void) {
 }
 
 void ble_prov_tick(void) {
+    int64_t now_ms = esp_timer_get_time() / 1000;
+
+    // Disconnect if idle for longer than BLE_CONN_IDLE_TIMEOUT_MS (10s)
+    if (conn_handle != BLE_HS_CONN_HANDLE_NONE && !s_should_stop_ble) {
+        if (s_pending_scan_response) {
+            // Keep timer alive while scanning Wi-Fi
+            s_last_ble_activity_time_ms = now_ms;
+        } else if (now_ms - s_last_ble_activity_time_ms >= BLE_CONN_IDLE_TIMEOUT_MS) {
+            ESP_LOGW(TAG, "BLE connection idle timeout (%d ms)! Disconnecting client...", BLE_CONN_IDLE_TIMEOUT_MS);
+            ble_gap_terminate(conn_handle, BLE_ERR_REM_USER_CONN_TERM);
+            s_last_ble_activity_time_ms = now_ms;
+        }
+    }
+
     if (s_pending_scan_response && wifi_manager_is_scan_done()) {
         uint16_t ap_count = wifi_manager_get_ap_count();
         uint8_t count = (ap_count > 10) ? 10 : ap_count;

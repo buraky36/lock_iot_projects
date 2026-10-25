@@ -32,7 +32,8 @@ typedef enum {
     ANIM_FACTORY_RESET,
     ANIM_IDLE_SNAKE,    // Screensaver: snake slide 1→2→3→6→5→4→7→8→9→#→0→* and back
     ANIM_IDLE_WAVE,     // Screensaver: sweeping wave across keypad
-    ANIM_IDLE_PING_PONG // Screensaver: ping pong ball bouncing back and forth
+    ANIM_IDLE_PING_PONG, // Screensaver: ping pong ball bouncing back and forth
+    ANIM_OTA_PROGRESS   // OTA download progress animation (1..0 digits + RGB)
 } shift_reg_anim_t;
 
 void hal_shift_reg_init(void);
@@ -40,6 +41,10 @@ void hal_shift_reg_tick(void);
 
 // Play an animation continuously (non-blocking)
 void hal_shift_reg_play_anim(shift_reg_anim_t anim, uint32_t arg);
+
+// OTA Download Animation
+void hal_shift_reg_set_ota_progress(uint8_t pct);
+void hal_shift_reg_stop_ota_progress(void);
 
 // Direct access
 void hal_shift_reg_write(uint8_t reg1_data, uint8_t reg2_data);

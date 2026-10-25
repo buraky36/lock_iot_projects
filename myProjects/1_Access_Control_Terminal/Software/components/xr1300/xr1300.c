@@ -62,7 +62,7 @@ static void xr1300_task(void *arg) {
         strncpy(last_qr, clean_str, sizeof(last_qr) - 1);
         last_qr_time_ms = now_ms;
 
-        printf("[QR XR1300] RAW Rx (%d bytes): %s\n", c_len, clean_str);
+        // printf("[QR XR1300] RAW Rx (%d bytes): %s\n", c_len, clean_str); // [V2.0.6 log cleanup]
         xQueueSend(xr1300_event_queue, clean_str, 0);
       }
     }

@@ -1,0 +1,57 @@
+================================================================================
+ONLOI ACCESS CONTROL TERMINAL - FIRMWARE V2.0.10 OTA GÜNCELLEME PARAMETRELERİ
+================================================================================
+Yazılım Versiyonu (Hex)    : 0x0002000A (Decimal: 131082)
+Yazılım Versiyonu (Metin)  : v2.0.10
+Yenilikler                 :
+  1. Yarıda Kesilen OTA Kurtarma (Interrupted OTA Recovery on Boot):
+     - OTA indirme / yazma sırasında elektrik kesilmesi, çökme veya rollback
+       durumunda, cihaz eski firmware'den yeniden açıldığında durumu NVS'ten algılar.
+     - Buluta ve Mobil Uygulamaya derhal FIRMWARE_STATUS (0x07 FAILED) ve
+       ACK (0x04 FAILED, detailCode: OTA_ERR_NETWORK 0x01) göndererek uygulamanın
+       "%40 indiriliyor" ekranında asılı kalmasını önler.
+  2. Sıfır / Fabrika Çıkışlı Cihaz Koruması (Fresh Device Algorithm):
+     - NVS'te özel Magic Header (0x4F544131 "OTA1"), struct boyutu, hedef kontrolü
+       ve CRC32 sağlama algoritması eklenmiştir.
+     - Fabrikadan yeni çıkan, sıfırlanmış veya boş hafızalı cihazlar açılışta
+       kesinlikle yanlışlıkla "OTA kesildi" zannetmez. Normal açılış akışı korunur.
+  3. Fabrika Sıfırlama ve Eşleşme İptali Entegrasyonu:
+     - Cihaz Menü 9 veya buton/donanım ile sıfırlandığında aktif OTA iş kaydı
+       tamamen temizlenir.
+
+--------------------------------------------------------------------------------
+1) OE0110 - PIN + QR Terminal (OE_0110_PIN_QR)
+--------------------------------------------------------------------------------
+Binary Dosyası      : outputs/OE_0110_PIN_QR/V2.0.10/firmware.bin
+Target Component    : 0x01 (OTA_TARGET_UNIT1_ESP)
+Product ID          : 0x0110
+Hardware Revision   : 0x01
+Firmware Version    : 0x0002000A (131082)
+Firmware Length     : 1210656 byte (0x00127920)
+Plain FW CRC32      : 0x295EFB51 (Decimal: 694090577)
+Plain FW SHA-256    : 79155cf95cb92bbf4b6cbb9b953cc430e30ea34be2bbd077efaaaa040cda4695
+
+--------------------------------------------------------------------------------
+2) OE0111 - PIN + RFID Terminal (OE_0111_PIN_RFID)
+--------------------------------------------------------------------------------
+Binary Dosyası      : outputs/OE_0111_PIN_RFID/V2.0.10/firmware.bin
+Target Component    : 0x01 (OTA_TARGET_UNIT1_ESP)
+Product ID          : 0x0111
+Hardware Revision   : 0x01
+Firmware Version    : 0x0002000A (131082)
+Firmware Length     : 1210640 byte (0x00127910)
+Plain FW CRC32      : 0xEED6F9B6 (Decimal: 4007066038)
+Plain FW SHA-256    : a672dee43cff11d048095783fc8487a3c4d1f04de9bdac9246ed8ee92d7f3a46
+
+--------------------------------------------------------------------------------
+3) OE0112 - RFID Only Terminal (OE_0112_RFID_ONLY)
+--------------------------------------------------------------------------------
+Binary Dosyası      : outputs/OE_0112_RFID_ONLY/V2.0.10/firmware.bin
+Target Component    : 0x01 (OTA_TARGET_UNIT1_ESP)
+Product ID          : 0x0112
+Hardware Revision   : 0x01
+Firmware Version    : 0x0002000A (131082)
+Firmware Length     : 1210656 byte (0x00127920)
+Plain FW CRC32      : 0x4BCDE76D (Decimal: 1271785325)
+Plain FW SHA-256    : ac789b37921a46b721d6f804347749b3612dd880144045adefbe37b98bda655d
+================================================================================

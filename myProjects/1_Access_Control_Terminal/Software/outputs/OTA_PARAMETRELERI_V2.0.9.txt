@@ -1,0 +1,68 @@
+================================================================================
+ONLOI ACCESS CONTROL TERMINAL (OE SERIES) - V2.0.9 OTA PARAMETRELERİ
+================================================================================
+
+ÖNEMLİ NOT:
+OTA paneline kesinlikle 'full_firmware_OExxxx.bin' yüklenmemelidir! 
+Yalnızca 'firmware.bin' dosyası yüklenmelidir.
+
+Bu versiyondaki yenilikler:
+1. Programlama Menüsü sadeleştirildi ve 1'den başlayacak şekilde yeniden düzenlendi:
+   - Menü 1: Master Kod Değiştirme
+   - Menü 2: Master Kart / QR Ekleme
+   - Menü 3: Kullanıcı Ekleme (Offline)
+   - Menü 4: Kullanıcı Silme (Offline)
+   - Menü 5: Seri Kart Ekleme (Offline & PIN+RFID)
+   - Menü 6: Röle Çekili Kalma Süresi (0-99 sn)
+   - Menü 7: Ses ve LED Gösterge Ayarları
+   - Menü 9: Fabrika Reset (99#)
+2. Eski Menü 6 (Çalışma Modu) ve Menü 7 (Kapı Algılama) yazılımdan tamamen kaldırıldı.
+   - Wiegand okuyucu girişi (D0/D1) ve röle kontrolü kalıcı olarak standart aktif hale getirildi (Controller mantığı korundu).
+3. Bekleme modunda kullanıcı PIN değiştirme (* -> ID -> # -> Eski PIN -> ...) koruması:
+   - Cihaz Online moddayken bu tuşlama yapıldığında 3 bip hata sesi verip işlemi reddeder.
+   - Offline modda ise yerel NVS kullanıcısının şifresi başarıyla değiştirilir.
+4. RFID Only modelinde Master Card ile kullanıcı kartı ekleme/silme senaryoları eksiksiz çalışır durumdadır.
+5. Yazılım sürümü V2.0.9 (0x00020009) olarak derlendi.
+
+================================================================================
+1) OE0110 - PIN + QR KONTROLCÜ (OE_0110_PIN_QR)
+================================================================================
+Dosya Yolu     : outputs/OE_0110_PIN_QR/V2.0.9/firmware.bin
+Hedef Ünite    : 0x01 (Unit 1 - ESP32)
+Ürün ID        : 0x0110 (Decimal: 272)
+Versiyon (Hex) : 0x00020009
+Versiyon (Str) : V2.0.9
+Donanım Rev    : 0x01
+Dosya Boyutu   : 1209424 byte
+CRC32 (Hex)    : 0x5DD42524
+CRC32 (Dec)    : 1574184228
+SHA-256        : 7e5b6cf20bea8079ead63363e728a086b0beff2fcee5ac5739818f66d8b4d081
+
+================================================================================
+2) OE0111 - PIN + RFID KONTROLCÜ (OE_0111_PIN_RFID)
+================================================================================
+Dosya Yolu     : outputs/OE_0111_PIN_RFID/V2.0.9/firmware.bin
+Hedef Ünite    : 0x01 (Unit 1 - ESP32)
+Ürün ID        : 0x0111 (Decimal: 273)
+Versiyon (Hex) : 0x00020009
+Versiyon (Str) : V2.0.9
+Donanım Rev    : 0x01
+Dosya Boyutu   : 1209408 byte
+CRC32 (Hex)    : 0x83C500D6
+CRC32 (Dec)    : 2210726102
+SHA-256        : ae84412749df0120b09fd794069e33d4f011a18ba47dde0e57a0768738a4236f
+
+================================================================================
+3) OE0112 - RFID ONLY KONTROLCÜ (OE_0112_RFID_ONLY)
+================================================================================
+Dosya Yolu     : outputs/OE_0112_RFID_ONLY/V2.0.9/firmware.bin
+Hedef Ünite    : 0x01 (Unit 1 - ESP32)
+Ürün ID        : 0x0112 (Decimal: 274)
+Versiyon (Hex) : 0x00020009
+Versiyon (Str) : V2.0.9
+Donanım Rev    : 0x01
+Dosya Boyutu   : 1209424 byte
+CRC32 (Hex)    : 0x4874497C
+CRC32 (Dec)    : 1215580540
+SHA-256        : 0c9d230d7853e8fdc9c8c51fb9e44dc1ae090f861015ef7ccad9ff78a61813bd
+================================================================================
