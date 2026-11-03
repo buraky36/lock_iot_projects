@@ -1,0 +1,35 @@
+========================================================================
+ONLOI FIRMWARE STUDIO (v1.0)
+Görsel Derleme, Yazılım Yükleme (Flash) ve Seri Port Monitörü
+========================================================================
+
+Bu yazılım, Onloi Geçiş Kontrol Terminallerinin (OE0111, OE0112, OE0113) 
+yazılımlarını derlemek, birleştirmek (merged 0x0000), karta tek tıkla 
+flash etmek ve anlık seri port loglarını izlemek için hazırlanmış 
+kapsamlı mühendislik ve üretim asistanıdır.
+
+ÖZELLİKLER:
+------------------------------------------------------------------------
+1. DERLEME (BUILD):
+   - OE0111, OE0112, OE0113 veya tümünü tek tıkla derler.
+   - Bootloader, partitions, ota_data ve firmware ikililerini 0x0000 
+     başlangıç adresli tek bir 'full_firmware_OExxxx.bin' dosyasında birleştirir.
+   - Çıktıları otomatik olarak 'Software/outputs/' altına arşivler.
+
+2. YAZILIM YÜKLEME (FLASH):
+   - Cihazın bağlı olduğu COM portu seçin.
+   - 921600 baud yüksek hızda 15-20 saniyede tam yazılım yüklemesi yapar.
+   - İster hazır derlenmiş model yazılımlarını, ister özel .bin dosyasını yükleyin.
+   - Çip hafızasını temizlemek için 'Çipi Tamamen Sil (Erase Flash)' fonksiyonu mevcuttur.
+
+3. CANLI SERİ MONİTÖR (UART LOG):
+   - 115200 baud ile cihazın açılış ve çalışma loglarını anlık görüntüler.
+   - Hızlı CLI butonları (OTA Info, Kullanıcılar, Masterlar, OSDP vb.).
+   - Donanımsal ESP32 Reset (DTR/RTS) desteği.
+   - Flash işlemi başladığında port çakışmasını önlemek için seri monitörü 
+     otomatik durdurur; flash tamamlandığında cihaz loglarını anında 
+     yakalamak için seri monitörü otomatik yeniden bağlar.
+
+========================================================================
+ONLOI AR-GE EKİBİ
+========================================================================

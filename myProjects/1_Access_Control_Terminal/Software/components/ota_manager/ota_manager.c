@@ -11,6 +11,7 @@
 #include "esp_timer.h"
 #include "mbedtls/sha256.h"
 #include "app_state_machine.h"
+#include "hal_shift_reg.h"
 
 static const char *TAG = "OTA_MGR";
 
@@ -190,6 +191,7 @@ static void ota_task(void *pvParameter) {
 
     // Initial DOWNLOADING status at 0%
     report_status(params->request_id, params->firmware_target, OTA_STATE_DOWNLOADING, 0, OTA_ERR_NONE, 0, params->firmware_version);
+    hal_shift_reg_set_ota_progress(0);
 
     bool download_success = false;
 
@@ -246,6 +248,8 @@ static void ota_task(void *pvParameter) {
         uint8_t pct = (total_expected > 0) ? (uint8_t)((bytes_transferred * 100ULL) / total_expected) : 0;
         if (pct > 100) pct = 100;
 
+        hal_shift_reg_set_ota_progress(pct);
+
         int64_t now = esp_timer_get_time() / 1000;
         if (pct >= last_reported_pct + 5 || (now - last_report_time > 2000 && pct != last_reported_pct)) {
             last_reported_pct = pct;
@@ -275,6 +279,7 @@ static void ota_task(void *pvParameter) {
     }
 
     // Step 47: State VERIFYING (0x03)
+    hal_shift_reg_set_ota_progress(100);
     report_status(params->request_id, params->firmware_target, OTA_STATE_VERIFYING, 100, OTA_ERR_NONE, bytes_transferred, params->firmware_version);
 
     // Verify SHA-256
@@ -337,6 +342,7 @@ static void ota_task(void *pvParameter) {
     esp_restart();
 
 cleanup_exit:
+    hal_shift_reg_stop_ota_progress();
     app_set_state(STATE_IDLE);
     if (params->url) {
         free(params->url);

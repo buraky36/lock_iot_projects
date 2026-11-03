@@ -1,6 +1,7 @@
 #include "app_state_machine.h"
 #include "ble_prov.h"
 #include "api_client.h"
+#include "osdp_pd.h"
 #include "esp_event.h"
 #include "hal_io.h"
 #include "hal_qr.h"
@@ -26,8 +27,8 @@
 // ============================================================
 #define FW_VERSION_MAJOR  2
 #define FW_VERSION_MINOR  0
-#define FW_VERSION_PATCH  1
-#define FW_VERSION_STR    "v2.0.1"
+#define FW_VERSION_PATCH  13
+#define FW_VERSION_STR    "v2.0.13"
 #define FW_BUILD_DATE     __DATE__
 #define FW_BUILD_TIME     __TIME__
 #define HW_BOARD_REVISION 1
@@ -42,10 +43,10 @@ uint8_t active_hw_version = COMPILE_HW_VERSION;
 bool has_hw_warning = false;
 
 uint16_t app_get_product_id(void) {
-    if (active_hw_version == HW_VERSION_PIN_QR) return 0x0110;
-    if (active_hw_version == HW_VERSION_PIN_RFID) return 0x0111;
-    if (active_hw_version == HW_VERSION_RFID_ONLY) return 0x0112;
-    return 0x0110;
+    if (active_hw_version == HW_VERSION_PIN_QR) return PRODUCT_ID_PIN_QR;
+    if (active_hw_version == HW_VERSION_PIN_RFID) return PRODUCT_ID_PIN_RFID;
+    if (active_hw_version == HW_VERSION_RFID_ONLY) return PRODUCT_ID_RFID_ONLY;
+    return PRODUCT_ID_PIN_QR;
 }
 
 uint8_t app_get_hardware_revision(void) {
@@ -64,7 +65,7 @@ static void app_generate_hw_info(void) {
     uint16_t mac_last_2 = (mac[4] << 8) | mac[5];
     
     if (active_hw_version == HW_VERSION_PIN_QR) {
-        strcpy(device_code_str, "OE0110");
+        strcpy(device_code_str, "OE0113");
     } else if (active_hw_version == HW_VERSION_PIN_RFID) {
         strcpy(device_code_str, "OE0111");
     } else if (active_hw_version == HW_VERSION_RFID_ONLY) {
@@ -89,10 +90,10 @@ static void serial_cli_task(void *pvParameters) {
         } else if (c == '\n' || c == '\r') {
             if (pos > 0) {
                 buf[pos] = '\0';
-                if (strcmp(buf, "buraky36_fab_reset") == 0) {
+                if (strcmp(buf, "onloi_fab_reset") == 0) {
                     printf("\n[CLI] Triggering Factory Reset via State Machine...\n");
                     app_set_state(STATE_FACTORY_RESET);
-                } else if (strcmp(buf, "buraky36_user_list_view") == 0) {
+                } else if (strcmp(buf, "onloi_user_list_view") == 0) {
                     printf("\n--- USER LIST ---\n");
                     int count = 0;
                     for (int i=1; i<=9988; i++) {
@@ -104,7 +105,7 @@ static void serial_cli_task(void *pvParameters) {
                     }
                     printf("Total Users: %d\n", count);
                     printf("--- END OF LIST ---\n");
-                } else if (strcmp(buf, "buraky36_master_list_view") == 0) {
+                } else if (strcmp(buf, "onloi_master_list_view") == 0) {
                     printf("\n--- MASTER LIST ---\n");
                     sys_config_t cfg;
                     nv_storage_get_config(&cfg);
@@ -113,7 +114,7 @@ static void serial_cli_task(void *pvParameters) {
                     }
                     printf("Total Masters: %d\n", cfg.master_card_count);
                     printf("--- END OF LIST ---\n");
-                } else if (strcmp(buf, "buraky36_ota_info") == 0) {
+                } else if (strcmp(buf, "onloi_ota_info") == 0) {
                     printf("\n--- FIRMWARE & HARDWARE INFO ---\n");
                     printf("Firmware Version: 0x%08lX (%s)\n", (unsigned long)app_get_firmware_version(), FW_VERSION_STR);
                     printf("Product ID      : 0x%04X (%s)\n", app_get_product_id(), device_code_str);
@@ -121,9 +122,15 @@ static void serial_cli_task(void *pvParameters) {
                     printf("Device Code     : %s\n", device_code_str);
                     printf("Sending unsolicited FIRMWARE_INFO (0x3A) via MQTT...\n");
                     api_client_send_firmware_info(0, 1);
-                } else if (strcmp(buf, "buraky36_ota_req") == 0) {
+                } else if (strcmp(buf, "onloi_ota_req") == 0) {
                     printf("\n[CLI] Sending FIRMWARE_UPDATE_REQUEST (0x38) via MQTT...\n");
                     api_client_send_firmware_update_request();
+                } else if (strcmp(buf, "onloi_osdp_info") == 0) {
+                    printf("\n--- OSDP PD STATUS ---\n");
+                    printf("Address : 0x%02X\n", osdp_pd_get_address());
+                    printf("Baudrate: %lu\n", (unsigned long)osdp_pd_get_baudrate());
+                    printf("Online  : %s\n", osdp_pd_is_online() ? "YES (ACU Polling)" : "NO");
+                    printf("----------------------\n");
                 }
                 pos = 0;
             }
@@ -147,39 +154,24 @@ void app_main(void) {
   hal_shift_reg_init(); // MUST be before touch and RFID due to RST pins
   nv_storage_init();
   
-  bool has_tsm12 = false;
-  if (active_hw_version != HW_VERSION_RFID_ONLY) {
-      has_tsm12 = hal_touch_init();
-  }
-  
-  // MFRC522 RST is driven by Shift Register U2 QG (MASK_U2_RFID_RST).
-  // After hal_shift_reg_init() all outputs are 0x00 → RST is LOW (active reset).
-  // The MFRC522 ignores SPI while RST is LOW, so we must release it first
-  // and wait at least 37µs (datasheet) before any SPI transaction.
+#if HW_HAS_KEYPAD
+  bool has_tsm12 = hal_touch_init();
+  if (!has_tsm12) { printf("WARNING: TSM12 (Keypad) did NOT respond!\n"); has_hw_warning = true; }
+#endif
+
+#if HW_HAS_RFID
   hal_shift_reg_set_rfid_rst(true);
   vTaskDelay(pdMS_TO_TICKS(50)); // 50ms: safe margin after hard reset release
+  bool has_mfrc522 = mfrc522_init();
+  if (!has_mfrc522) { printf("WARNING: MFRC522 (RFID) did NOT respond!\n"); has_hw_warning = true; }
+#endif
 
-  bool has_mfrc522 = false;
-  if (active_hw_version != HW_VERSION_PIN_QR) {
-      has_mfrc522 = mfrc522_init();
-  }
-
-  bool has_qr = false;
-  if (active_hw_version == HW_VERSION_PIN_QR) {
-      has_qr = hal_qr_init();
-  }
+#if HW_HAS_QR
+  bool has_qr = hal_qr_init();
+  if (!has_qr) { printf("WARNING: XR1300 (QR) did NOT respond!\n"); has_hw_warning = true; }
+#endif
 
   printf("FIRMWARE COMPILED FOR HARDWARE VERSION: %d\n", active_hw_version);
-  
-  if (active_hw_version == HW_VERSION_PIN_RFID) {
-      if (!has_tsm12) { printf("WARNING: TSM12 (Keypad) did NOT respond!\n"); has_hw_warning = true; }
-      if (!has_mfrc522) { printf("WARNING: MFRC522 (RFID) did NOT respond!\n"); has_hw_warning = true; }
-  } else if (active_hw_version == HW_VERSION_PIN_QR) {
-      if (!has_tsm12) { printf("WARNING: TSM12 (Keypad) did NOT respond!\n"); has_hw_warning = true; }
-      if (!has_qr) { printf("WARNING: XR1300 (QR) did NOT respond!\n"); has_hw_warning = true; }
-  } else if (active_hw_version == HW_VERSION_RFID_ONLY) {
-      if (!has_mfrc522) { printf("WARNING: MFRC522 (RFID) did NOT respond!\n"); has_hw_warning = true; }
-  }
 
   app_generate_hw_info();
 
@@ -252,50 +244,23 @@ void app_main(void) {
 #else
   // Logic initialization first to load config
   app_state_machine_init();
-  
-  uint8_t current_mode = app_get_working_mode();
-  bool mode_changed = false;
-  
-  if (active_hw_version == HW_VERSION_RFID_ONLY) {
-      if (current_mode != 3) {
-          printf("Enforcing Reader Mode for RFID-Only hardware.\n");
-          current_mode = 3;
-          mode_changed = true;
-      }
-      int in1_state = gpio_get_level(PIN_DIGITAL_IN1);
-      printf("RFID-Only Wiegand Output Format is set to: %d-bit (IN1 Level: %d)\n", (in1_state == 1) ? 34 : 26, in1_state);
-  } else if ((active_hw_version == HW_VERSION_PIN_RFID || active_hw_version == HW_VERSION_PIN_QR) && current_mode == 3) {
-      printf("Reader Mode not supported on PIN+RFID / PIN+QR hardware. Enforcing Standalone.\n");
-      current_mode = 1;
-      mode_changed = true;
-  }
-  
-  if (mode_changed) {
-      app_set_working_mode(current_mode);
-  }
 
-  if (current_mode != 3) {
-      // Network and BLE
-      wifi_manager_init();
-      ble_prov_init();
-      api_client_init();
-  } else {
-      printf("Wiegand Reader Mode Active: Wi-Fi and BLE are DISABLED for security and power saving.\n");
-  }
+  // Network, BLE and Cloud API are active on all variations
+  wifi_manager_init();
+  ble_prov_init();
+  api_client_init();
+  osdp_pd_init();
 
   xTaskCreate(serial_cli_task, "serial_cli", 4096, NULL, 5, NULL);
 
   // Main Super-Loop
   while (1) {
     // Run state machine tick which handles inputs, time and LED/Buzzer
-    // non-blocking io
     app_state_machine_tick();
     
-    if (current_mode != 3) {
-        wifi_manager_tick();
-        ble_prov_tick();
-        api_client_tick();
-    }
+    wifi_manager_tick();
+    ble_prov_tick();
+    api_client_tick();
 
     // Crucial for FreeRTOS: allow IDLE task to run and prevent WDT timeouts
     vTaskDelay(pdMS_TO_TICKS(10));

@@ -1,0 +1,143 @@
+24.10.2026 
+
+Yapılan İşler
+
+
+User Manual hazırlama
+
+Haklısınız, önceki listemde sadece son birkaç saat içinde yaptığımız V2.0.8 – V2.0.10 aralığındaki acil düzeltmelere odaklanmıştım. Bugün sabahtan itibaren gerçekleştirdiğimiz V2.0.6'dan V2.0.10'a kadar olan tüm sprint çalışmalarını (OSDP protokolü, RFID_ONLY varyasyonu, Offline QR hashleme, IN2 donanımsal reset el sıkışması vb. dahil) eksiksiz olarak çıkardım.
+
+Azure DevOps üzerinde proje altına açabileceğiniz tam ve eksiksiz iş listesi aşağıdadır:
+
+1. [Feature] RS-485 Donanım Sürücüsü ve OSDP v2.2 Protokol Entegrasyonu
+Work Item Type: Feature / Task
+Title: [OSDP] Implement RS-485 UART driver and OSDP v2.2 Peripheral Device (PD) Protocol Stack
+Süre: 4.5 Saat
+Durum: Completed (V2.0.6)
+Açıklama:
+Erişim kontrol terminalinin harici ACU (Access Control Unit) panellerine RS-485 üzerinden OSDP protokolüyle çevre birimi (PD) olarak bağlanabilmesi sağlandı.
+Yapılan İşler:
+components/osdp_pd bileşeni geliştirildi.
+GPIO 26 (TX), GPIO 34 (RX) ve GPIO 18 (RTS/DE Direction Enable) pinleriyle donanımsal Half-Duplex RS-485 UART2 sürücüsü kuruldu.
+OSDP v2.2 PD mesajlaşma standardı uygulandı: osdp_POLL, osdp_ID, osdp_CAP, osdp_OUT (Röle), osdp_LED, osdp_BUZ (Buzzer) ve osdp_COMSET (Baudrate/Adres) komutları işlendi.
+Okunan RFID kartlar, PIN tuşlamaları ve QR kodlar OSDP formatında (osdp_RAW, osdp_KPAD) anlık ACU paneline iletildi.
+NVS üzerinde OSDP adres, baudrate ve enable ayarları (osdp_config_t) kalıcı hale getirildi.
+2. [Feature] OE0112 (RFID_ONLY) Bağımsız Controller Varyasyonunun Eklenmesi
+Work Item Type: Feature / Task
+Title: [Hardware Variant] Add OE0112 RFID-Only standalone controller with boot-time Master Card enrollment
+Süre: 3.0 Saat
+Durum: Completed (V2.0.6)
+Açıklama:
+Tuş takımı ve QR okuyucusu olmayan, yalnızca 13.56MHz Mifare RFID içeren 3. donanım modeli (OE0112, Product ID: 0x0112) projeye kazandırıldı.
+Yapılan İşler:
+PlatformIO derleme ortamı (env:rfid_only) ve sdkconfig dosyaları izole edildi.
+#define HW_HAS_KEYPAD 0, #define HW_HAS_RFID 1, #define HW_BOOT_MASTER_ENROLL 1 koşullu derleme blokları eklendi.
+Tuş takımı olmadığı için cihaz açılışında ilk 10 saniyelik Master Kart Öğrenme Penceresi geliştirildi (10 adede kadar Master Kart hafızaya alınabilmektedir).
+Master Kart ile kullanıcı kartı ekleme ve silme döngüsü tuş takımı olmadan çalışır hale getirildi.
+3. [Feature] PIN+QR Cihazına Offline Master & Kullanıcı QR Yönetimi ve SHA-256 Hashleme
+Work Item Type: Feature / Task
+Title: [QR Engine] Implement offline Master/User QR enrollment with SHA-256 hashing for long tokens
+Süre: 3.5 Saat
+Durum: Completed (V2.0.6)
+Açıklama:
+PIN+QR (OE0110) modelinin internet bağlantısı olmadan yıllarca çalışabilmesi için QR kodlarla Master ve Kullanıcı yönetimi geliştirildi.
+Yapılan İşler:
+Menü üzerinden Master QR ekleme ve Kullanıcı QR ekleme/silme akışları kodlandı.
+31 karakteri aşan dinamik/uzun QR kodlar için mbedtls tabanlı SHA-256 (31 hex) özetleme algoritması entegre edildi.
+NVS bellek mimarisi (sys_config_t) eski V2.0.4/V2.0.5 saha cihazlarıyla %100 binary uyumlu tutuldu.
+4. [Task] IN2 Pini Üzerinden 12V El Sıkışmalı Donanımsal Fabrika Sıfırlama (Fail-Safe Reset)
+Work Item Type: Task
+Title: [Hardware Safety] Implement 10s 12V hold + 3s release fail-safe hardware factory reset via IN2
+Süre: 2.0 Saat
+Durum: Completed (V2.0.6)
+Açıklama:
+Tuş takımı olmayan RFID_ONLY modeli başta olmak üzere cihazın sahada fiziksel müdahale ile sıfırlanabilmesi için IN2 dijital girişine akıllı reset algoritması yazıldı.
+Yapılan İşler:
+Cihaz açıldıktan sonraki ilk 25 saniye içinde IN2 girişine 10 saniye boyunca kesintisiz 12V uygulanması şartı getirildi.
+10 saniye dolduğunda 3 saniyelik sarı LED + sesli uyarı penceresi açıldı.
+Kullanıcı 3 saniye içinde 12V bağlantısını keserse (Release Handshake) Fabrika Sıfırlama onaylandı. Kesilmezse (örneğin hatta sürekli 12V kalan arızalı kapı kontağı durumunda) işlem iptal edilerek kazaen sıfırlanmalar engellendi.
+5. [Task] Sistem Genelinde UART, BLE ve MQTT Debug Log Temizliği
+Work Item Type: Task
+Title: [Performance] Cleanup verbose debug logs across XR1300, BLE Prov, and MQTT packet handlers
+Süre: 1.5 Saat
+Durum: Completed (V2.0.6)
+Açıklama:
+Seri portu gereksiz meşgul eden, CPU yükü oluşturan ve bellek tüketimini artıran aşırı detaylı debug mesajları temizlendi.
+Yapılan İşler:
+BLE bildirim logları, MQTT per-packet hexdump logları, XR1300 UART ham karakter akışı ve 25 saniyelik periyodik heartbeat çıktıları yoruma alındı (// [V2.0.6 log cleanup]).
+6. [Bug] MQTT Komut Kuyruğunda Kalan Firmware Version Sorgusu & Keepalive Çözümü
+Work Item Type: Bug
+Title: [MQTT] Resolve queued cloud commands and delayed response via 20s Keepalive Session Start
+Süre: 2.5 Saat
+Durum: Resolved / Closed (V2.0.8)
+Açıklama:
+Mobil uygulamadan firmware versiyon sorgusu atıldığında cihazın cevap vermemesi veya ancak kapı açma gibi bir event sonrasında gecikmeli cevap verebilmesi sorunu çözüldü.
+Yapılan İşler:
+Terminalin şebeke beslemeli (12V mains-powered) olduğunu Onloi Cloud'a bildirmek üzere her 20 saniyede bir periyodik CMD_SESSION_START (0x30) keepalive paketi eklendi.
+Wi-Fi güç tasarrufu modu WIFI_PS_NONE yapılarak paket kaybı ve gecikmeler sıfırlandı.
+MQTT bağlantısı kurulduğu anda otomatik FIRMWARE_INFO (0x3A) gönderilerek app senkronizasyonu sağlandı.
+7. [Task] Tuş Takımı Programlama Menülerinin Sadeleştirilmesi ve 1-9 Sıralaması
+Work Item Type: Task
+Title: [Keypad Menu] Reorder programming menus from 1 to 9 and remove deprecated working modes
+Süre: 3.5 Saat
+Durum: Completed (V2.0.9)
+Açıklama:
+Menü 0 kaldırılarak kullanıcı deneyimi açısından menüler 1'den başlatıldı; kullanılmayan Controller/Reader çalışma modları temizlendi.
+Yapılan İşler:
+Menü 1: Master Kod, Menü 2: Master Kart/QR, Menü 3: Kullanıcı Ekle, Menü 4: Kullanıcı Sil, Menü 5: Geçiş Modu, Menü 6: Röle Süresi, Menü 7: Ses/LED, Menü 9: Fabrika Reset (99#) olarak güncellendi.
+Eski Menü 6 (working_mode) ve Menü 7 (door_open_detection) mantığı kaldırıldı; Wiegand girişleri ve dahili röle tüm modellerde kalıcı aktif edildi.
+NVS struct geriye dönük uyumluluğu korundu.
+8. [Task] Standby Modunda Yerel PIN Değişimine Online Güvenlik Koruması
+Work Item Type: Task
+Title: [Access Control] Block standby user PIN modification when device is configured in Online Mode
+Süre: 1.0 Saat
+Durum: Completed (V2.0.9)
+Açıklama:
+Cihaz bekleme modundayken (* -> UserID -> #) yapılan yerel PIN değişiminin online sunucu veri tabanı ile tutarsızlık yaratması önlendi.
+Yapılan İşler:
+config.is_online == true iken standby PIN değişim isteği reddedilerek 3 kısa hata bipi ve kırmızı LED uyarısı üretildi.
+9. [Bug] Yarıda Kesilen OTA Durumunda Mobil Uygulamanın İndirme Ekranında Asılı Kalması
+Work Item Type: Bug
+Title: [OTA] Implement interrupted OTA recovery on boot to release stuck mobile app download UI
+Süre: 2.5 Saat
+Durum: Resolved / Closed (V2.0.10)
+Açıklama:
+OTA indirme esnasında (%40'ta) elektrik kesildiğinde cihazın eski sürümden güvenle açılmasına rağmen mobil uygulamanın indirme ekranında kilitli kalması problemi giderildi.
+Yapılan İşler:
+OTA başlatıldığında iş bilgileri (requestId, target, target_version, deviceId) NVS'e yazıldı.
+Açılışta MQTT bağlandığında NVS'teki hedef sürüm ile mevcut sürüm karşılaştırıldı; uyuşmazlık halinde derhal FIRMWARE_STATUS (0x07 FAILED) ve ACK (0x04 FAILED) yollanarak mobil uygulamanın ekranı serbest bırakıldı.
+10. [Task] Sıfır / Fabrika Çıkışlı Cihazlar için Açılışta Yanlış OTA Algılama Koruması
+Work Item Type: Task
+Title: [Storage] Add magic word (0x4F544131) and hardware CRC32 validation for active OTA job record
+Süre: 1.5 Saat
+Durum: Completed (V2.0.10)
+Açıklama:
+Fabrikadan yeni çıkan veya hafızası silinmiş cihazların ilk açılışta rastgele flash baytları sebebiyle yanlışlıkla OTA kesintisi bildirmesi engellendi.
+Yapılan İşler:
+ota_job_record_t struct'ına OTA_JOB_MAGIC (0x4F544131 "OTA1") sihirli kelimesi ve bağımsız donanımsal CRC32 kontrolü eklendi.
+NVS anahtarı bulunmadığında, magic eşleşmediğinde veya CRC bozulduğunda fonksiyonun doğrudan false dönmesi garanti edildi.
+Tüm fabrika sıfırlama mekanizmalarında bu kaydın temizlenmesi sağlandı.
+11. [Task] Çoklu Varyasyon Otomatik Derleme, Çıktı Mimarisi (outputs/) ve OTA Dağıtımı
+Work Item Type: Task
+Title: [DevOps] Automated PlatformIO multi-target build script, hash generation, and outputs directory migration
+Süre: 2.0 Saat
+Durum: Completed (V2.0.10)
+Açıklama:
+Eski dağınık releases/ ve output/ yapısının modernize edilerek outputs/ altında tüm varyasyonların tek komutla otomatik derlenmesi ve paketlenmesi sağlandı.
+Yapılan İşler:
+build_all.py betiği güncellendi; pin_qr, pin_rfid, rfid_only varyasyonları için merged (0x0000) ve partition bazlı binary'ler oluşturuldu.
+V2.0.10 için her üç varyasyonun CRC32 ve SHA-256 değerleri hesaplanarak outputs/OTA_PARAMETRELERI_V2.0.10.txt oluşturuldu.
+⏱️ Günün Tam Efor ve Sprint Özeti
+#	Türü	Başlık	Tamamlanan Efor
+1	Feature	RS-485 Donanım Sürücüsü ve OSDP v2.2 PD Protokolü	4.5 saat
+2	Feature	OE0112 (RFID_ONLY) Varyasyonu & Açılış Master Kart Kaydı	3.0 saat
+3	Feature	PIN+QR Çevrimdışı (Offline) Master/User QR & SHA-256	3.5 saat
+4	Task	IN2 Girişi ile 12V Fail-Safe Donanımsal Fabrika Sıfırlama	2.0 saat
+5	Task	Sistem Genelinde UART, BLE ve MQTT Log Temizliği	1.5 saat
+6	Bug	MQTT Firmware Info Komut Kuyruğu & Keepalive Çözümü	2.5 saat
+7	Task	Menülerin Sadeleştirilmesi ve 1-9 Sıralaması	3.5 saat
+8	Task	Standby PIN Değişimine Online Güvenlik Koruması	1.0 saat
+9	Bug	Yarıda Kesilen OTA Açılış Kurtarma Algoritması	2.5 saat
+10	Task	Sıfır/Fabrika Çıkışlı Cihazlar için Magic & CRC32 Koruması	1.5 saat
+11	Task	Çoklu Varyasyon Otomatik Derleme & Dağıtım (DevOps)	2.0 saat
+TOPLAM		Access Control Terminal Tam Sprint Eforu	27.5 saat

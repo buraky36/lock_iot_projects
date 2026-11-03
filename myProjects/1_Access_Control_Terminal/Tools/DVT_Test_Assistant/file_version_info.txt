@@ -1,0 +1,32 @@
+# UTF-8
+#
+# For more details about fixed file info 'ffi' see:
+# http://msdn.microsoft.com/en-us/library/ms646997.aspx
+VSVersionInfo(
+  ffi=FixedFileInfo(
+    filevers=(1, 0, 0, 0),
+    prodvers=(1, 0, 0, 0),
+    mask=0x3f,
+    flags=0x0,
+    OS=0x40004,
+    fileType=0x1,
+    subtype=0x0,
+    date=(0, 0)
+    ),
+  kids=[
+    StringFileInfo(
+      [
+      StringTable(
+        '040904B0',
+        [StringStruct('CompanyName', 'ONLOI'),
+        StringStruct('FileDescription', 'Onloi Gecis Kontrol Terminali DVT Test Asistani'),
+        StringStruct('FileVersion', '1.0.0.0'),
+        StringStruct('InternalName', 'Onloi_DVT_Tester'),
+        StringStruct('LegalCopyright', 'Copyright (C) 2026 ONLOI. All rights reserved.'),
+        StringStruct('OriginalFilename', 'Onloi_DVT_Tester_v1.0.exe'),
+        StringStruct('ProductName', 'Onloi DVT Test Asistani'),
+        StringStruct('ProductVersion', '1.0.0.0')])
+      ]), 
+    VarFileInfo([VarStruct('Translation', [1033, 1200])])
+  ]
+)

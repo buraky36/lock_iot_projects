@@ -12,7 +12,11 @@ typedef enum {
     LED_COLOR_ORANGE,
     LED_COLOR_BLUE,
     LED_COLOR_YELLOW,
-    LED_COLOR_WHITE
+    LED_COLOR_WHITE,
+    LED_COLOR_LIME,
+    LED_COLOR_CYAN,
+    LED_COLOR_PURPLE,
+    LED_COLOR_MAGENTA
 } led_color_t;
 
 typedef enum {
@@ -43,6 +47,7 @@ void hal_io_buzzer_intro_sweep(void);
 // Dig Inputs
 bool hal_io_read_door_sensor(void);
 bool hal_io_read_exit_button(void);
+int hal_io_read_in2_raw(void);
 
 // LED
 void hal_io_led_set(led_color_t color, led_mode_t mode);

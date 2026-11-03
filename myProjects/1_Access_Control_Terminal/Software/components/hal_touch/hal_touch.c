@@ -1,7 +1,9 @@
 #include "hal_touch.h"
+#include "hw_config.h"
+
+#if HW_HAS_KEYPAD
 #include "tsm12.h"
 #include "hal_shift_reg.h"
-#include "hw_config.h"
 
 // Bit index 0-11 → character mapping, one table per hardware variant.
 // Bit:                                  0     1     2     3     4     5     6     7     8     9    10    11
@@ -54,3 +56,20 @@ bool hal_touch_read_key(char *key_out) {
     }
     return false;
 }
+
+#else
+
+bool hal_touch_init(void) {
+    return false;
+}
+
+void hal_touch_inject(char key) {
+    (void)key;
+}
+
+bool hal_touch_read_key(char *key_out) {
+    (void)key_out;
+    return false;
+}
+
+#endif

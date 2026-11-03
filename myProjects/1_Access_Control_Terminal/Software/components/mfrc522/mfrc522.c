@@ -1,3 +1,9 @@
+#ifndef HW_HAS_RFID
+#define HW_HAS_RFID 1
+#endif
+
+#if HW_HAS_RFID
+
 #include "mfrc522.h"
 #include "driver/gpio.h"
 #include "driver/spi_master.h"
@@ -276,6 +282,9 @@ void mfrc522_inject(uint32_t uid) {
 }
 
 bool mfrc522_check_card(uint32_t *uid) {
+  if (spi == NULL) {
+    return false;
+  }
   if (simulated_uid != 0) {
       if (uid) *uid = simulated_uid;
       simulated_uid = 0;
@@ -314,10 +323,16 @@ bool mfrc522_check_card(uint32_t *uid) {
     uint32_t current_uid = ((uint32_t)backData[3] << 24) | ((uint32_t)backData[2] << 16) |
                            ((uint32_t)backData[1] << 8) | (uint32_t)backData[0];
 
-    // Filter duplicates: if same card, wait 1 second before reporting again
-    // 1000ms cooldown
-    if (current_uid == last_uid && (now_ticks - last_scan_ticks < pdMS_TO_TICKS(1000))) {
-        return false;
+    // Filter rapid consecutive scans:
+    // 1) Any card: 2000ms cooldown
+    // 2) Same card: 3000ms cooldown
+    if (last_scan_ticks > 0) {
+        if (now_ticks - last_scan_ticks < pdMS_TO_TICKS(2000)) {
+            return false;
+        }
+        if (current_uid == last_uid && (now_ticks - last_scan_ticks < pdMS_TO_TICKS(3000))) {
+            return false;
+        }
     }
 
     last_uid = current_uid;
@@ -336,3 +351,22 @@ bool mfrc522_check_card(uint32_t *uid) {
 
   return false;
 }
+
+
+#else
+#include "mfrc522.h"
+
+bool mfrc522_init(void) {
+  return false;
+}
+
+bool mfrc522_check_card(uint32_t *uid) {
+  (void)uid;
+  return false;
+}
+
+void mfrc522_inject(uint32_t uid) {
+  (void)uid;
+}
+
+#endif

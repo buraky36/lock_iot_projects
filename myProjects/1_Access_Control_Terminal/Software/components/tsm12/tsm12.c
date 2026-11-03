@@ -1,3 +1,7 @@
+#include "hw_config.h"
+
+#if HW_HAS_KEYPAD
+
 #include "tsm12.h"
 #include "driver/gpio.h"
 #include "driver/i2c.h"
@@ -257,3 +261,18 @@ bool tsm12_read_keys(uint16_t *keys_mask) {
   }
   return false;
 }
+
+
+#else
+#include "tsm12.h"
+
+bool tsm12_init(void) {
+  return false;
+}
+
+bool tsm12_read_keys(uint16_t *keys_mask) {
+  (void)keys_mask;
+  return false;
+}
+
+#endif

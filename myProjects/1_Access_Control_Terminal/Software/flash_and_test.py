@@ -8,7 +8,7 @@ PORT = "COM11"
 BAUD = 115200
 ESPTOOL_PATH = r"C:\Users\gentek-ideapad\.platformio\packages\tool-esptoolpy\esptool.py"
 PYTHON_PATH = r"C:\Users\gentek-ideapad\.platformio\penv\Scripts\python.exe"
-BIN_PATH = os.path.join(os.path.dirname(__file__), "output", "OE0110_PIN_QR", "full_firmware_OE0110.bin")
+BIN_PATH = os.path.join(os.path.dirname(__file__), "outputs", "OE_0113_PIN_QR", "V2.0.12", "full_firmware_OE0113_PIN_QR_V2.0.12.bin")
 
 def wait_for_bootloader(timeout_sec=30):
     print(f"\n[1/3] ESP32 Bootloader Bekleniyor (COM4)...")
@@ -94,7 +94,7 @@ def run_monitor():
                         continue
                     if "WARNING" in text or "error" in text.lower():
                         print(f"[*] {text}")
-                    elif any(k in text for k in ["TSM12", "XR1300", "QR", "Key", "OE0110", "Relay", "Buzzer", "BLE Name"]):
+                    elif any(k in text for k in ["TSM12", "XR1300", "QR", "Key", "OE0113", "Relay", "Buzzer", "BLE Name"]):
                         print(f"[+] {text}")
                     else:
                         print(f"    {text}")
@@ -107,7 +107,7 @@ def run_monitor():
 
 def main():
     print("=" * 65)
-    print("  ACCESS CONTROL TERMINAL - OE0110 (QR + TUŞ TAKIMI) TEST  ")
+    print("  ACCESS CONTROL TERMINAL - OE0113 (QR + TUŞ TAKIMI) TEST  ")
     print("=" * 65)
     
     if not os.path.exists(BIN_PATH):

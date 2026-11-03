@@ -1,4 +1,5 @@
 #include "hal_shift_reg.h"
+#include "hal_io.h"
 #include "driver/gpio.h"
 #include "esp_timer.h" // For non-blocking timers
 #include "freertos/FreeRTOS.h"
@@ -14,6 +15,37 @@ static shift_reg_anim_t current_anim = ANIM_NONE;
 static uint32_t anim_step = 0;
 static int64_t next_anim_time_ms = 0;
 static uint8_t anim_key_index = 0;
+
+// OTA progress state tracking (1-2-3-4-5-6-7-8-9-0 simulating 0-100%)
+static uint8_t s_ota_pct = 0;
+static uint8_t s_ota_bracket = 0;
+static bool s_ota_blink_state = false;
+
+static const uint8_t s_ota_digits[10] = {
+    1,  // '1' (mask bit 0)
+    2,  // '2' (mask bit 1)
+    3,  // '3' (mask bit 2)
+    4,  // '4' (mask bit 3)
+    5,  // '5' (mask bit 4)
+    6,  // '6' (mask bit 5)
+    7,  // '7' (mask bit 6)
+    8,  // '8' (mask bit 7)
+    9,  // '9' (mask bit 8)
+    11  // '0' (mask bit 10)
+};
+
+static const led_color_t s_ota_bracket_colors[10] = {
+    LED_COLOR_RED,      // 0:  0-9%
+    LED_COLOR_ORANGE,   // 1: 10-19%
+    LED_COLOR_YELLOW,   // 2: 20-29%
+    LED_COLOR_LIME,     // 3: 30-39%
+    LED_COLOR_CYAN,     // 4: 40-49%
+    LED_COLOR_BLUE,     // 5: 50-59%
+    LED_COLOR_PURPLE,   // 6: 60-69%
+    LED_COLOR_MAGENTA,  // 7: 70-79%
+    LED_COLOR_WHITE,    // 8: 80-89%
+    LED_COLOR_GREEN     // 9: 90-100%
+};
 
 // Keypad activity tracking for the 20-second LED light-up window
 #define KEYPAD_ACTIVE_DURATION_MS 20000
@@ -349,6 +381,33 @@ void hal_shift_reg_tick(void) {
     }
     break;
 
+  case ANIM_OTA_PROGRESS: {
+    // Active digit blinks every 180ms to indicate download activity
+    if (now >= next_anim_time_ms) {
+      next_anim_time_ms = now + 180;
+      s_ota_blink_state = !s_ota_blink_state;
+
+      uint16_t mask = 0;
+      if (s_ota_pct >= 100) {
+        // At 100%, all 10 digits '1'..'0' are solid ON
+        for (int i = 0; i < 10; i++) {
+          mask |= (1 << (s_ota_digits[i] - 1));
+        }
+      } else {
+        // Completed previous brackets: solid ON
+        for (int i = 0; i < s_ota_bracket; i++) {
+          mask |= (1 << (s_ota_digits[i] - 1));
+        }
+        // Current bracket digit: blinks
+        if (s_ota_blink_state) {
+          mask |= (1 << (s_ota_digits[s_ota_bracket] - 1));
+        }
+      }
+      set_all_leds(mask);
+    }
+    break;
+  }
+
   default:
     current_anim = ANIM_NONE;
     break;
@@ -537,7 +596,8 @@ void hal_shift_reg_set_touch_mask(uint16_t mask) {
 }
 
 bool hal_shift_reg_is_blocking_anim_playing(void) {
-  return (current_anim == ANIM_SUCCESS_TICK || current_anim == ANIM_ERROR_FLASH || current_anim == ANIM_FACTORY_RESET);
+  return (current_anim == ANIM_SUCCESS_TICK || current_anim == ANIM_ERROR_FLASH ||
+          current_anim == ANIM_FACTORY_RESET || current_anim == ANIM_OTA_PROGRESS);
 }
 
 void hal_shift_reg_wakeup_keypad(void) {
@@ -547,5 +607,28 @@ void hal_shift_reg_wakeup_keypad(void) {
   if (!hal_shift_reg_is_blocking_anim_playing()) {
     current_anim = ANIM_NONE;
     set_all_leds(0xFFF);
+  }
+}
+
+void hal_shift_reg_set_ota_progress(uint8_t pct) {
+  if (pct > 100) pct = 100;
+  uint8_t bracket = pct / 10;
+  if (bracket > 9) bracket = 9;
+
+  bool changed_bracket = (current_anim != ANIM_OTA_PROGRESS || bracket != s_ota_bracket);
+  s_ota_pct = pct;
+  s_ota_bracket = bracket;
+  current_anim = ANIM_OTA_PROGRESS;
+  keypad_leds_forced_on = false; // Turn off normal 20s backlight window
+
+  if (changed_bracket) {
+    hal_io_led_set(s_ota_bracket_colors[bracket], LED_MODE_SOLID);
+  }
+}
+
+void hal_shift_reg_stop_ota_progress(void) {
+  if (current_anim == ANIM_OTA_PROGRESS) {
+    current_anim = ANIM_NONE;
+    set_all_leds(0);
   }
 }

@@ -1,7 +1,10 @@
+#include "hw_config.h"
+
+#if HW_HAS_QR
+
 #include "xr1300.h"
 #include "driver/gpio.h"
 #include "driver/uart.h"
-#include "hw_config.h"
 #include <string.h>
 #include "esp_timer.h"
 #include "esp_log.h"
@@ -54,15 +57,21 @@ static void xr1300_task(void *arg) {
 
       if (c_len > 0) {
         int64_t now_ms = esp_timer_get_time() / 1000;
-        // Suppress identical scan repetition within 1.5 seconds so camera doesn't flood server
-        if (strcmp(last_qr, clean_str) == 0 && (now_ms - last_qr_time_ms < 1500)) {
-          continue;
+        // Suppress rapid consecutive scans:
+        // 1) Any QR code: 2500ms cooldown
+        // 2) Identical QR code: 3000ms cooldown
+        if (last_qr_time_ms > 0) {
+          if (now_ms - last_qr_time_ms < 2500) {
+            continue;
+          }
+          if (strcmp(last_qr, clean_str) == 0 && (now_ms - last_qr_time_ms < 3000)) {
+            continue;
+          }
         }
 
         strncpy(last_qr, clean_str, sizeof(last_qr) - 1);
         last_qr_time_ms = now_ms;
 
-        printf("[QR XR1300] RAW Rx (%d bytes): %s\n", c_len, clean_str);
         xQueueSend(xr1300_event_queue, clean_str, 0);
       }
     }
@@ -106,7 +115,7 @@ bool xr1300_init(void) {
   printf("[QR XR1300] Init at 9600 baud (TX=GPIO%d, RX=GPIO%d) - Fast burst mode active\n",
          XR1300_TXD_PIN, XR1300_RXD_PIN);
 
-  xr1300_event_queue = xQueueCreate(5, 64);
+  xr1300_event_queue = xQueueCreate(1, 64);
 
   // Create real-time background task pinned to Core 0
   xTaskCreatePinnedToCore(xr1300_task, "xr1300_task", 4096, NULL, 5, &xr1300_task_handle, 0);
@@ -118,15 +127,32 @@ bool xr1300_init(void) {
 
 // Non-blocking poll from the queue
 bool xr1300_read_qr(char *qr_string_out, uint16_t max_len) {
-  if (!qr_string_out || max_len == 0)
+  if (!qr_string_out || max_len == 0 || xr1300_event_queue == NULL)
     return false;
 
   char temp[64];
   if (xQueueReceive(xr1300_event_queue, temp, 0) == pdTRUE) {
     strncpy(qr_string_out, temp, max_len - 1);
     qr_string_out[max_len - 1] = '\0';
+    xQueueReset(xr1300_event_queue);
     return true;
   }
 
   return false;
 }
+
+#else
+
+#include "xr1300.h"
+
+bool xr1300_init(void) {
+  return false;
+}
+
+bool xr1300_read_qr(char *qr_string_out, uint16_t max_len) {
+  (void)qr_string_out;
+  (void)max_len;
+  return false;
+}
+
+#endif
