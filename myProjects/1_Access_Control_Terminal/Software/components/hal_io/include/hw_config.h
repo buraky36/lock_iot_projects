@@ -4,12 +4,20 @@
 #include <stdint.h>
 
 // Hardware Versions (Compile / internal index)
+<<<<<<< HEAD
 #define HW_VERSION_PIN_QR     1  // OE0113
+=======
+#define HW_VERSION_PIN_QR     1  // OE0110
+>>>>>>> 4a69eb347e1374e942ceb39a745cf5a3b5c0352c
 #define HW_VERSION_PIN_RFID   2  // OE0111
 #define HW_VERSION_RFID_ONLY  3  // OE0112
 
 // Hardware Product Codes
+<<<<<<< HEAD
 #define PRODUCT_ID_PIN_QR     0x0113
+=======
+#define PRODUCT_ID_PIN_QR     0x0110
+>>>>>>> 4a69eb347e1374e942ceb39a745cf5a3b5c0352c
 #define PRODUCT_ID_PIN_RFID   0x0111
 #define PRODUCT_ID_RFID_ONLY  0x0112
 

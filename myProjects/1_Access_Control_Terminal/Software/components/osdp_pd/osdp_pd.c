@@ -215,11 +215,18 @@ static void osdp_handle_command(uint8_t cmd, const uint8_t *payload, size_t payl
             pdid[7] = mac[4];
             pdid[8] = mac[5];
 
+<<<<<<< HEAD
             // Firmware version (Major.Minor.Patch)
             uint32_t fw_v = app_get_firmware_version();
             pdid[9] = (uint8_t)((fw_v >> 16) & 0xFF);  // Major
             pdid[10] = (uint8_t)((fw_v >> 8) & 0xFF); // Minor
             pdid[11] = (uint8_t)(fw_v & 0xFF);         // Patch
+=======
+            // Firmware version: 2.0.9
+            pdid[9] = 2;  // Major
+            pdid[10] = 0; // Minor
+            pdid[11] = 9; // Build
+>>>>>>> 4a69eb347e1374e942ceb39a745cf5a3b5c0352c
             osdp_send_reply(seq, use_crc, REPLY_PDID, pdid, sizeof(pdid));
             break;
         }

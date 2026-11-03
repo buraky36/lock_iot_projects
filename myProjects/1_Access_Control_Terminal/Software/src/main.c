@@ -27,8 +27,13 @@
 // ============================================================
 #define FW_VERSION_MAJOR  2
 #define FW_VERSION_MINOR  0
+<<<<<<< HEAD
 #define FW_VERSION_PATCH  13
 #define FW_VERSION_STR    "v2.0.13"
+=======
+#define FW_VERSION_PATCH  10
+#define FW_VERSION_STR    "v2.0.10"
+>>>>>>> 4a69eb347e1374e942ceb39a745cf5a3b5c0352c
 #define FW_BUILD_DATE     __DATE__
 #define FW_BUILD_TIME     __TIME__
 #define HW_BOARD_REVISION 1
@@ -125,7 +130,11 @@ static void serial_cli_task(void *pvParameters) {
                 } else if (strcmp(buf, "onloi_ota_req") == 0) {
                     printf("\n[CLI] Sending FIRMWARE_UPDATE_REQUEST (0x38) via MQTT...\n");
                     api_client_send_firmware_update_request();
+<<<<<<< HEAD
                 } else if (strcmp(buf, "onloi_osdp_info") == 0) {
+=======
+                } else if (strcmp(buf, "buraky36_osdp_info") == 0) {
+>>>>>>> 4a69eb347e1374e942ceb39a745cf5a3b5c0352c
                     printf("\n--- OSDP PD STATUS ---\n");
                     printf("Address : 0x%02X\n", osdp_pd_get_address());
                     printf("Baudrate: %lu\n", (unsigned long)osdp_pd_get_baudrate());

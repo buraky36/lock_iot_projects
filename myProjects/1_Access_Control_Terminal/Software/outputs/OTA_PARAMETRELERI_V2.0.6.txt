@@ -1,0 +1,51 @@
+================================================================================
+ONLOI ACCESS CONTROL TERMINAL (OE SERIES) - V2.0.6 OTA PARAMETRELERİ
+================================================================================
+Tarih: 24 Ekim 2026
+Protokol: Onloi Smart Lock Protocol v2.18
+
+ÖNEMLİ NOT:
+OTA sunucusuna veya Onloi Cloud Paneline KESİNLİKLE "full_firmware_xxx.bin" 
+YÜKLENMEMELİDİR. Sadece "firmware.bin" (yaklaşık 1.2 MB) yüklenmelidir.
+"full_firmware_xxx.bin" dosyası (2.3 MB) yalnızca USB kablosu ve esptool ile 
+0x0 adresine ilk kurulum yapılırken kullanılır.
+
+--------------------------------------------------------------------------------
+1. OE_0110_PIN_QR (PIN + QR Kod Varyasyonu - Sahadaki Cihaz)
+--------------------------------------------------------------------------------
+Dosya Yolu     : outputs/OE_0110_PIN_QR/V2.0.6/firmware.bin
+Dosya Boyutu   : 1209232 bytes
+Versiyon (Hex) : 0x00020006
+Versiyon (Str) : V2.0.6
+Target         : 0x01 (UNIT1_ESP)
+Product ID     : 0x0110
+CRC-32 (Hex)   : 0x86814577
+CRC-32 (Dec)   : 2256618871
+SHA-256        : 0aa2c4927ed048a86ce292e77e678f0c0a4185ab85c06426466a481479c3141a
+
+--------------------------------------------------------------------------------
+2. OE_0111_PIN_RFID (PIN + RFID Varyasyonu)
+--------------------------------------------------------------------------------
+Dosya Yolu     : outputs/OE_0111_PIN_RFID/V2.0.6/firmware.bin
+Dosya Boyutu   : 1209216 bytes
+Versiyon (Hex) : 0x00020006
+Versiyon (Str) : V2.0.6
+Target         : 0x01 (UNIT1_ESP)
+Product ID     : 0x0111
+CRC-32 (Hex)   : 0x24CD1EB1
+CRC-32 (Dec)   : 617422513
+SHA-256        : 370da6c6a8b8cfb9b4264410479fabefbda5b513eb2e113b7bca23d4aaf00efc
+
+--------------------------------------------------------------------------------
+3. OE_0112_RFID_ONLY (Sadece RFID Controller Varyasyonu)
+--------------------------------------------------------------------------------
+Dosya Yolu     : outputs/OE_0112_RFID_ONLY/V2.0.6/firmware.bin
+Dosya Boyutu   : 1209216 bytes
+Versiyon (Hex) : 0x00020006
+Versiyon (Str) : V2.0.6
+Target         : 0x01 (UNIT1_ESP)
+Product ID     : 0x0112
+CRC-32 (Hex)   : 0x59BF4783
+CRC-32 (Dec)   : 1505707907
+SHA-256        : 97f429126e1bae59e9e102b94445f2e51fb7267f481e8a4517c364064200e884
+================================================================================
