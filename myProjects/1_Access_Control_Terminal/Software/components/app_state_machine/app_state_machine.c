@@ -136,10 +136,7 @@ typedef enum {
   PROG_STATE_BLOCK_ADD_CARD,       // Menu 5
   PROG_STATE_RELAY,                // Menu 6
   PROG_STATE_AUDIO_VISUAL,         // Menu 7
-<<<<<<< HEAD
   PROG_STATE_DEL_MASTER_CARD,      // Menu 8 - Master Card / Master QR Silme
-=======
->>>>>>> 4a69eb347e1374e942ceb39a745cf5a3b5c0352c
   PROG_STATE_FACTORY_RESET         // Menu 9 - Factory Reset (99#)
 } prog_substate_t;
 
@@ -555,15 +552,12 @@ void app_state_machine_tick(void) {
     if (current_state == STATE_IDLE) {
       ESP_LOGI(TAG, "Exit Button Pressed - Opening Door");
       app_trigger_door_open();
-<<<<<<< HEAD
     } else if (current_state == STATE_DOOR_OPEN && config.relay_time == 0) {
       ESP_LOGI(TAG, "Exit Button Pressed - Closing Door (Toggle mode)");
       relay_state = false;
       hal_io_relay_set(false);
       app_set_state(STATE_IDLE);
       hal_io_buzzer_beep(2700, 100, 2);
-=======
->>>>>>> 4a69eb347e1374e942ceb39a745cf5a3b5c0352c
     }
   }
 
@@ -788,11 +782,7 @@ void app_state_machine_tick(void) {
     }
 
     char raw_qr_str[128];
-<<<<<<< HEAD
     if (active_hw_version == HW_VERSION_PIN_QR && hal_qr_read(raw_qr_str, sizeof(raw_qr_str))) {
-=======
-    if (hal_qr_read(raw_qr_str, sizeof(raw_qr_str))) {
->>>>>>> 4a69eb347e1374e942ceb39a745cf5a3b5c0352c
       if (hal_shift_reg_is_blocking_anim_playing())
         break;
       hal_shift_reg_wakeup_keypad();
@@ -1102,11 +1092,7 @@ void app_state_machine_tick(void) {
     }
 
     char raw_qr_mode[128];
-<<<<<<< HEAD
     if (active_hw_version == HW_VERSION_PIN_QR && hal_qr_read(raw_qr_mode, sizeof(raw_qr_mode))) {
-=======
-    if (hal_qr_read(raw_qr_mode, sizeof(raw_qr_mode))) {
->>>>>>> 4a69eb347e1374e942ceb39a745cf5a3b5c0352c
       state_timer_start = esp_timer_get_time();
       hal_shift_reg_wakeup_keypad();
       char qr_str[32];
@@ -1223,13 +1209,10 @@ void app_state_machine_tick(void) {
         } else if (key == '7') {
           prog_state = PROG_STATE_AUDIO_VISUAL;
           ESP_LOGI(TAG, "Menu 7: Audio/Visual");
-<<<<<<< HEAD
           hal_io_buzzer_beep(2700, 50, 1);
         } else if (key == '8') {
           prog_state = PROG_STATE_DEL_MASTER_CARD;
           ESP_LOGI(TAG, "Menu 8: Delete Master Card/QR");
-=======
->>>>>>> 4a69eb347e1374e942ceb39a745cf5a3b5c0352c
           hal_io_buzzer_beep(2700, 50, 1);
         } else if (key == '9') {
           // Menu 9: Factory Reset (9 9 #)
@@ -1560,7 +1543,6 @@ void app_state_machine_tick(void) {
         } else if (key == '*') {
           prog_state = PROG_STATE_ROOT;
         }
-<<<<<<< HEAD
       } else if (prog_state == PROG_STATE_DEL_MASTER_CARD) {
         if (key == '#') {
           if (input_len == 0) {
@@ -1599,8 +1581,6 @@ void app_state_machine_tick(void) {
           input_buffer[input_len++] = key;
           hal_io_buzzer_beep(2700, 50, 1);
         }
-=======
->>>>>>> 4a69eb347e1374e942ceb39a745cf5a3b5c0352c
       } else {
         // Dynamic Configuration Menu Processing
         if (key == '#') {
@@ -1786,11 +1766,7 @@ void app_state_machine_tick(void) {
     }
 
     char raw_prog_qr[128];
-<<<<<<< HEAD
     if (active_hw_version == HW_VERSION_PIN_QR && hal_qr_read(raw_prog_qr, sizeof(raw_prog_qr))) {
-=======
-    if (hal_qr_read(raw_prog_qr, sizeof(raw_prog_qr))) {
->>>>>>> 4a69eb347e1374e942ceb39a745cf5a3b5c0352c
       state_timer_start = esp_timer_get_time();
       hal_shift_reg_wakeup_keypad();
       char qr_str[32];
@@ -2012,37 +1988,6 @@ void app_state_machine_tick(void) {
                 }
             }
         }
-<<<<<<< HEAD
-=======
-
-    char raw_door_qr[128];
-    if (hal_qr_read(raw_door_qr, sizeof(raw_door_qr))) {
-        char norm_door_qr[32];
-        app_normalize_qr_string(raw_door_qr, norm_door_qr, sizeof(norm_door_qr));
-        if (nv_storage_is_master_credential(norm_door_qr)) {
-            ESP_LOGI(TAG, "Master QR scanned during DOOR_OPEN. Entering Master Mode.");
-            hal_io_relay_set(false);
-            hal_shift_reg_play_anim(ANIM_MASTER_WAVE, 0);
-            app_set_state(STATE_MASTER_ADD_MODE);
-        } else {
-            user_record_t u_qr;
-            if (nv_storage_find_user_by_qr(norm_door_qr, &u_qr)) {
-                ESP_LOGI(TAG, "Valid QR scanned during DOOR_OPEN. Extending timer.");
-                hal_io_buzzer_beep(2700, 100, 2);
-                state_timer_start = esp_timer_get_time();
-            } else {
-                if (!config.is_online) {
-                    ESP_LOGW(TAG, "Invalid QR scanned during DOOR_OPEN.");
-                    hal_io_buzzer_beep(1000, 300, 3);
-                }
-            }
-        }
-    }
-
-    if (config.relay_time > 0 && elapsed_ms >= (config.relay_time * 1000)) {
-      hal_io_relay_set(false);
-      app_set_state(STATE_IDLE);
->>>>>>> 4a69eb347e1374e942ceb39a745cf5a3b5c0352c
     }
 
     char raw_door_qr[128];
