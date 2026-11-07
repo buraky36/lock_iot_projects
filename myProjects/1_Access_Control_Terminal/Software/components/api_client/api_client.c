@@ -8,9 +8,11 @@
 #include "esp_timer.h"
 #include "wifi_manager.h"
 #include "hw_config.h"
+#include "hal_io.h"
 #include "../app_state_machine/include/app_state_machine.h"
 #include "ota_manager.h"
 #include <string.h>
+#include <strings.h>
 #include <stdlib.h>
 #include <sys/time.h>
 
@@ -36,6 +38,7 @@ static const char *TAG = "API_CLIENT";
 #define CMD_QR_SCANNED 0x14
 #define CMD_LOCK_OPENED 0x10
 #define CMD_SESSION_START 0x30
+#define CMD_TELEMETRY 0x32
 #define CMD_REGISTRATION 0x34
 
 static esp_mqtt_client_handle_t mqtt_client = NULL;
@@ -47,6 +50,17 @@ static uint64_t time_offset_ms = 0;
 static uint32_t current_enroll_req_id = 0;
 static char s_ota_active_dev_id[64] = {0};
 static char s_current_cmd_dev_id[64] = {0};
+static uint16_t s_current_cmd_seq = 0;
+static bool s_is_remote_reset = false;
+
+// Command deduplication state
+static uint16_t s_last_handled_seq = 0xFFFF;
+static uint8_t  s_last_handled_cmd = 0xFF;
+static int64_t  s_last_handled_time_ms = 0;
+
+// Cloud orphan / deleted device detection state
+static int  s_unanswered_time_sync_count = 0;
+static bool s_ever_synced_time = false;
 
 static char topic_cmd[128];
 static char topic_reply[128];
@@ -54,6 +68,7 @@ static char topic_config[128];
 static char topic_lifecycle[128];
 static char topic_event[128];
 static char topic_ack[128];
+static char topic_telemetry[128];
 static int64_t s_last_session_keepalive = 0;
 
 static void generate_device_id(void) {
@@ -61,7 +76,8 @@ static void generate_device_id(void) {
         uint8_t mac[6];
         esp_read_mac(mac, ESP_MAC_BT);
         uint32_t low = ((uint32_t)mac[3] << 16) | ((uint32_t)mac[4] << 8) | mac[5];
-        snprintf(device_id_str, sizeof(device_id_str), "SMART_%06lX", (unsigned long)low);
+        const char *code = (strlen(device_code_str) > 0 && strcmp(device_code_str, "UNKNOWN") != 0) ? device_code_str : "OE0113";
+        snprintf(device_id_str, sizeof(device_id_str), "%.8s_%06lX", code, (unsigned long)low);
     }
 }
 
@@ -90,16 +106,22 @@ static uint16_t calculate_crc16(const uint8_t *data, size_t length) {
     return crc;
 }
 
-static void publish_mqtt_frame(uint8_t msg_type, uint8_t cmd, const uint8_t *payload, uint16_t payload_len, const char *topic, bool retain) {
-    if (!mqtt_connected || mqtt_client == NULL) return;
+static void publish_mqtt_frame_with_seq(uint8_t msg_type, uint8_t cmd, uint16_t forced_seq, const uint8_t *payload, uint16_t payload_len, const char *topic, bool retain) {
+    if (!mqtt_connected || mqtt_client == NULL || topic == NULL || strlen(topic) == 0) return;
 
-    uint8_t frame[512];
+    size_t total_len = 19 + payload_len;
+    uint8_t frame[256];
+    if (total_len > sizeof(frame)) {
+        ESP_LOGE(TAG, "MQTT frame too large (%zu bytes, max %zu)", total_len, sizeof(frame));
+        return;
+    }
+
     frame[0] = SOF_BYTE;
     frame[1] = VER_BYTE;
     frame[2] = msg_type;
     frame[3] = cmd;
 
-    uint16_t seq = mqtt_seq++;
+    uint16_t seq = (forced_seq != 0xFFFF) ? forced_seq : mqtt_seq++;
     frame[4] = (seq >> 8) & 0xFF;
     frame[5] = seq & 0xFF;
     frame[6] = (payload_len >> 8) & 0xFF;
@@ -123,12 +145,26 @@ static void publish_mqtt_frame(uint8_t msg_type, uint8_t cmd, const uint8_t *pay
     frame[17 + payload_len] = (crc >> 8) & 0xFF;
     frame[17 + payload_len + 1] = crc & 0xFF;
 
-    size_t total_len = 19 + payload_len;
     esp_mqtt_client_publish(mqtt_client, topic, (const char*)frame, total_len, 1, retain);
-    ESP_LOGI(TAG, "MQTT TX CMD: 0x%02X, Seq: %d, Len: %zu, Topic: %s", cmd, seq, total_len, topic);
+    ESP_LOGI(TAG, "MQTT TX CMD: 0x%02X, Seq: %u, Len: %zu, Topic: %s", cmd, seq, total_len, topic);
 }
 
-static void send_mqtt_ack_to(uint32_t requestId, uint8_t ackPhase, uint8_t cmdEcho, uint8_t detailCode, const char *alt_dev_id) {
+static void publish_mqtt_frame(uint8_t msg_type, uint8_t cmd, const uint8_t *payload, uint16_t payload_len, const char *topic, bool retain) {
+    publish_mqtt_frame_with_seq(msg_type, cmd, 0xFFFF, payload, payload_len, topic, retain);
+}
+
+static void publish_lifecycle_event(uint8_t cmd, const uint8_t *payload, uint16_t len, bool retain) {
+    publish_mqtt_frame(MSG_TYPE_EVENT, cmd, payload, len, topic_lifecycle, retain);
+}
+
+void api_client_send_telemetry(void) {
+    if (!mqtt_connected || mqtt_client == NULL) return;
+    uint8_t payload[1] = { 0x64 }; // 0x64 = 100% battery
+    publish_mqtt_frame(MSG_TYPE_EVENT, CMD_TELEMETRY, payload, 1, topic_telemetry, false);
+    ESP_LOGI(TAG, "Sent TELEMETRY (0x32, battery=100%%) to %s", topic_telemetry);
+}
+
+static void send_mqtt_ack_exact(uint16_t req_seq, uint32_t requestId, uint8_t ackPhase, uint8_t cmdEcho, uint8_t detailCode, const char *alt_dev_id) {
     uint8_t payload[7];
     payload[0] = (requestId >> 24) & 0xFF;
     payload[1] = (requestId >> 16) & 0xFF;
@@ -137,18 +173,37 @@ static void send_mqtt_ack_to(uint32_t requestId, uint8_t ackPhase, uint8_t cmdEc
     payload[4] = ackPhase;
     payload[5] = cmdEcho;
     payload[6] = detailCode;
-    publish_mqtt_frame(MSG_TYPE_ACK, CMD_ACK, payload, 7, topic_ack, false);
-    if (alt_dev_id != NULL && strlen(alt_dev_id) > 0) {
-        char alt_topic[128];
-        snprintf(alt_topic, sizeof(alt_topic), "onloi/v1/d/%s/ack", alt_dev_id);
-        if (strcmp(alt_topic, topic_ack) != 0) {
-            publish_mqtt_frame(MSG_TYPE_ACK, CMD_ACK, payload, 7, alt_topic, false);
-        }
+
+    // Header CMD field is cmdEcho (e.g. 0x59 for SERVER_DISCONNECT, 0x58 for WIFI_RESET, 0x40 for REMOTE_OPEN)
+    // per Sections 37.4, 37.5, 38.4, 38.5, and Step 22 of the protocol specification.
+    // For FACTORY_RESET (0x50), Section 39.3 allows CMD_ACK (0x05) or 0x50.
+    uint8_t header_cmd = (cmdEcho == CMD_FACTORY_RESET) ? CMD_ACK : cmdEcho;
+
+    // 1. Publish to main topic_ack (onloi/v1/d/{active_id}/ack)
+    publish_mqtt_frame_with_seq(MSG_TYPE_ACK, header_cmd, req_seq, payload, 7, topic_ack, false);
+
+    // 2. Also publish to uppercase ONLOI/V1/D/{active_id}/ACK
+    const char *active = get_cloud_device_id();
+    char up_ack[128];
+    snprintf(up_ack, sizeof(up_ack), "ONLOI/V1/D/%s/ACK", active);
+    publish_mqtt_frame_with_seq(MSG_TYPE_ACK, header_cmd, req_seq, payload, 7, up_ack, false);
+
+    // 3. If alt_dev_id is provided, also publish to both lowercase and uppercase alt ack topics
+    if (alt_dev_id != NULL && strlen(alt_dev_id) > 0 && strcmp(alt_dev_id, active) != 0) {
+        char alt_ack[128];
+        snprintf(alt_ack, sizeof(alt_ack), "onloi/v1/d/%s/ack", alt_dev_id);
+        publish_mqtt_frame_with_seq(MSG_TYPE_ACK, header_cmd, req_seq, payload, 7, alt_ack, false);
+        snprintf(alt_ack, sizeof(alt_ack), "ONLOI/V1/D/%s/ACK", alt_dev_id);
+        publish_mqtt_frame_with_seq(MSG_TYPE_ACK, header_cmd, req_seq, payload, 7, alt_ack, false);
     }
 }
 
+static void send_mqtt_ack_to(uint32_t requestId, uint8_t ackPhase, uint8_t cmdEcho, uint8_t detailCode, const char *alt_dev_id) {
+    send_mqtt_ack_exact(s_current_cmd_seq, requestId, ackPhase, cmdEcho, detailCode, alt_dev_id);
+}
+
 static void send_mqtt_ack(uint32_t requestId, uint8_t ackPhase, uint8_t cmdEcho, uint8_t detailCode) {
-    send_mqtt_ack_to(requestId, ackPhase, cmdEcho, detailCode, s_current_cmd_dev_id);
+    send_mqtt_ack_exact(s_current_cmd_seq, requestId, ackPhase, cmdEcho, detailCode, s_current_cmd_dev_id);
 }
 
 void api_client_send_firmware_status(uint32_t requestId, uint8_t target, uint8_t state, uint8_t progressPct, uint8_t errorCode, uint32_t bytesTransferred, uint32_t reportedVersion) {
@@ -289,14 +344,118 @@ static void api_client_on_ota_status(uint32_t request_id, uint8_t target, uint8_
     }
 }
 
-static void process_mqtt_message(const char *topic, size_t topic_len, const char *data, size_t data_len) {
-    if (data_len < 19) return;
-    const uint8_t *frame = (const uint8_t *)data;
-    if (frame[0] != SOF_BYTE || frame[1] != VER_BYTE) return;
+static bool is_topic_for_this_device(const char *topic_dev_id) {
+    if (topic_dev_id == NULL || strlen(topic_dev_id) == 0) return false;
 
-    uint16_t payload_len = (frame[6] << 8) | frame[7];
+    const char *active = get_cloud_device_id();
+    if (strcasecmp(topic_dev_id, active) == 0) return true;
+    if (strcasecmp(topic_dev_id, device_id_str) == 0) return true;
+    if (strlen(s_mqtt_cfg.client_id) > 0 && strcasecmp(topic_dev_id, s_mqtt_cfg.client_id) == 0) return true;
+
+    char smart_id[32];
+    uint8_t mac[6];
+    esp_read_mac(mac, ESP_MAC_BT);
+    uint32_t low = ((uint32_t)mac[3] << 16) | ((uint32_t)mac[4] << 8) | mac[5];
+    snprintf(smart_id, sizeof(smart_id), "SMART_%06lX", (unsigned long)low);
+    if (strcasecmp(topic_dev_id, smart_id) == 0) return true;
+
+    char raw_mac[16];
+    snprintf(raw_mac, sizeof(raw_mac), "%06lX", (unsigned long)low);
+    if (strcasecmp(topic_dev_id, raw_mac) == 0) return true;
+
+    return false;
+}
+
+static void execute_server_disconnect(const char *reason) {
+    ESP_LOGW(TAG, "=== [EXECUTE SERVER DISCONNECT] === Reason: %s", reason ? reason : "Unknown");
+    vTaskDelay(pdMS_TO_TICKS(500));
+    wifi_manager_clear_credentials();
+    nv_storage_clear_onloi_mqtt_config();
+    nv_storage_clear_active_ota_job();
+    s_ever_synced_time = false;
+    s_unanswered_time_sync_count = 0;
+    sys_config_t cfg;
+    nv_storage_get_config(&cfg);
+    cfg.is_online = false;
+    nv_storage_set_config(&cfg);
+    hal_io_led_set(LED_COLOR_ORANGE, LED_MODE_SOLID);
+    hal_io_buzzer_beep(2700, 300, 2);
+    vTaskDelay(pdMS_TO_TICKS(500));
+    ESP_LOGW(TAG, "SERVER_DISCONNECT complete. Restarting into BLE setup mode...");
+    esp_restart();
+}
+
+static void process_mqtt_message(const char *topic, size_t topic_len, const char *data, size_t data_len) {
+    if (data == NULL || data_len < 4) {
+        return;
+    }
+
+    const uint8_t *frame = (const uint8_t *)data;
+    if (frame[0] != SOF_BYTE || frame[1] != VER_BYTE) {
+        return;
+    }
+
+    if (data_len < 19) {
+        return;
+    }
+
     uint8_t msg_type = frame[2];
     uint8_t cmd = frame[3];
+    uint16_t req_seq = (frame[4] << 8) | frame[5];
+    uint16_t payload_len = (frame[6] << 8) | frame[7];
+
+    // Silently ignore our own echoes to keep log screen clean and avoid clutter
+    if (msg_type == MSG_TYPE_ACK || msg_type == MSG_TYPE_EVENT) {
+        return;
+    }
+
+    if (msg_type == MSG_TYPE_REQUEST && cmd == CMD_TIME_SYNC) {
+        return;
+    }
+
+    // Extract device ID from incoming topic if present (e.g. onloi/v1/d/{devId}/cmd or ONLOI/V1/D/{devId}/CMD)
+    char topic_dev_id[64] = {0};
+    if (topic && topic_len > 11 && strncasecmp(topic, "onloi/v1/d/", 11) == 0) {
+        const char *p = topic + 11;
+        size_t rem = topic_len - 11;
+        const char *slash = memchr(p, '/', rem);
+        if (slash && (size_t)(slash - p) < sizeof(topic_dev_id)) {
+            memcpy(topic_dev_id, p, slash - p);
+            topic_dev_id[slash - p] = '\0';
+        }
+    }
+
+    // Strictly ensure message is intended for this device
+    if (!is_topic_for_this_device(topic_dev_id)) {
+        return;
+    }
+
+    // Command Deduplication: ignore identical (cmd, req_seq) arriving within 1000ms
+    int64_t now_ms = esp_timer_get_time() / 1000;
+    if (cmd == s_last_handled_cmd && req_seq == s_last_handled_seq && (now_ms - s_last_handled_time_ms) < 1000) {
+        ESP_LOGW(TAG, "Duplicate command ignored: CMD=0x%02X, Seq=%u (within %lld ms)",
+                 cmd, req_seq, (long long)(now_ms - s_last_handled_time_ms));
+        return;
+    }
+    s_last_handled_seq = req_seq;
+    s_last_handled_cmd = cmd;
+    s_last_handled_time_ms = now_ms;
+
+    char safe_topic[128] = {0};
+    if (topic && topic_len > 0) {
+        size_t cplen = (topic_len < sizeof(safe_topic) - 1) ? topic_len : (sizeof(safe_topic) - 1);
+        memcpy(safe_topic, topic, cplen);
+        safe_topic[cplen] = '\0';
+    }
+
+    // Log genuine incoming COMMAND (0x04) or RESPONSE (0x02) packets with hexdump
+    ESP_LOGI(TAG, "=== [MQTT RX] === Topic='%s', CMD=0x%02X, MsgType=0x%02X, Seq=%u, PayLen=%u, DataLen=%zu",
+             safe_topic, cmd, msg_type, req_seq, payload_len, data_len);
+    ESP_LOG_BUFFER_HEXDUMP(TAG, data, data_len, ESP_LOG_INFO);
+
+    // Server communicated with us: reset unanswered sync counter and mark as synced
+    s_unanswered_time_sync_count = 0;
+    s_ever_synced_time = true;
 
     // Check minimum frame size (17 header + payload + 2 CRC = 19 + payload_len)
     size_t min_len = 19 + payload_len;
@@ -318,16 +477,9 @@ static void process_mqtt_message(const char *topic, size_t topic_len, const char
                  calc_all, calc_no_auth, received, cmd);
     }
 
-    // Extract device ID from incoming topic if present (e.g. onloi/v1/d/78356203936/cmd)
-    char topic_dev_id[64] = {0};
-    if (topic && strncmp(topic, "onloi/v1/d/", 11) == 0) {
-        const char *p = topic + 11;
-        const char *slash = strchr(p, '/');
-        if (slash && (size_t)(slash - p) < sizeof(topic_dev_id)) {
-            memcpy(topic_dev_id, p, slash - p);
-            topic_dev_id[slash - p] = '\0';
-        }
-    }
+    s_current_cmd_seq = req_seq;
+    strncpy(s_current_cmd_dev_id, topic_dev_id, sizeof(s_current_cmd_dev_id) - 1);
+    s_current_cmd_dev_id[sizeof(s_current_cmd_dev_id) - 1] = '\0';
 
     char reply_topic[128] = {0};
     if (strlen(topic_dev_id) > 0) {
@@ -336,11 +488,61 @@ static void process_mqtt_message(const char *topic, size_t topic_len, const char
         snprintf(reply_topic, sizeof(reply_topic), "%s", topic_reply);
     }
 
-    strncpy(s_current_cmd_dev_id, topic_dev_id, sizeof(s_current_cmd_dev_id) - 1);
-    s_current_cmd_dev_id[sizeof(s_current_cmd_dev_id) - 1] = '\0';
+    const uint8_t *payload = frame + 17;
+    uint32_t requestId = 0;
+    if (payload_len >= 4) {
+        requestId = (payload[0] << 24) | (payload[1] << 16) | (payload[2] << 8) | payload[3];
+    }
 
-    ESP_LOGI(TAG, "MQTT RX CMD: 0x%02X, MsgType: 0x%02X, PayloadLen: %d, DataLen: %zu, TopicDev: %s",
-             cmd, msg_type, payload_len, data_len, topic_dev_id);
+    // Specific handler for SERVER_DISCONNECT (0x59) — Step 38 of protocol specification
+    // Triggered when user deletes device from mobile app.
+    // Clears Wi-Fi credentials + MQTT config + is_online = false.
+    // PRESERVES local NVC users (PIN, NFC, FP, QR) and deviceCode!
+    // Process regardless of msg_type (0x01, 0x02, 0x04)
+    if (cmd == CMD_DISCONNECTED) {
+        ESP_LOGW(TAG, "SERVER_DISCONNECT (0x59) received! Req=0x%08lX, Seq=%u, TopicDev=%s",
+                 (unsigned long)requestId, req_seq, topic_dev_id);
+        // 1. Send ACK RECEIVED (phase 0x01, cmdEcho 0x59, matching req_seq)
+        send_mqtt_ack_exact(req_seq, requestId, 0x01, CMD_DISCONNECTED, 0x00, topic_dev_id);
+        // 2. Send ACK COMPLETED (phase 0x03, cmdEcho 0x59, matching req_seq)
+        send_mqtt_ack_exact(req_seq, requestId, 0x03, CMD_DISCONNECTED, 0x00, topic_dev_id);
+        // 3. Execute server disconnect common routine
+        execute_server_disconnect("Received CMD_DISCONNECTED (0x59) from cloud");
+        return;
+    }
+
+    // Specific handler for WIFI_RESET (0x58) — Step 37 of protocol specification
+    // Clears Wi-Fi credentials only. Keeps MQTT config and local NVC users.
+    // Process regardless of msg_type (0x01, 0x02, 0x04)
+    if (cmd == CMD_WIFI_RESET) {
+        ESP_LOGW(TAG, "WIFI_RESET (0x58) received! Req=0x%08lX, Seq=%u", (unsigned long)requestId, req_seq);
+        send_mqtt_ack_exact(req_seq, requestId, 0x01, CMD_WIFI_RESET, 0x00, topic_dev_id);
+        send_mqtt_ack_exact(req_seq, requestId, 0x03, CMD_WIFI_RESET, 0x00, topic_dev_id);
+        vTaskDelay(pdMS_TO_TICKS(500));
+        wifi_manager_clear_credentials();
+        sys_config_t cfg;
+        nv_storage_get_config(&cfg);
+        cfg.is_online = false;
+        nv_storage_set_config(&cfg);
+        hal_io_buzzer_beep(2700, 200, 2);
+        vTaskDelay(pdMS_TO_TICKS(500));
+        ESP_LOGW(TAG, "WIFI_RESET complete. Restarting into BLE setup mode...");
+        esp_restart();
+        return;
+    }
+
+    // Remote Factory Reset (0x50 or 0x73) — Step 39 of protocol specification
+    // Clears ALL data including NVC users.
+    // Process regardless of msg_type (0x01, 0x02, 0x04)
+    if (cmd == CMD_FACTORY_RESET || cmd == 0x73) {
+        ESP_LOGW(TAG, "Remote FACTORY_RESET (0x50) received! Req=0x%08lX, Seq=%u", (unsigned long)requestId, req_seq);
+        s_is_remote_reset = true;
+        send_mqtt_ack_exact(req_seq, requestId, 0x01, CMD_FACTORY_RESET, 0x00, topic_dev_id);
+        send_mqtt_ack_exact(req_seq, requestId, 0x03, CMD_FACTORY_RESET, 0x00, topic_dev_id);
+        vTaskDelay(pdMS_TO_TICKS(500));
+        app_set_state(STATE_FACTORY_RESET);
+        return;
+    }
 
     // Accept both COMMAND (0x04) and REQUEST (0x01)
     if (msg_type == MSG_TYPE_COMMAND || msg_type == MSG_TYPE_REQUEST) {
@@ -358,23 +560,6 @@ static void process_mqtt_message(const char *topic, size_t topic_len, const char
             send_mqtt_ack(requestId, 0x01, CMD_REMOTE_CLOSE, 0x00); // RECEIVED
             app_trigger_door_close();
             send_mqtt_ack(requestId, 0x03, CMD_REMOTE_CLOSE, 0x00); // COMPLETED
-        } else if (cmd == CMD_FACTORY_RESET) {
-            send_mqtt_ack(requestId, 0x01, CMD_FACTORY_RESET, 0x00);
-            send_mqtt_ack(requestId, 0x03, CMD_FACTORY_RESET, 0x00);
-            app_set_state(STATE_FACTORY_RESET);
-        } else if (cmd == CMD_WIFI_RESET) {
-            send_mqtt_ack(requestId, 0x01, CMD_WIFI_RESET, 0x00);
-            wifi_manager_clear_credentials();
-            send_mqtt_ack(requestId, 0x03, CMD_WIFI_RESET, 0x00);
-            vTaskDelay(pdMS_TO_TICKS(500));
-            esp_restart();
-        } else if (cmd == CMD_DISCONNECTED) {
-            send_mqtt_ack(requestId, 0x01, CMD_DISCONNECTED, 0x00);
-            wifi_manager_clear_credentials();
-            api_client_reset_claim_status();
-            send_mqtt_ack(requestId, 0x03, CMD_DISCONNECTED, 0x00);
-            vTaskDelay(pdMS_TO_TICKS(500));
-            esp_restart();
         } else if (cmd == CMD_NFC_ENROLL_START) {
             current_enroll_req_id = requestId;
             send_mqtt_ack(requestId, 0x01, CMD_NFC_ENROLL_START, 0x00); // RECEIVED
@@ -538,31 +723,19 @@ static void process_mqtt_message(const char *topic, size_t topic_len, const char
                 ESP_LOGE(TAG, "OTA Start command has no URL payload");
                 send_mqtt_ack(requestId, 0x03, CMD_OTA_START, 0x02); // Error
             }
-        } else {
+        } else if (msg_type == MSG_TYPE_COMMAND) {
             ESP_LOGW(TAG, "Unhandled MQTT Command 0x%02X, sending ACK to unblock server", cmd);
             send_mqtt_ack(requestId, 0x01, cmd, 0x00); // Send RECEIVED
             send_mqtt_ack(requestId, 0x03, cmd, 0x00); // Send COMPLETED to unblock
         }
     } else if (msg_type == MSG_TYPE_RESPONSE) {
-        if (cmd == CMD_OFFLINE_LOG_BATCH) {
-            if (payload_len >= 3) {
-                const uint8_t *payload = frame + 17;
-                uint16_t accepted = (payload[0] << 8) | payload[1];
-                uint8_t errCode = payload[2];
-                if (errCode == 0x00) {
-                    nv_storage_clear_offline_logs((uint8_t)accepted);
-                    ESP_LOGI(TAG, "Offline logs successfully uploaded: %d", accepted);
-                    
-                    uint8_t remaining = 0;
-                    nv_storage_get_offline_logs(NULL, &remaining);
-                    if (remaining > 0) {
-                        api_client_send_offline_logs();
-                    }
-                } else {
-                    ESP_LOGW(TAG, "Server rejected offline logs, err: %02X", errCode);
-                }
+        uint8_t status = frame[8]; // STATUS byte
+        if (cmd == CMD_TIME_SYNC) {
+            if (status != 0x00) {
+                ESP_LOGE(TAG, "TIME_SYNC returned error status 0x%02X! Device deleted/unauthorized.", status);
+                execute_server_disconnect("Server returned error status on TIME_SYNC");
+                return;
             }
-        } else if (cmd == CMD_TIME_SYNC) {
             if (payload_len >= 8) {
                 const uint8_t *payload = frame + 17;
                 uint64_t server_ts = 0;
@@ -574,7 +747,6 @@ static void process_mqtt_message(const char *topic, size_t topic_len, const char
                 ESP_LOGI(TAG, "Time synced! Offset: %llu ms, Server Time: %llu", time_offset_ms, server_ts);
             }
         } else if (cmd == CMD_PIN_ENTERED || cmd == CMD_NFC_SCANNED || cmd == CMD_QR_SCANNED) {
-            uint8_t status = frame[8]; // STATUS byte
             if (status == 0x00) {
                 ESP_LOGI(TAG, "Server Approved Access via CMD 0x%02X! Opening door...", cmd);
                 app_trigger_door_open();
@@ -590,37 +762,74 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     esp_mqtt_event_handle_t event = event_data;
     switch ((esp_mqtt_event_id_t)event_id) {
         case MQTT_EVENT_CONNECTED: {
+            s_unanswered_time_sync_count = 0;
             const char *active_id = get_cloud_device_id();
             ESP_LOGI(TAG, "MQTT Connected! Active Cloud DeviceId: %s", active_id);
             mqtt_connected = true;
-            esp_mqtt_client_subscribe(mqtt_client, topic_cmd, 1);
-            esp_mqtt_client_subscribe(mqtt_client, topic_reply, 1);
-            esp_mqtt_client_subscribe(mqtt_client, topic_config, 1);
 
-            // Also subscribe to hardware MAC ID if different from active_id
+            int mid;
+            // 1. Device specific topics (QoS 1) - Lowercase
+            mid = esp_mqtt_client_subscribe(mqtt_client, topic_cmd, 1);
+            ESP_LOGI(TAG, "SUB: '%s' (mid=%d)", topic_cmd, mid);
+            mid = esp_mqtt_client_subscribe(mqtt_client, topic_reply, 1);
+            ESP_LOGI(TAG, "SUB: '%s' (mid=%d)", topic_reply, mid);
+            mid = esp_mqtt_client_subscribe(mqtt_client, topic_config, 1);
+            ESP_LOGI(TAG, "SUB: '%s' (mid=%d)", topic_config, mid);
+
+            // 2. Protocol spec uppercase subscriptions (Sections 37.3, 38.3, 39.2)
+            char up_topic[128];
+            snprintf(up_topic, sizeof(up_topic), "ONLOI/V1/D/%s/CMD", active_id);
+            mid = esp_mqtt_client_subscribe(mqtt_client, up_topic, 1);
+            ESP_LOGI(TAG, "SUB: '%s' (mid=%d)", up_topic, mid);
+
+            snprintf(up_topic, sizeof(up_topic), "ONLOI/V1/D/%s/REPLY", active_id);
+            mid = esp_mqtt_client_subscribe(mqtt_client, up_topic, 1);
+            ESP_LOGI(TAG, "SUB: '%s' (mid=%d)", up_topic, mid);
+
+            snprintf(up_topic, sizeof(up_topic), "ONLOI/V1/D/%s/CONFIG", active_id);
+            mid = esp_mqtt_client_subscribe(mqtt_client, up_topic, 1);
+            ESP_LOGI(TAG, "SUB: '%s' (mid=%d)", up_topic, mid);
+
+            // 3. Hardware MAC ID if different from active_id
             if (strcmp(active_id, device_id_str) != 0) {
-                char alt_cmd[128], alt_reply[128], alt_config[128];
-                snprintf(alt_cmd, sizeof(alt_cmd), "onloi/v1/d/%s/cmd", device_id_str);
-                snprintf(alt_reply, sizeof(alt_reply), "onloi/v1/d/%s/reply", device_id_str);
-                snprintf(alt_config, sizeof(alt_config), "onloi/v1/d/%s/config", device_id_str);
-                esp_mqtt_client_subscribe(mqtt_client, alt_cmd, 1);
-                esp_mqtt_client_subscribe(mqtt_client, alt_reply, 1);
-                esp_mqtt_client_subscribe(mqtt_client, alt_config, 1);
-                ESP_LOGI(TAG, "Subscribed to dual topics: active=%s, hw=%s", active_id, device_id_str);
-            }
-            
-            // Send Lifecycle events
-            uint8_t reg_payload[3] = { (s_mqtt_cfg.session_epoch >> 8) & 0xFF, s_mqtt_cfg.session_epoch & 0xFF, 0x00 };
-            publish_mqtt_frame(MSG_TYPE_EVENT, CMD_REGISTRATION, reg_payload, 3, topic_lifecycle, true);
+                char alt_topic[128];
+                snprintf(alt_topic, sizeof(alt_topic), "onloi/v1/d/%s/cmd", device_id_str);
+                esp_mqtt_client_subscribe(mqtt_client, alt_topic, 1);
+                snprintf(alt_topic, sizeof(alt_topic), "ONLOI/V1/D/%s/CMD", device_id_str);
+                esp_mqtt_client_subscribe(mqtt_client, alt_topic, 1);
 
+                snprintf(alt_topic, sizeof(alt_topic), "onloi/v1/d/%s/reply", device_id_str);
+                esp_mqtt_client_subscribe(mqtt_client, alt_topic, 1);
+                snprintf(alt_topic, sizeof(alt_topic), "ONLOI/V1/D/%s/REPLY", device_id_str);
+                esp_mqtt_client_subscribe(mqtt_client, alt_topic, 1);
+
+                snprintf(alt_topic, sizeof(alt_topic), "onloi/v1/d/%s/config", device_id_str);
+                esp_mqtt_client_subscribe(mqtt_client, alt_topic, 1);
+                snprintf(alt_topic, sizeof(alt_topic), "ONLOI/V1/D/%s/CONFIG", device_id_str);
+                esp_mqtt_client_subscribe(mqtt_client, alt_topic, 1);
+            }
+
+            // NOTE: Wildcards ('#' and '+') are completely removed to prevent adopting foreign IDs
+            // and 3x duplicate command reception.
+
+            // 5-Step Battery Device Wake-up Sequence on connect:
+            // 1. REGISTRATION (0x34) -> onloi/v1/d/{deviceId}/lifecycle (retain=false)
+            uint8_t reg_payload[3] = { (s_mqtt_cfg.session_epoch >> 8) & 0xFF, s_mqtt_cfg.session_epoch & 0xFF, 0x00 };
+            publish_lifecycle_event(CMD_REGISTRATION, reg_payload, 3, false);
+
+            // 2. SESSION_START (0x30) -> onloi/v1/d/{deviceId}/lifecycle (wakeReason=0x01 [Button], battery=100%, flags=0x00)
             uint8_t sess_payload[3] = { 0x01, 100, 0x00 };
-            publish_mqtt_frame(MSG_TYPE_EVENT, CMD_SESSION_START, sess_payload, 3, topic_lifecycle, true);
+            publish_lifecycle_event(CMD_SESSION_START, sess_payload, 3, false);
             s_last_session_keepalive = esp_timer_get_time() / 1000;
             
+            // 3. TIME_SYNC (0x33) -> onloi/v1/d/{deviceId}/cmd (MSG_TYPE_REQUEST, payload len=0)
             api_client_send_get_time();
             
-            // Send unsolicited FIRMWARE_INFO (0x3A) with requestId = 0 on connect
+            // 4. FIRMWARE_INFO (0x3A) -> onloi/v1/d/{deviceId}/event (MSG_TYPE_EVENT, requestId=0)
             api_client_send_firmware_info(0, 1);
+
+            // 5. TELEMETRY (0x32) -> onloi/v1/d/{deviceId}/telemetry (MSG_TYPE_EVENT, payload={100})
+            api_client_send_telemetry();
 
             // Check for interrupted OTA update or pending OTA job verification across reboot/power-loss
             ota_job_record_t ota_job;
@@ -648,18 +857,30 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
                 }
                 nv_storage_clear_active_ota_job();
             }
-            
-            uint8_t offline_log_count = 0;
-            nv_storage_get_offline_logs(NULL, &offline_log_count);
-            if (offline_log_count > 0) {
-                api_client_send_offline_logs();
-            }
             break;
         }
+        case MQTT_EVENT_SUBSCRIBED:
+            ESP_LOGI(TAG, "MQTT SUBACK received! Subscribed successfully, msg_id=%d", event->msg_id);
+            break;
+        case MQTT_EVENT_ERROR:
+            ESP_LOGE(TAG, "MQTT ERROR event! msg_id=%d", event->msg_id);
+            if (event->error_handle) {
+                ESP_LOGE(TAG, "  -> Error type: %d", event->error_handle->error_type);
+                if (event->error_handle->error_type == MQTT_ERROR_TYPE_ESP_TLS) {
+                    ESP_LOGE(TAG, "  -> ESP-TLS last err: 0x%x, stack err: 0x%x",
+                             event->error_handle->esp_tls_last_esp_err,
+                             event->error_handle->esp_tls_stack_err);
+                } else if (event->error_handle->error_type == MQTT_ERROR_TYPE_CONNECTION_REFUSED) {
+                    ESP_LOGE(TAG, "  -> Connection refused code: 0x%x",
+                             event->error_handle->connect_return_code);
+                }
+            }
+            break;
         case MQTT_EVENT_DISCONNECTED:
             ESP_LOGI(TAG, "MQTT Disconnected.");
             mqtt_connected = false;
             s_last_session_keepalive = 0;
+            s_unanswered_time_sync_count = 0;
             break;
         case MQTT_EVENT_DATA:
             process_mqtt_message(event->topic, event->topic_len, event->data, event->data_len);
@@ -683,12 +904,29 @@ static void start_mqtt(void) {
     snprintf(topic_lifecycle, sizeof(topic_lifecycle), "onloi/v1/d/%s/lifecycle", active_id);
     snprintf(topic_event, sizeof(topic_event), "onloi/v1/d/%s/event", active_id);
     snprintf(topic_ack, sizeof(topic_ack), "onloi/v1/d/%s/ack", active_id);
+    snprintf(topic_telemetry, sizeof(topic_telemetry), "onloi/v1/d/%s/telemetry", active_id);
 
     if (strlen(s_mqtt_cfg.client_id) == 0) {
         snprintf(s_mqtt_cfg.client_id, sizeof(s_mqtt_cfg.client_id), "onloi_d_%s", active_id);
     }
 
     bool use_tls = (s_mqtt_cfg.flags & 0x01) || (s_mqtt_cfg.port == 8883);
+
+    // Requirement 4: Giriş Bilgilerini (Credentials) Net Logla
+    char secret_hex[65] = {0};
+    for (int i = 0; i < 32; i++) {
+        sprintf(secret_hex + (i * 2), "%02X", s_mqtt_cfg.device_secret[i]);
+    }
+    ESP_LOGW(TAG, "================ [MQTT CREDENTIALS DUMP] ================");
+    ESP_LOGW(TAG, "Host     : %s", s_mqtt_cfg.host);
+    ESP_LOGW(TAG, "Port     : %d (TLS=%d)", s_mqtt_cfg.port, use_tls);
+    ESP_LOGW(TAG, "ClientId : %s", s_mqtt_cfg.client_id);
+    ESP_LOGW(TAG, "Username : %s", s_mqtt_cfg.username);
+    ESP_LOGW(TAG, "Password : %s", s_mqtt_cfg.password);
+    ESP_LOGW(TAG, "Secret   : %s", secret_hex);
+    ESP_LOGW(TAG, "Epoch    : %u", s_mqtt_cfg.session_epoch);
+    ESP_LOGW(TAG, "ActiveId : %s (HW=%s)", active_id, device_id_str);
+    ESP_LOGW(TAG, "=========================================================");
 
     esp_mqtt_client_config_t mqtt_cfg = {
         .broker.address.hostname = s_mqtt_cfg.host,
@@ -698,17 +936,16 @@ static void start_mqtt(void) {
         .credentials.client_id = s_mqtt_cfg.client_id,
         .credentials.username = s_mqtt_cfg.username,
         .credentials.authentication.password = s_mqtt_cfg.password,
-        .session.disable_clean_session = 1,
-        .session.keepalive = 30,
+        .session.disable_clean_session = 0, // Clean Session = 1 to discard stale subscriptions
+        .session.keepalive = 60,
         .session.last_will.topic = topic_lifecycle,
         .session.last_will.msg = "",
         .session.last_will.msg_len = 0,
         .session.last_will.qos = 1,
-        .session.last_will.retain = 1
+        .session.last_will.retain = 1,
+        .task.stack_size = 8192
     };
 
-    ESP_LOGI(TAG, "Starting MQTT: Host: %s, Port: %d, TLS: %d, ClientId: %s, User: %s, ActiveId: %s",
-             s_mqtt_cfg.host, s_mqtt_cfg.port, use_tls, s_mqtt_cfg.client_id, s_mqtt_cfg.username, active_id);
     mqtt_client = esp_mqtt_client_init(&mqtt_cfg);
     esp_mqtt_client_register_event(mqtt_client, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
     esp_mqtt_client_start(mqtt_client);
@@ -724,7 +961,14 @@ void api_client_reload_config(void) {
     if (nv_storage_get_onloi_mqtt_config(&s_mqtt_cfg) && s_mqtt_cfg.is_claimed) {
         ESP_LOGI(TAG, "Cloud config reloaded: Host=%s, Port=%d, TLS=%d",
                  s_mqtt_cfg.host, s_mqtt_cfg.port, (s_mqtt_cfg.flags & 0x01));
-        if (wifi_manager_is_connected() && mqtt_client == NULL) {
+        if (mqtt_client != NULL) {
+            ESP_LOGI(TAG, "Stopping previous MQTT client to apply reloaded config...");
+            esp_mqtt_client_stop(mqtt_client);
+            esp_mqtt_client_destroy(mqtt_client);
+            mqtt_client = NULL;
+            mqtt_connected = false;
+        }
+        if (wifi_manager_is_connected()) {
             start_mqtt();
         }
     }
@@ -739,6 +983,8 @@ void api_client_reset_claim_status(void) {
     s_mqtt_cfg.is_claimed = false;
     memset(&s_mqtt_cfg, 0, sizeof(s_mqtt_cfg));
     mqtt_connected = false;
+    s_ever_synced_time = false;
+    s_unanswered_time_sync_count = 0;
     nv_storage_clear_onloi_mqtt_config();
     nv_storage_clear_active_ota_job();
     ESP_LOGI(TAG, "Cloud config reset. Ready for new provision.");
@@ -748,7 +994,7 @@ void api_client_tick(void) {
     static int64_t last_check = 0;
     int64_t now = esp_timer_get_time() / 1000;
 
-    if (now - last_check > 5000) {
+    if (now - last_check > 1500) {
         last_check = now;
         if (wifi_manager_is_connected()) {
             if (!s_mqtt_cfg.is_claimed) {
@@ -762,19 +1008,57 @@ void api_client_tick(void) {
         }
     }
 
-    // Periodic SESSION_START keepalive for 12V mains-powered terminals
-    // Every 20 seconds, report active session so Onloi Cloud never puts the device to sleep
-    // and never buffers/queues incoming app commands (e.g. GET_FIRMWARE_INFO 0x5C or REMOTE_OPEN 0x40).
+    // Periodic wake-up simulation for battery lock simulation
+    // Every 15 seconds, simulate button wake-up so Onloi Cloud immediately flushes queued management commands
+    // (such as SERVER_DISCONNECT 0x59, WIFI_RESET 0x58, FACTORY_RESET 0x50, REMOTE_OPEN 0x40, or GET_FIRMWARE_INFO 0x5C).
     if (mqtt_connected && mqtt_client != NULL && !ota_manager_is_running()) {
         if (s_last_session_keepalive == 0) {
             s_last_session_keepalive = now;
-        } else if (now - s_last_session_keepalive > 20000) {
-            s_last_session_keepalive = now;
-            // 0x02 = Timer/Keepalive wake reason, 100% battery (12V wired terminal), 0x00 = flags
-            uint8_t sess_payload[3] = { 0x02, 100, 0x00 };
-            publish_mqtt_frame(MSG_TYPE_EVENT, CMD_SESSION_START, sess_payload, 3, topic_lifecycle, false);
+        } else if (now - s_last_session_keepalive >= 15000) {
+            // Check for orphan / deleted device condition:
+            // If device was previously talking to the cloud (s_ever_synced_time == true)
+            // but now 2 consecutive TIME_SYNC requests (~30 seconds) received no reply while connected to MQTT,
+            // the backend has deleted the device from the database!
+            if (s_ever_synced_time && s_unanswered_time_sync_count >= 2) {
+                ESP_LOGW(TAG, "Server stopped responding to TIME_SYNC (%d consecutive timeouts while MQTT connected). Device was deleted from App/Cloud! Triggering disconnect...",
+                         s_unanswered_time_sync_count);
+                execute_server_disconnect("Cloud stopped responding to TIME_SYNC (Device Deleted)");
+                return;
+            }
+            api_client_send_session_keepalive();
         }
     }
+}
+
+void api_client_send_session_start(uint8_t wake_reason) {
+    if (!mqtt_connected || mqtt_client == NULL || ota_manager_is_running()) return;
+    s_last_session_keepalive = esp_timer_get_time() / 1000;
+    // wakeReason: 0x01 = physical button / user wake, 0x02 = timer
+    // 100% battery (12V wired terminal), 0x00 = flags
+    uint8_t sess_payload[3] = { wake_reason, 100, 0x00 };
+    publish_lifecycle_event(CMD_SESSION_START, sess_payload, 3, false);
+    ESP_LOGI(TAG, "Sent SESSION_START (wakeReason: 0x%02X) to %s", wake_reason, topic_lifecycle);
+}
+
+void api_client_send_session_keepalive(void) {
+    if (!mqtt_connected || mqtt_client == NULL || ota_manager_is_running()) return;
+    s_last_session_keepalive = esp_timer_get_time() / 1000;
+
+    // 1. CMD_REGISTRATION (0x34) -> onloi/v1/d/{active_id}/lifecycle (retain=false)
+    uint8_t reg_payload[3] = { (s_mqtt_cfg.session_epoch >> 8) & 0xFF, s_mqtt_cfg.session_epoch & 0xFF, 0x00 };
+    publish_mqtt_frame(MSG_TYPE_EVENT, CMD_REGISTRATION, reg_payload, 3, topic_lifecycle, false);
+
+    // 2. CMD_SESSION_START (0x30) -> onloi/v1/d/{active_id}/lifecycle (retain=false)
+    uint8_t sess_payload[3] = { 0x01, 100, 0x00 };
+    publish_mqtt_frame(MSG_TYPE_EVENT, CMD_SESSION_START, sess_payload, 3, topic_lifecycle, false);
+
+    // 3. CMD_TIME_SYNC (0x33) -> onloi/v1/d/{active_id}/cmd
+    api_client_send_get_time();
+
+    // 4. CMD_TELEMETRY (0x32) -> onloi/v1/d/{active_id}/telemetry
+    api_client_send_telemetry();
+
+    ESP_LOGI(TAG, "Sent periodic wake-up sequence: 0x34 -> 0x30 -> 0x33 -> 0x32");
 }
 
 int api_client_send_pass_event(const char* data_val) {
@@ -782,6 +1066,9 @@ int api_client_send_pass_event(const char* data_val) {
         ESP_LOGW(TAG, "Failed to send MQTT Event! Code: -1");
         return -1;
     }
+
+    // Ensure SESSION_START (0x30, wakeReason=0x01) precedes credential transmission
+    api_client_send_session_start(0x01);
 
     uint8_t cmd = 0;
     const char *payload_data = NULL;
@@ -878,6 +1165,8 @@ void api_client_send_nfc_enrolled_event(uint32_t card_id) {
 
 int api_client_send_get_time(void) {
     if (!mqtt_connected) return -1;
+    s_unanswered_time_sync_count++;
+    ESP_LOGI(TAG, "Sending TIME_SYNC request (unanswered_sync_count=%d)", s_unanswered_time_sync_count);
     publish_mqtt_frame(MSG_TYPE_REQUEST, CMD_TIME_SYNC, NULL, 0, topic_cmd, false);
     return 200;
 }
@@ -900,44 +1189,13 @@ void api_client_send_lock_opened_event(void) {
 }
 
 void api_client_send_local_factory_reset_event(void) {
-    if (!mqtt_connected) return;
-    publish_mqtt_frame(MSG_TYPE_EVENT, CMD_LOCAL_FACTORY_RESET, NULL, 0, topic_event, true);
-    ESP_LOGI(TAG, "Published LOCAL_FACTORY_RESET event.");
+    if (!mqtt_connected || s_is_remote_reset) return;
+    uint8_t payload[1] = { 0x01 }; // 0x01 = tuş kombinasyonu / yerel müdahale
+    publish_lifecycle_event(CMD_LOCAL_FACTORY_RESET, payload, 1, false);
+    ESP_LOGI(TAG, "Published LOCAL_FACTORY_RESET event to %s", topic_lifecycle);
 }
 
 void api_client_send_offline_logs(void) {
-    if (!mqtt_connected) return;
-    uint8_t count = 0;
-    nv_storage_get_offline_logs(NULL, &count);
-    if (count == 0) return;
-    
-    offline_log_t *logs = malloc(count * sizeof(offline_log_t));
-    if (!logs) return;
-    nv_storage_get_offline_logs(logs, &count);
-    
-    size_t payload_len = 1 + (count * 12);
-    uint8_t *payload = malloc(payload_len);
-    if (!payload) {
-        free(logs);
-        return;
-    }
-    
-    payload[0] = count;
-    for (int i=0; i<count; i++) {
-        uint8_t *entry = &payload[1 + (i * 12)];
-        uint64_t ts = logs[i].timestamp;
-        for (int j=0; j<8; j++) {
-            entry[j] = (ts >> (56 - (j * 8))) & 0xFF;
-        }
-        entry[8] = logs[i].accessMethod;
-        entry[9] = (logs[i].localId >> 8) & 0xFF;
-        entry[10] = logs[i].localId & 0xFF;
-        entry[11] = logs[i].result;
-    }
-    
-    publish_mqtt_frame(MSG_TYPE_EVENT, CMD_OFFLINE_LOG_BATCH, payload, payload_len, topic_event, true);
-    ESP_LOGI(TAG, "Published OFFLINE_LOG_BATCH event with %d logs.", count);
-    
-    free(payload);
-    free(logs);
+    // Per system specification, offline logs are never sent to cloud;
+    // they are cleared upon switching to Online mode.
 }

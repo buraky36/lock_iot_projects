@@ -38,6 +38,7 @@ void nv_storage_init(void) {
     // Ensure default config exists
     sys_config_t conf;
     nv_storage_get_config(&conf);
+    nv_storage_set_config(&conf);
     nv_storage_set_hw_version(active_hw_version);
 
     // Load or rebuild active users map
@@ -162,16 +163,25 @@ void nv_storage_get_config(sys_config_t *config) {
     config->led_always_on = true;
     config->reserved_mode = 0;
     config->reserved_door_det = 0;
-    config->reserved_0 = 34;
+    config->reserved_0 = 26;
     config->reserved_1 = 4;
-    config->reserved_2 = true;
+    config->reserved_2 = false;
 
     nvs_handle_t handle;
-    if (nvs_open(NAMESPACE_CFG, NVS_READONLY, &handle) == ESP_OK) {
+    if (nvs_open(NAMESPACE_CFG, NVS_READWRITE, &handle) == ESP_OK) {
         size_t size = sizeof(sys_config_t);
         // Load only if size exactly matches
         if (nvs_get_blob(handle, "sys", config, &size) != ESP_OK) {
-            ESP_LOGW(TAG, "Failed reading config, using defaults");
+            ESP_LOGW(TAG, "Config not found in NVS, saving defaults");
+            nvs_set_blob(handle, "sys", config, sizeof(sys_config_t));
+            nvs_commit(handle);
+        } else if (config->reserved_2 == true) {
+            // One-time migration from legacy default (34-bit) to new default (26-bit) after OTA
+            config->reserved_0 = 26;
+            config->reserved_2 = false;
+            nvs_set_blob(handle, "sys", config, sizeof(sys_config_t));
+            nvs_commit(handle);
+            ESP_LOGI(TAG, "Migrated NVS Wiegand/RFID default format to 26-bit");
         }
         nvs_close(handle);
     }

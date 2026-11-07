@@ -1,0 +1,47 @@
+================================================================================
+ONLOI ACCESS CONTROL TERMINAL - FIRMWARE V2.0.5 OTA BİLGİLERİ
+================================================================================
+Tarih: 23.10.2026
+Sürüm: v2.0.5 (Hex: 0x00020005)
+
+ÖNEMLİ: OTA güncellemesi için sunucuya yüklenecek ve MQTT 0x53 paketine yazılacak 
+dosya saf "firmware.bin" dosyasıdır (full_firmware değildir!).
+
+--------------------------------------------------------------------------------
+1. MODEL BİLGİLERİ VE CHECKSUM DEĞERLERİ
+--------------------------------------------------------------------------------
+
+A) OE0110_PIN_QR (Varsayılan - PIN + Tuş Takımı + QR Okuyucu):
+   - Product ID    : 0x0110
+   - HW Revision   : 0x01
+   - Versiyon Hex  : 0x00020005 (v2.0.5)
+   - Dosya Boyutu  : 1,205,024 byte (0x00126320) -> MQTT plainFwLength alanına bu yazılmalıdır!
+   - SHA-256       : f2e0931bc9407dc2df40288ba4c6469543546f487e5510ca4bd049ed3e2e32bb
+   - CRC-32        : 0xE7FBA75C
+   - Dosya Yolu    : output\OE0110_PIN_QR\firmware.bin (veya output\firmware.bin)
+
+B) OE0111_PIN_RFID (PIN + Tuş Takımı + Dahili RFID/MFRC522):
+   - Product ID    : 0x0111
+   - HW Revision   : 0x01
+   - Versiyon Hex  : 0x00020005 (v2.0.5)
+   - Dosya Boyutu  : 1,205,008 byte (0x00126310)
+   - SHA-256       : 9c7c05bf695fcd8cbf28fb93c96e979897f8c0888d67c03d97dc2676ed4503c9
+   - CRC-32        : 0xE3C97A61
+   - Dosya Yolu    : output\OE0111_PIN_RFID\firmware.bin
+
+C) OE0112_RFID_ONLY (Sadece RFID / Wiegand):
+   - Product ID    : 0x0112
+   - HW Revision   : 0x01
+   - Versiyon Hex  : 0x00020005 (v2.0.5)
+   - Dosya Boyutu  : 1,205,008 byte (0x00126310)
+   - SHA-256       : ed0a9017066f79bf9f5b39e1c4a288fb6a5075b90b9511f9b2532ce234ad1ca7
+   - CRC-32        : 0xFC7FB691
+   - Dosya Yolu    : output\OE0112_RFID_ONLY\firmware.bin
+
+--------------------------------------------------------------------------------
+2. PAKET VE DOSYA KONUMLARI
+--------------------------------------------------------------------------------
+- Proje Ana Dizini Zip : OE_Series_SW_V2.0.5.zip
+- Output Klasörü      : output\
+- Releases Klasörü    : releases\V2.0.5\
+================================================================================

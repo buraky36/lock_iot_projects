@@ -1,5 +1,6 @@
 #include "ble_prov.h"
 #include "../hal_io/include/hw_config.h"
+#include "hal_io.h"
 #include "esp_log.h"
 #include "esp_mac.h"
 #include "esp_system.h"
@@ -15,6 +16,7 @@
 #include "services/gatt/ble_svc_gatt.h"
 #include "wifi_manager.h"
 #include "../api_client/include/api_client.h"
+#include "app_state_machine.h"
 #include <string.h>
 #include <sys/time.h>
 
@@ -41,6 +43,8 @@ static bool s_pending_scan_response = false;
 static uint16_t s_pending_scan_seq = 0;
 static bool s_should_stop_ble = false;
 static uint32_t s_stop_ble_time = 0;
+static bool s_ble_advertising_enabled = false;
+static bool s_ble_initialized = false;
 static int64_t s_last_ble_activity_time_ms = 0;
 #define BLE_CONN_IDLE_TIMEOUT_MS 10000 // 10 seconds timeout for inactive BLE connections
 
@@ -79,7 +83,7 @@ static void send_ble_response(uint8_t cmd, uint16_t seq, uint8_t status, const u
     }
 
     if (payload_len > 490) payload_len = 490; // Protect against large payloads
-    uint8_t resp[512];
+    static uint8_t resp[512];
     resp[0] = SOF_BYTE;
     resp[1] = VER_BYTE;
     resp[2] = MSG_TYPE_RESPONSE;
@@ -118,7 +122,38 @@ static void send_ble_response(uint8_t cmd, uint16_t seq, uint8_t status, const u
 
 static void handle_ble_command(uint8_t cmd, uint16_t seq, const uint8_t *payload, uint16_t payload_len) {
     s_last_ble_activity_time_ms = esp_timer_get_time() / 1000;
-    // ESP_LOGI(TAG, "BLE Command 0x%02X Seq %d", cmd, seq); // [V2.0.6 log cleanup]
+
+    static sys_config_t sys_cfg;
+    nv_storage_get_config(&sys_cfg);
+
+    // 1. Allow UNCLAIM / DISCONNECT / RESET commands even if online/claimed
+    if (cmd == 0x73 || cmd == 0x59 || cmd == 0x50) {
+        ESP_LOGW(TAG, "BLE Reset/Unclaim command 0x%02X received! Unpairing device...", cmd);
+        uint8_t ok_res = 0x00;
+        send_ble_response(cmd, seq, 0x00, &ok_res, 1);
+        vTaskDelay(pdMS_TO_TICKS(150));
+        
+        s_ble_advertising_enabled = true;
+        // Clear Wi-Fi credentials
+        wifi_manager_clear_credentials();
+        // Clear MQTT credentials in NVS
+        nv_storage_clear_onloi_mqtt_config();
+        nv_storage_clear_active_ota_job();
+        // Set is_online = false (preserving local PIN/NFC users if 0x73/0x59, or wiping if 0x50)
+        sys_cfg.is_online = false;
+        if (cmd == 0x50) {
+            app_set_state(STATE_FACTORY_RESET);
+            return;
+        }
+        nv_storage_set_config(&sys_cfg);
+        // Feedback & restart into unclaimed BLE setup mode
+        hal_io_led_set(LED_COLOR_ORANGE, LED_MODE_SOLID);
+        hal_io_buzzer_beep(2700, 300, 2);
+        vTaskDelay(pdMS_TO_TICKS(500));
+        esp_restart();
+        return;
+    }
+
     switch (cmd) {
         case CMD_HANDSHAKE: {
             uint8_t resp_payload[24] = {0};
@@ -215,7 +250,8 @@ static void handle_ble_command(uint8_t cmd, uint16_t seq, const uint8_t *payload
             uint16_t session_epoch = (payload[off] << 8) | payload[off + 1];
             off += 2;
 
-            onloi_mqtt_config_t cfg = {0};
+            static onloi_mqtt_config_t cfg;
+            memset(&cfg, 0, sizeof(cfg));
             strncpy(cfg.host, host, sizeof(cfg.host) - 1);
             cfg.port = port;
             strncpy(cfg.client_id, client_id, sizeof(cfg.client_id) - 1);
@@ -265,8 +301,7 @@ static void handle_ble_command(uint8_t cmd, uint16_t seq, const uint8_t *payload
                     if (success) {
                         uint8_t result = 0x00;
                         send_ble_response(CMD_CONNECT_WIFI, seq, 0x00, &result, 1);
-                        s_should_stop_ble = true;
-                        s_stop_ble_time = xTaskGetTickCount() + pdMS_TO_TICKS(1500);
+                        // Do not terminate BLE prematurely here; wifi_manager_tick will call ble_prov_stop() once IP is acquired.
                     } else {
                         uint8_t result = 0x01;
                         send_ble_response(CMD_CONNECT_WIFI, seq, 0x00, &result, 1);
@@ -374,12 +409,23 @@ static int ble_gap_event(struct ble_gap_event *event, void *arg) {
             conn_handle = BLE_HS_CONN_HANDLE_NONE;
             ble_rx_len = 0;
             s_pending_scan_response = false;
-            struct ble_gap_adv_params adv_params;
-            memset(&adv_params, 0, sizeof(adv_params));
-            adv_params.conn_mode = BLE_GAP_CONN_MODE_UND;
-            adv_params.disc_mode = BLE_GAP_DISC_MODE_GEN;
-            ble_gap_adv_start(nimble_port_own_addr_type, NULL, BLE_HS_FOREVER,
-                              &adv_params, ble_gap_event, NULL);
+            {
+                static sys_config_t config;
+                nv_storage_get_config(&config);
+                if (config.is_online || !s_ble_advertising_enabled) {
+                    s_ble_advertising_enabled = false;
+                    ESP_LOGI(TAG, "Device is in ONLINE mode (enabled=%d). BLE advertising will NOT restart.", s_ble_advertising_enabled);
+                } else {
+                    static struct ble_gap_adv_params adv_params;
+                    memset(&adv_params, 0, sizeof(adv_params));
+                    adv_params.conn_mode = BLE_GAP_CONN_MODE_UND;
+                    adv_params.disc_mode = BLE_GAP_DISC_MODE_GEN;
+                    adv_params.itvl_min = 160; // 100 ms (160 * 0.625ms) - frees 2.4GHz RF for Wi-Fi coexistence
+                    adv_params.itvl_max = 240; // 150 ms (240 * 0.625ms)
+                    ble_gap_adv_start(nimble_port_own_addr_type, NULL, BLE_HS_FOREVER,
+                                      &adv_params, ble_gap_event, NULL);
+                }
+            }
             break;
     }
     return 0;
@@ -389,15 +435,28 @@ static void ble_app_on_sync(void) {
     ESP_LOGI(TAG, "BLE synced");
     ble_hs_id_infer_auto(0, &nimble_port_own_addr_type);
 
-    struct ble_gap_adv_params adv_params;
+    static sys_config_t config;
+    nv_storage_get_config(&config);
+    if (config.is_online || !s_ble_advertising_enabled) {
+        s_ble_advertising_enabled = false;
+        ESP_LOGI(TAG, "Device is in ONLINE mode. BLE advertising is disabled.");
+        ble_gap_adv_stop();
+        return;
+    }
+
+    static struct ble_gap_adv_params adv_params;
     memset(&adv_params, 0, sizeof(adv_params));
     adv_params.conn_mode = BLE_GAP_CONN_MODE_UND;
     adv_params.disc_mode = BLE_GAP_DISC_MODE_GEN;
+    adv_params.itvl_min = 160; // 100 ms - frees 2.4GHz RF for Wi-Fi coexistence
+    adv_params.itvl_max = 240; // 150 ms
 
-    struct ble_hs_adv_fields fields;
+    static struct ble_hs_adv_fields fields;
     memset(&fields, 0, sizeof(fields));
     fields.flags = BLE_HS_ADV_F_DISC_GEN | BLE_HS_ADV_F_BREDR_UNSUP;
-    fields.uuids128 = (ble_uuid128_t[]){gatt_svr_svc_uuid};
+    static ble_uuid128_t svc_uuid_copy;
+    svc_uuid_copy = gatt_svr_svc_uuid;
+    fields.uuids128 = &svc_uuid_copy;
     fields.num_uuids128 = 1;
     fields.uuids128_is_complete = 1;
     
@@ -406,19 +465,27 @@ static void ble_app_on_sync(void) {
     svc_data[0] = 0xF0; // FFF0 (Little Endian)
     svc_data[1] = 0xFF;
     memcpy(&svc_data[2], device_code_str, 6);
-    
     fields.svc_data_uuid16 = svc_data;
     fields.svc_data_uuid16_len = 8;
-    
     ble_gap_adv_set_fields(&fields);
 
-    struct ble_hs_adv_fields scanned_fields;
+    static struct ble_hs_adv_fields scanned_fields;
     memset(&scanned_fields, 0, sizeof(scanned_fields));
     scanned_fields.name = (uint8_t *)ble_name_str;
     scanned_fields.name_len = strlen(ble_name_str);
     scanned_fields.name_is_complete = 1;
+
+    // Manufacturer Data (Section 11.7): "OK" (2B) + deviceCode (6B) + claimed (1B: 0x00=unclaimed)
+    static uint8_t mfg_data[9];
+    mfg_data[0] = 0x4F; // 'O'
+    mfg_data[1] = 0x4B; // 'K'
+    memcpy(&mfg_data[2], device_code_str, 6);
+    mfg_data[8] = 0x00; // unclaimed setup mode
+    scanned_fields.mfg_data = mfg_data;
+    scanned_fields.mfg_data_len = 9;
     ble_gap_adv_rsp_set_fields(&scanned_fields);
 
+    ESP_LOGI(TAG, "BLE Advertising started (unclaimed, name=%s)", ble_name_str);
     ble_gap_adv_start(nimble_port_own_addr_type, NULL, BLE_HS_FOREVER,
                       &adv_params, ble_gap_event, NULL);
 }
@@ -432,12 +499,23 @@ static void ble_host_task(void *param) {
 void ble_prov_init(void) {
     ESP_LOGI(TAG, "Initializing BLE Provisioning");
 
+    static sys_config_t cfg;
+    nv_storage_get_config(&cfg);
+    s_ble_advertising_enabled = !cfg.is_online;
+    if (cfg.is_online) {
+        ESP_LOGI(TAG, "Device is in ONLINE mode at boot. Skipping NimBLE init to save ~45KB heap RAM.");
+        s_ble_initialized = false;
+        return;
+    }
+    ESP_LOGI(TAG, "BLE initial state: is_online=%d, advertising_enabled=%d", cfg.is_online, s_ble_advertising_enabled);
+
     uint8_t mac[6];
     esp_read_mac(mac, ESP_MAC_BT);
     uint32_t low = ((uint32_t)mac[3] << 16) | ((uint32_t)mac[4] << 8) | mac[5];
-    snprintf(device_id_str, sizeof(device_id_str), "SMART_%06lX", (unsigned long)low);
+    const char *code = (strlen(device_code_str) > 0 && strcmp(device_code_str, "UNKNOWN") != 0) ? device_code_str : "OE0113";
+    snprintf(device_id_str, sizeof(device_id_str), "%.8s_%06lX", code, (unsigned long)low);
 
-    ESP_LOGI(TAG, "Using BLE Name: %s", ble_name_str);
+    ESP_LOGI(TAG, "Using BLE Name: %s, DeviceID: %s", ble_name_str, device_id_str);
 
     nimble_port_init();
     
@@ -452,9 +530,11 @@ void ble_prov_init(void) {
     if (rc != 0) ESP_LOGE(TAG, "ble_svc_gap_device_name_set failed: %d", rc);
     
     nimble_port_freertos_init(ble_host_task);
+    s_ble_initialized = true;
 }
 
 void ble_prov_tick(void) {
+    if (!s_ble_initialized) return;
     int64_t now_ms = esp_timer_get_time() / 1000;
 
     // Disconnect if idle for longer than BLE_CONN_IDLE_TIMEOUT_MS (10s)
@@ -472,7 +552,7 @@ void ble_prov_tick(void) {
     if (s_pending_scan_response && wifi_manager_is_scan_done()) {
         uint16_t ap_count = wifi_manager_get_ap_count();
         uint8_t count = (ap_count > 10) ? 10 : ap_count;
-        uint8_t scan_payload[512];
+        static uint8_t scan_payload[512];
         scan_payload[0] = 0;
         size_t offset = 1;
         uint8_t added_count = 0;
@@ -502,7 +582,28 @@ void ble_prov_tick(void) {
     }
 
     if (s_should_stop_ble && xTaskGetTickCount() >= s_stop_ble_time) {
-        ESP_LOGI(TAG, "Restarting device after successful provisioning...");
-        esp_restart();
+        s_should_stop_ble = false;
+        ESP_LOGI(TAG, "Provisioning finished, updating BLE advertisement and disconnecting setup client...");
+        ble_prov_stop();
+    }
+}
+
+void ble_prov_stop(void) {
+    s_ble_advertising_enabled = false;
+    s_should_stop_ble = false;
+    if (!s_ble_initialized) {
+        return;
+    }
+    ESP_LOGI(TAG, "Device is online. Terminating BLE setup client, stopping advertising & freeing BLE RAM...");
+    if (conn_handle != BLE_HS_CONN_HANDLE_NONE) {
+        ble_gap_terminate(conn_handle, BLE_ERR_REM_USER_CONN_TERM);
+        conn_handle = BLE_HS_CONN_HANDLE_NONE;
+    }
+    ble_gap_adv_stop();
+    int rc = nimble_port_stop();
+    if (rc == 0) {
+        nimble_port_deinit();
+        s_ble_initialized = false;
+        ESP_LOGI(TAG, "NimBLE stack deinitialized and RAM freed.");
     }
 }

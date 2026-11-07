@@ -27,8 +27,8 @@
 // ============================================================
 #define FW_VERSION_MAJOR  2
 #define FW_VERSION_MINOR  0
-#define FW_VERSION_PATCH  13
-#define FW_VERSION_STR    "v2.0.13"
+#define FW_VERSION_PATCH  26
+#define FW_VERSION_STR    "v2.0.26"
 #define FW_BUILD_DATE     __DATE__
 #define FW_BUILD_TIME     __TIME__
 #define HW_BOARD_REVISION 1
@@ -93,6 +93,18 @@ static void serial_cli_task(void *pvParameters) {
                 if (strcmp(buf, "onloi_fab_reset") == 0) {
                     printf("\n[CLI] Triggering Factory Reset via State Machine...\n");
                     app_set_state(STATE_FACTORY_RESET);
+                } else if (strcmp(buf, "onloi_unclaim") == 0) {
+                    printf("\n[CLI] Unclaiming device (Clearing Wi-Fi & MQTT credentials, keeping local users)...\n");
+                    wifi_manager_clear_credentials();
+                    nv_storage_clear_onloi_mqtt_config();
+                    nv_storage_clear_active_ota_job();
+                    sys_config_t cfg;
+                    nv_storage_get_config(&cfg);
+                    cfg.is_online = false;
+                    nv_storage_set_config(&cfg);
+                    hal_io_buzzer_beep(2700, 300, 2);
+                    vTaskDelay(pdMS_TO_TICKS(500));
+                    esp_restart();
                 } else if (strcmp(buf, "onloi_user_list_view") == 0) {
                     printf("\n--- USER LIST ---\n");
                     int count = 0;
@@ -131,6 +143,31 @@ static void serial_cli_task(void *pvParameters) {
                     printf("Baudrate: %lu\n", (unsigned long)osdp_pd_get_baudrate());
                     printf("Online  : %s\n", osdp_pd_is_online() ? "YES (ACU Polling)" : "NO");
                     printf("----------------------\n");
+                } else if (strcmp(buf, "onloi_wg_debug") == 0) {
+                    printf("\n=== WIEGAND HARDWARE AND ISR DIAGNOSTICS ===\n");
+                    printf("GPIO 22 (D0) Level    : %d (Idle must be 1)\n", gpio_get_level(PIN_WIEGAND_D0));
+                    printf("GPIO 23 (D1) Level    : %d (Idle must be 1)\n", gpio_get_level(PIN_WIEGAND_D1));
+                    printf("ShiftReg U2 WIEGAND_EN: %s\n", hal_shift_reg_get_wiegand_en() ? "ENABLED (1)" : "DISABLED (0) - FAULT!");
+                    printf("Total D0 Pulses (ISR) : %lu\n", (unsigned long)hal_wiegand_get_d0_pulses());
+                    printf("Total D1 Pulses (ISR) : %lu\n", (unsigned long)hal_wiegand_get_d1_pulses());
+                    printf("Last D0 Interval (us) : %ld (Min: %ld, Max: %ld)\n",
+                           (long)hal_wiegand_get_last_d0_interval(),
+                           (long)hal_wiegand_get_min_d0_interval(),
+                           (long)hal_wiegand_get_max_d0_interval());
+                    hal_wiegand_print_intervals();
+                    printf("Current Buffer Bits   : %d\n", hal_wiegand_get_current_bits());
+                    printf("Last Decoded Bit Count: %d\n", hal_wiegand_get_last_bit_count());
+                    printf("Last Decoded Card ID  : %lu\n", (unsigned long)hal_wiegand_get_last_card_id());
+                    printf("===========================================\n");
+                } else if (strcmp(buf, "onloi_wg_reset") == 0) {
+                    hal_wiegand_reset_debug_counters();
+                    printf("\n[CLI] Wiegand pulse counters and buffer reset to 0.\n");
+                } else if (strcmp(buf, "onloi_wg_oe_0") == 0) {
+                    hal_shift_reg_set_wiegand_en(false);
+                    printf("\n[CLI] WIEGAND_EN Level Shifter set to 0 (DISABLED)\n");
+                } else if (strcmp(buf, "onloi_wg_oe_1") == 0) {
+                    hal_shift_reg_set_wiegand_en(true);
+                    printf("\n[CLI] WIEGAND_EN Level Shifter set to 1 (ENABLED)\n");
                 }
                 pos = 0;
             }

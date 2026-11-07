@@ -5,6 +5,10 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#define CMD_SESSION_START 0x30
+#define CMD_TELEMETRY     0x32
+#define CMD_TIME_SYNC     0x33
+#define CMD_REGISTRATION  0x34
 #define CMD_NFC_ENROLL_START 0x44
 #define CMD_NFC_ENROLL_READY 0x22
 #define CMD_NFC_ENROLLED     0x23
@@ -57,6 +61,21 @@ void api_client_send_nfc_enroll_ready_event(void);
 
 // Triggers a time sync request via MQTT.
 int api_client_send_get_time(void);
+
+/**
+ * @brief Send TELEMETRY event (0x32) with battery percentage (100%) to MQTT backend
+ */
+void api_client_send_telemetry(void);
+
+/**
+ * @brief Send SESSION_START event to MQTT backend with specified wakeReason (0x01=button, 0x02=timer)
+ */
+void api_client_send_session_start(uint8_t wake_reason);
+
+/**
+ * @brief Send SESSION_START keepalive to flush cloud command queue and keep broker connection active
+ */
+void api_client_send_session_keepalive(void);
 
 /**
  * @brief Send Lock Opened event to MQTT backend

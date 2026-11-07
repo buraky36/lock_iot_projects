@@ -496,6 +496,9 @@ void hal_shift_reg_set_relay(bool state) {
 void hal_shift_reg_set_wiegand_en(bool state) {
   update_reg2_bit(MASK_U2_WIEGAND_EN, state);
 }
+bool hal_shift_reg_get_wiegand_en(void) {
+  return (current_reg2 & MASK_U2_WIEGAND_EN) != 0;
+}
 
 void hal_shift_reg_set_led(uint8_t led_index, bool state) {
   if (led_index < 1 || led_index > 12)

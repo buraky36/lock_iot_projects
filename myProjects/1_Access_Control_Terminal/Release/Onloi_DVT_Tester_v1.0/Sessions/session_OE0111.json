@@ -2,9 +2,11 @@
   "model": "OE0111",
   "current_step_idx": 0,
   "tester": "",
-  "serial": "",
-  "detected_mac6": "",
-  "captured_vars": {},
+  "serial": "OE0111_6E1EAA",
+  "detected_mac6": "6E1EAA",
+  "captured_vars": {
+    "BLE": "OE0113_1EAA"
+  },
   "step_results": {},
-  "updated_at": "2026-10-30 03:34:08"
+  "updated_at": "2026-11-06 00:04:31"
 }

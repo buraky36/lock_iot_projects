@@ -52,6 +52,7 @@ void hal_shift_reg_set_rfid_rst(bool state);
 void hal_shift_reg_set_tsm_rst(bool state);
 void hal_shift_reg_set_relay(bool state);
 void hal_shift_reg_set_wiegand_en(bool state);
+bool hal_shift_reg_get_wiegand_en(void);
 void hal_shift_reg_set_led(uint8_t led_index, bool state); // 1-12
 void hal_shift_reg_set_touch_mask(uint16_t mask);
 bool hal_shift_reg_is_keypad_active(void);        // True while 20s LED activity window is running

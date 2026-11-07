@@ -55,6 +55,44 @@ static void xr1300_task(void *arg) {
       }
       clean_str[c_len] = '\0';
 
+      // Sanitize Dynamic QR glitch if it ends with ",QR"
+      // Format: <id>,<YYYY-MM-DD HH:MM:SS.mmm>,QR
+      // Fixes ESP32 GPIO39 (input-only, high-Z) UART sampling noise (bit-6 flipping '0' -> 'p', '3' -> 's', ',' -> 'X', ' ' -> '@')
+      if (c_len >= 30 && strcmp(clean_str + c_len - 3, ",QR") == 0) {
+        char orig_dbg[64];
+        strncpy(orig_dbg, clean_str, sizeof(orig_dbg) - 1);
+        orig_dbg[sizeof(orig_dbg) - 1] = '\0';
+        bool modified = false;
+
+        // 1. Sanitize ID part (digits '0'..'9'): map 'p'..'y' (0x70..0x79) -> '0'..'9'
+        for (int i = 0; i < 11 && i < c_len; i++) {
+          uint8_t ch = (uint8_t)clean_str[i];
+          if (ch >= 0x70 && ch <= 0x79) {
+            clean_str[i] = (char)(ch - 0x40);
+            modified = true;
+          }
+        }
+        // 2. Comma after ID: index 11
+        if (c_len > 11 && (clean_str[11] == 'X' || clean_str[11] == 'l' || clean_str[11] == 0x58 || clean_str[11] == 0x6C)) {
+          clean_str[11] = ',';
+          modified = true;
+        }
+        // 3. Date & time part: index 12 to c_len - 3
+        for (int i = 12; i < c_len - 3; i++) {
+          uint8_t ch = (uint8_t)clean_str[i];
+          if (ch == '@' || ch == '`') {
+            clean_str[i] = ' ';
+            modified = true;
+          } else if (ch >= 0x70 && ch <= 0x79) {
+            clean_str[i] = (char)(ch - 0x40);
+            modified = true;
+          }
+        }
+        if (modified) {
+          ESP_LOGW("XR1300", "UART noise glitch corrected: '%s' -> '%s'", orig_dbg, clean_str);
+        }
+      }
+
       if (c_len > 0) {
         int64_t now_ms = esp_timer_get_time() / 1000;
         // Suppress rapid consecutive scans:
@@ -110,6 +148,12 @@ bool xr1300_init(void) {
   const char *factory_reset_cmd = "$010200-BF34\r\n";
   uart_write_bytes(XR1300_UART_NUM, factory_reset_cmd, strlen(factory_reset_cmd));
   vTaskDelay(pdMS_TO_TICKS(200));
+
+  // Enable all 1D/2D barcode standards (Code 128, Interleaved 2 of 5, Matrix 2 of 5, Code 39, Codabar, Code 93, UCC/EAN-128)
+  const char *enable_all_barcodes_cmd = "$280101-3FD8\r\n";
+  uart_write_bytes(XR1300_UART_NUM, enable_all_barcodes_cmd, strlen(enable_all_barcodes_cmd));
+  vTaskDelay(pdMS_TO_TICKS(100));
+
   uart_flush_input(XR1300_UART_NUM);
 
   printf("[QR XR1300] Init at 9600 baud (TX=GPIO%d, RX=GPIO%d) - Fast burst mode active\n",

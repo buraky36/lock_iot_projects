@@ -130,7 +130,7 @@ void hal_io_tick(void) {
             apply_led_color(LED_COLOR_OFF);
         }
     } else {
-        int blink_period = (current_led_mode == LED_MODE_BLINK_FAST) ? 250 : 500;
+        int blink_period = (current_led_mode == LED_MODE_BLINK_FAST) ? 250 : 350;
         if ((now / blink_period) % 2 == 0) {
             apply_led_color(current_led_color);
         } else {

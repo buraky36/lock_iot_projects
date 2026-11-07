@@ -1,0 +1,57 @@
+================================================================================
+ONLOI ACCESS CONTROL TERMINAL (OE SERIES) - V2.0.8 OTA PARAMETRELERİ
+================================================================================
+
+ÖNEMLİ NOT:
+OTA paneline kesinlikle 'full_firmware_OExxxx.bin' yüklenmemelidir! 
+Yalnızca 'firmware.bin' dosyası yüklenmelidir.
+
+Bu versiyondaki yenilikler:
+1. Wi-Fi Power Save modu kapatıldı (WIFI_PS_NONE - 12V kablolu cihaz her an uyanık).
+2. Onloi Cloud Session Keepalive eklendi (CMD_SESSION_START 0x30, 20 saniyede bir gönderilir).
+   Böylece terminal boşta beklerken Onloi Cloud cihazı 'Asleep' moduna geçirip komutları (0x5C versiyon sorgusu, kapı açma vb.) QUEUED yapmaz; tüm app istekleri anında cihaza iletilir.
+3. Yazılım sürümü V2.0.8 (0x00020008) olarak güncellendi.
+4. OSDP PDID sürüm raporlaması 2.0.8 olarak eşitlendi.
+
+================================================================================
+1) OE0110 - PIN + QR KONTROLCÜ (OE_0110_PIN_QR)
+================================================================================
+Dosya Yolu     : outputs/OE_0110_PIN_QR/V2.0.8/firmware.bin
+Hedef Ünite    : 0x01 (Unit 1 - ESP32)
+Ürün ID        : 0x0110 (Decimal: 272)
+Versiyon (Hex) : 0x00020008
+Versiyon (Str) : V2.0.8
+Donanım Rev    : 0x01
+Dosya Boyutu   : 1209920 byte
+CRC32 (Hex)    : 0x5CEECCE1
+CRC32 (Dec)    : 1559153889
+SHA-256        : 1926db946f4a7cbe05c1168a5dcb3d1b646e6e651d3e1084c4e2ff5294c3b81a
+
+================================================================================
+2) OE0111 - PIN + RFID KONTROLCÜ (OE_0111_PIN_RFID)
+================================================================================
+Dosya Yolu     : outputs/OE_0111_PIN_RFID/V2.0.8/firmware.bin
+Hedef Ünite    : 0x01 (Unit 1 - ESP32)
+Ürün ID        : 0x0111 (Decimal: 273)
+Versiyon (Hex) : 0x00020008
+Versiyon (Str) : V2.0.8
+Donanım Rev    : 0x01
+Dosya Boyutu   : 1209904 byte
+CRC32 (Hex)    : 0xA13EB23F
+CRC32 (Dec)    : 2705240639
+SHA-256        : eb39ea141dfe667d01b46db1a4fb8beaacb3ef64f7d81ce6fe77bc9410fd3d0b
+
+================================================================================
+3) OE0112 - RFID ONLY KONTROLCÜ (OE_0112_RFID_ONLY)
+================================================================================
+Dosya Yolu     : outputs/OE_0112_RFID_ONLY/V2.0.8/firmware.bin
+Hedef Ünite    : 0x01 (Unit 1 - ESP32)
+Ürün ID        : 0x0112 (Decimal: 274)
+Versiyon (Hex) : 0x00020008
+Versiyon (Str) : V2.0.8
+Donanım Rev    : 0x01
+Dosya Boyutu   : 1209920 byte
+CRC32 (Hex)    : 0x06089EA1
+CRC32 (Dec)    : 101228193
+SHA-256        : 399cb177425275d2cae382b6faa2fcea0c2174795fba0066962a44ebc4ef79c8
+================================================================================

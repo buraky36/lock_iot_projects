@@ -19,6 +19,7 @@ static ota_status_cb_t s_status_cb = NULL;
 static bool s_ota_running = false;
 static bool s_abort_requested = false;
 static uint32_t s_active_request_id = 0;
+static uint8_t s_ota_chunk_buffer[4096]; // Static chunk buffer to prevent heap allocation failures during TLS handshake
 
 // Standard IEEE 802.3 CRC32 lookup table
 static uint32_t s_crc32_table[256];
@@ -120,12 +121,14 @@ static void ota_task(void *pvParameter) {
         goto cleanup_exit;
     }
 
+    ESP_LOGI(TAG, "Free heap before OTA HTTPS connect: %lu bytes", (unsigned long)esp_get_free_heap_size());
     esp_http_client_config_t http_config = {
         .url = params->url,
         .crt_bundle_attach = esp_crt_bundle_attach,
         .timeout_ms = 20000,
         .keep_alive_enable = true,
-        .buffer_size = 4096,
+        .buffer_size = 2048,
+        .buffer_size_tx = 1024,
     };
 
     esp_http_client_handle_t client = esp_http_client_init(&http_config);
@@ -172,16 +175,7 @@ static void ota_task(void *pvParameter) {
     mbedtls_sha256_starts(&sha_ctx, 0); // 0 = SHA-256
     uint32_t running_crc32 = 0xFFFFFFFF;
 
-    uint8_t *buffer = malloc(4096);
-    if (!buffer) {
-        ESP_LOGE(TAG, "Failed to allocate 4KB OTA chunk buffer");
-        esp_ota_abort(ota_handle);
-        esp_http_client_close(client);
-        esp_http_client_cleanup(client);
-        mbedtls_sha256_free(&sha_ctx);
-        report_status(params->request_id, params->firmware_target, OTA_STATE_FAILED, 0, OTA_ERR_FLASH_WRITE, 0, 0);
-        goto cleanup_exit;
-    }
+    uint8_t *buffer = s_ota_chunk_buffer;
 
     uint32_t bytes_transferred = 0;
     uint8_t last_reported_pct = 0;
@@ -202,7 +196,6 @@ static void ota_task(void *pvParameter) {
             esp_http_client_close(client);
             esp_http_client_cleanup(client);
             mbedtls_sha256_free(&sha_ctx);
-            free(buffer);
             app_set_state(STATE_IDLE);
             report_status(params->request_id, params->firmware_target, OTA_STATE_ABORTED, last_reported_pct, OTA_ERR_NONE, bytes_transferred, 0);
             goto cleanup_exit;
@@ -215,7 +208,6 @@ static void ota_task(void *pvParameter) {
             esp_http_client_close(client);
             esp_http_client_cleanup(client);
             mbedtls_sha256_free(&sha_ctx);
-            free(buffer);
             report_status(params->request_id, params->firmware_target, OTA_STATE_FAILED, last_reported_pct, OTA_ERR_NETWORK, bytes_transferred, 0);
             goto cleanup_exit;
         } else if (data_read == 0) {
@@ -233,7 +225,6 @@ static void ota_task(void *pvParameter) {
             esp_http_client_close(client);
             esp_http_client_cleanup(client);
             mbedtls_sha256_free(&sha_ctx);
-            free(buffer);
             report_status(params->request_id, params->firmware_target, OTA_STATE_FAILED, last_reported_pct, OTA_ERR_FLASH_WRITE, bytes_transferred, 0);
             goto cleanup_exit;
         }
@@ -258,7 +249,6 @@ static void ota_task(void *pvParameter) {
         }
     }
 
-    free(buffer);
     esp_http_client_close(client);
     esp_http_client_cleanup(client);
 

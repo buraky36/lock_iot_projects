@@ -3,5 +3,6 @@
 
 void ble_prov_init(void);
 void ble_prov_tick(void);
+void ble_prov_stop(void);
 
 #endif // BLE_PROV_H

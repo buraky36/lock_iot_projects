@@ -1,0 +1,58 @@
+================================================================================
+ONLOI ACCESS CONTROL TERMINAL (OE SERIES) - V2.0.7 OTA PARAMETRELERİ
+================================================================================
+Tarih: 24 Ekim 2026
+Protokol: Onloi Smart Lock Protocol v2.18
+
+YAPILAN İYİLEŞTİRMELER:
+1. Wi-Fi Power Save Modu kapatıldı (WIFI_PS_NONE). Modem sürekli aktif tutularak
+   router ve buluttan gelen anlık MQTT komutlarının (uzaktan açma, versiyon sorgusu)
+   sıfır gecikmeyle (anında) cihaza ulaşması sağlandı.
+2. Yazılım sürümü V2.0.7 (0x00020007) olarak güncellendi.
+3. OSDP PDID sürüm raporlaması 2.0.7 olarak eşitlendi.
+
+ÖNEMLİ HATIRLATMA:
+Onloi OTA Sunucusuna veya Cloud Paneline KESİNLİKLE "full_firmware_xxx.bin" 
+YÜKLENMEMELİDİR. Sadece "firmware.bin" (yaklaşık 1.2 MB) yüklenmelidir.
+"full_firmware_xxx.bin" dosyası (2.3 MB) yalnızca USB kablosu ve esptool ile 
+0x0 adresine ilk fabrikasyon kurulumu yapılırken kullanılır.
+
+--------------------------------------------------------------------------------
+1. OE_0110_PIN_QR (PIN + QR Kod Varyasyonu - Sahadaki Cihaz)
+--------------------------------------------------------------------------------
+Dosya Yolu     : outputs/OE_0110_PIN_QR/V2.0.7/firmware.bin
+Dosya Boyutu   : 1209728 bytes
+Versiyon (Hex) : 0x00020007
+Versiyon (Str) : V2.0.7
+Target         : 0x01 (UNIT1_ESP)
+Product ID     : 0x0110
+CRC-32 (Hex)   : 0xE87519F6
+CRC-32 (Dec)   : 3899988470
+SHA-256        : 528ac8185c722efcad2f9d4dd12d895f9faf751ede072ecadd8b6c1adc416a54
+
+--------------------------------------------------------------------------------
+2. OE_0111_PIN_RFID (PIN + RFID Varyasyonu)
+--------------------------------------------------------------------------------
+Dosya Yolu     : outputs/OE_0111_PIN_RFID/V2.0.7/firmware.bin
+Dosya Boyutu   : 1209712 bytes
+Versiyon (Hex) : 0x00020007
+Versiyon (Str) : V2.0.7
+Target         : 0x01 (UNIT1_ESP)
+Product ID     : 0x0111
+CRC-32 (Hex)   : 0x116D233D
+CRC-32 (Dec)   : 292365117
+SHA-256        : 86232ba5f2dc591fa6f3623397aacb0fdc6aab9983ec64a86af1c679e8cb902f
+
+--------------------------------------------------------------------------------
+3. OE_0112_RFID_ONLY (Sadece RFID Controller Varyasyonu)
+--------------------------------------------------------------------------------
+Dosya Yolu     : outputs/OE_0112_RFID_ONLY/V2.0.7/firmware.bin
+Dosya Boyutu   : 1209728 bytes
+Versiyon (Hex) : 0x00020007
+Versiyon (Str) : V2.0.7
+Target         : 0x01 (UNIT1_ESP)
+Product ID     : 0x0112
+CRC-32 (Hex)   : 0xF58A9BC6
+CRC-32 (Dec)   : 4119501766
+SHA-256        : c209b3fa4fa1ac092a77cefc380bf3638ab71d3075bcff4fef42121aa64fbadb
+================================================================================
