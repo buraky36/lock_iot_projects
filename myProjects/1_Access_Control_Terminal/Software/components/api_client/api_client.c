@@ -58,10 +58,6 @@ static uint16_t s_last_handled_seq = 0xFFFF;
 static uint8_t  s_last_handled_cmd = 0xFF;
 static int64_t  s_last_handled_time_ms = 0;
 
-// Cloud orphan / deleted device detection state
-static int  s_unanswered_time_sync_count = 0;
-static bool s_ever_synced_time = false;
-
 static char topic_cmd[128];
 static char topic_reply[128];
 static char topic_config[128];
@@ -368,19 +364,17 @@ static bool is_topic_for_this_device(const char *topic_dev_id) {
 
 static void execute_server_disconnect(const char *reason) {
     ESP_LOGW(TAG, "=== [EXECUTE SERVER DISCONNECT] === Reason: %s", reason ? reason : "Unknown");
-    vTaskDelay(pdMS_TO_TICKS(500));
+    vTaskDelay(pdMS_TO_TICKS(200));
     wifi_manager_clear_credentials();
     nv_storage_clear_onloi_mqtt_config();
     nv_storage_clear_active_ota_job();
-    s_ever_synced_time = false;
-    s_unanswered_time_sync_count = 0;
     sys_config_t cfg;
     nv_storage_get_config(&cfg);
     cfg.is_online = false;
     nv_storage_set_config(&cfg);
     hal_io_led_set(LED_COLOR_ORANGE, LED_MODE_SOLID);
     hal_io_buzzer_beep(2700, 300, 2);
-    vTaskDelay(pdMS_TO_TICKS(500));
+    vTaskDelay(pdMS_TO_TICKS(200));
     ESP_LOGW(TAG, "SERVER_DISCONNECT complete. Restarting into BLE setup mode...");
     esp_restart();
 }
@@ -453,10 +447,6 @@ static void process_mqtt_message(const char *topic, size_t topic_len, const char
              safe_topic, cmd, msg_type, req_seq, payload_len, data_len);
     ESP_LOG_BUFFER_HEXDUMP(TAG, data, data_len, ESP_LOG_INFO);
 
-    // Server communicated with us: reset unanswered sync counter and mark as synced
-    s_unanswered_time_sync_count = 0;
-    s_ever_synced_time = true;
-
     // Check minimum frame size (17 header + payload + 2 CRC = 19 + payload_len)
     size_t min_len = 19 + payload_len;
     if (data_len < min_len) {
@@ -488,68 +478,59 @@ static void process_mqtt_message(const char *topic, size_t topic_len, const char
         snprintf(reply_topic, sizeof(reply_topic), "%s", topic_reply);
     }
 
-    const uint8_t *payload = frame + 17;
-    uint32_t requestId = 0;
-    if (payload_len >= 4) {
-        requestId = (payload[0] << 24) | (payload[1] << 16) | (payload[2] << 8) | payload[3];
-    }
-
-    // Specific handler for SERVER_DISCONNECT (0x59) — Step 38 of protocol specification
-    // Triggered when user deletes device from mobile app.
-    // Clears Wi-Fi credentials + MQTT config + is_online = false.
-    // PRESERVES local NVC users (PIN, NFC, FP, QR) and deviceCode!
-    // Process regardless of msg_type (0x01, 0x02, 0x04)
-    if (cmd == CMD_DISCONNECTED) {
-        ESP_LOGW(TAG, "SERVER_DISCONNECT (0x59) received! Req=0x%08lX, Seq=%u, TopicDev=%s",
-                 (unsigned long)requestId, req_seq, topic_dev_id);
-        // 1. Send ACK RECEIVED (phase 0x01, cmdEcho 0x59, matching req_seq)
-        send_mqtt_ack_exact(req_seq, requestId, 0x01, CMD_DISCONNECTED, 0x00, topic_dev_id);
-        // 2. Send ACK COMPLETED (phase 0x03, cmdEcho 0x59, matching req_seq)
-        send_mqtt_ack_exact(req_seq, requestId, 0x03, CMD_DISCONNECTED, 0x00, topic_dev_id);
-        // 3. Execute server disconnect common routine
-        execute_server_disconnect("Received CMD_DISCONNECTED (0x59) from cloud");
-        return;
-    }
-
-    // Specific handler for WIFI_RESET (0x58) — Step 37 of protocol specification
-    // Clears Wi-Fi credentials only. Keeps MQTT config and local NVC users.
-    // Process regardless of msg_type (0x01, 0x02, 0x04)
-    if (cmd == CMD_WIFI_RESET) {
-        ESP_LOGW(TAG, "WIFI_RESET (0x58) received! Req=0x%08lX, Seq=%u", (unsigned long)requestId, req_seq);
-        send_mqtt_ack_exact(req_seq, requestId, 0x01, CMD_WIFI_RESET, 0x00, topic_dev_id);
-        send_mqtt_ack_exact(req_seq, requestId, 0x03, CMD_WIFI_RESET, 0x00, topic_dev_id);
-        vTaskDelay(pdMS_TO_TICKS(500));
-        wifi_manager_clear_credentials();
-        sys_config_t cfg;
-        nv_storage_get_config(&cfg);
-        cfg.is_online = false;
-        nv_storage_set_config(&cfg);
-        hal_io_buzzer_beep(2700, 200, 2);
-        vTaskDelay(pdMS_TO_TICKS(500));
-        ESP_LOGW(TAG, "WIFI_RESET complete. Restarting into BLE setup mode...");
-        esp_restart();
-        return;
-    }
-
-    // Remote Factory Reset (0x50 or 0x73) — Step 39 of protocol specification
-    // Clears ALL data including NVC users.
-    // Process regardless of msg_type (0x01, 0x02, 0x04)
-    if (cmd == CMD_FACTORY_RESET || cmd == 0x73) {
-        ESP_LOGW(TAG, "Remote FACTORY_RESET (0x50) received! Req=0x%08lX, Seq=%u", (unsigned long)requestId, req_seq);
-        s_is_remote_reset = true;
-        send_mqtt_ack_exact(req_seq, requestId, 0x01, CMD_FACTORY_RESET, 0x00, topic_dev_id);
-        send_mqtt_ack_exact(req_seq, requestId, 0x03, CMD_FACTORY_RESET, 0x00, topic_dev_id);
-        vTaskDelay(pdMS_TO_TICKS(500));
-        app_set_state(STATE_FACTORY_RESET);
-        return;
-    }
-
     // Accept both COMMAND (0x04) and REQUEST (0x01)
     if (msg_type == MSG_TYPE_COMMAND || msg_type == MSG_TYPE_REQUEST) {
         const uint8_t *payload = frame + 17;
         uint32_t requestId = 0;
         if (payload_len >= 4) {
             requestId = (payload[0] << 24) | (payload[1] << 16) | (payload[2] << 8) | payload[3];
+        }
+
+        // Specific handler for SERVER_DISCONNECT (0x59) — Step 38 of protocol specification
+        // Triggered when user deletes device from mobile app.
+        // Clears Wi-Fi credentials + MQTT config + is_online = false.
+        // PRESERVES local NVC users (PIN, NFC, FP, QR) and deviceCode!
+        if (cmd == CMD_DISCONNECTED) {
+            ESP_LOGW(TAG, "SERVER_DISCONNECT (0x59) received! Req=0x%08lX, Seq=%u, TopicDev=%s",
+                     (unsigned long)requestId, req_seq, topic_dev_id);
+            // 1. Send ACK RECEIVED (phase 0x01, cmdEcho 0x59, matching req_seq)
+            send_mqtt_ack_exact(req_seq, requestId, 0x01, CMD_DISCONNECTED, 0x00, topic_dev_id);
+            // 2. Send ACK COMPLETED (phase 0x03, cmdEcho 0x59, matching req_seq)
+            send_mqtt_ack_exact(req_seq, requestId, 0x03, CMD_DISCONNECTED, 0x00, topic_dev_id);
+            // 3. Execute server disconnect common routine
+            execute_server_disconnect("Received CMD_DISCONNECTED (0x59) from cloud");
+            return;
+        }
+
+        // Specific handler for WIFI_RESET (0x58) — Step 37 of protocol specification
+        // Clears Wi-Fi credentials only. Keeps MQTT config and local NVC users.
+        if (cmd == CMD_WIFI_RESET) {
+            ESP_LOGW(TAG, "WIFI_RESET (0x58) received! Req=0x%08lX, Seq=%u", (unsigned long)requestId, req_seq);
+            send_mqtt_ack_exact(req_seq, requestId, 0x01, CMD_WIFI_RESET, 0x00, topic_dev_id);
+            send_mqtt_ack_exact(req_seq, requestId, 0x03, CMD_WIFI_RESET, 0x00, topic_dev_id);
+            vTaskDelay(pdMS_TO_TICKS(200));
+            wifi_manager_clear_credentials();
+            sys_config_t cfg;
+            nv_storage_get_config(&cfg);
+            cfg.is_online = false;
+            nv_storage_set_config(&cfg);
+            hal_io_buzzer_beep(2700, 200, 2);
+            vTaskDelay(pdMS_TO_TICKS(200));
+            ESP_LOGW(TAG, "WIFI_RESET complete. Restarting into BLE setup mode...");
+            esp_restart();
+            return;
+        }
+
+        // Remote Factory Reset (0x50 or 0x73) — Step 39 of protocol specification
+        // Clears ALL data including NVC users.
+        if (cmd == CMD_FACTORY_RESET || cmd == 0x73) {
+            ESP_LOGW(TAG, "Remote FACTORY_RESET (0x50) received! Req=0x%08lX, Seq=%u", (unsigned long)requestId, req_seq);
+            s_is_remote_reset = true;
+            send_mqtt_ack_exact(req_seq, requestId, 0x01, CMD_FACTORY_RESET, 0x00, topic_dev_id);
+            send_mqtt_ack_exact(req_seq, requestId, 0x03, CMD_FACTORY_RESET, 0x00, topic_dev_id);
+            vTaskDelay(pdMS_TO_TICKS(200));
+            app_set_state(STATE_FACTORY_RESET);
+            return;
         }
 
         if (cmd == CMD_REMOTE_OPEN) {
@@ -732,8 +713,7 @@ static void process_mqtt_message(const char *topic, size_t topic_len, const char
         uint8_t status = frame[8]; // STATUS byte
         if (cmd == CMD_TIME_SYNC) {
             if (status != 0x00) {
-                ESP_LOGE(TAG, "TIME_SYNC returned error status 0x%02X! Device deleted/unauthorized.", status);
-                execute_server_disconnect("Server returned error status on TIME_SYNC");
+                ESP_LOGW(TAG, "TIME_SYNC returned status 0x%02X", status);
                 return;
             }
             if (payload_len >= 8) {
@@ -762,7 +742,6 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     esp_mqtt_event_handle_t event = event_data;
     switch ((esp_mqtt_event_id_t)event_id) {
         case MQTT_EVENT_CONNECTED: {
-            s_unanswered_time_sync_count = 0;
             const char *active_id = get_cloud_device_id();
             ESP_LOGI(TAG, "MQTT Connected! Active Cloud DeviceId: %s", active_id);
             mqtt_connected = true;
@@ -880,7 +859,6 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
             ESP_LOGI(TAG, "MQTT Disconnected.");
             mqtt_connected = false;
             s_last_session_keepalive = 0;
-            s_unanswered_time_sync_count = 0;
             break;
         case MQTT_EVENT_DATA:
             process_mqtt_message(event->topic, event->topic_len, event->data, event->data_len);
@@ -912,18 +890,14 @@ static void start_mqtt(void) {
 
     bool use_tls = (s_mqtt_cfg.flags & 0x01) || (s_mqtt_cfg.port == 8883);
 
-    // Requirement 4: Giriş Bilgilerini (Credentials) Net Logla
-    char secret_hex[65] = {0};
-    for (int i = 0; i < 32; i++) {
-        sprintf(secret_hex + (i * 2), "%02X", s_mqtt_cfg.device_secret[i]);
-    }
+    // Requirement 4: Giriş Bilgilerini (Credentials) Logla (Password & Secret Masked)
     ESP_LOGW(TAG, "================ [MQTT CREDENTIALS DUMP] ================");
     ESP_LOGW(TAG, "Host     : %s", s_mqtt_cfg.host);
     ESP_LOGW(TAG, "Port     : %d (TLS=%d)", s_mqtt_cfg.port, use_tls);
     ESP_LOGW(TAG, "ClientId : %s", s_mqtt_cfg.client_id);
     ESP_LOGW(TAG, "Username : %s", s_mqtt_cfg.username);
-    ESP_LOGW(TAG, "Password : %s", s_mqtt_cfg.password);
-    ESP_LOGW(TAG, "Secret   : %s", secret_hex);
+    ESP_LOGW(TAG, "Password : *** (len=%zu)", strlen(s_mqtt_cfg.password));
+    ESP_LOGW(TAG, "Secret   : *** (32-byte HMAC key loaded)");
     ESP_LOGW(TAG, "Epoch    : %u", s_mqtt_cfg.session_epoch);
     ESP_LOGW(TAG, "ActiveId : %s (HW=%s)", active_id, device_id_str);
     ESP_LOGW(TAG, "=========================================================");
@@ -983,8 +957,6 @@ void api_client_reset_claim_status(void) {
     s_mqtt_cfg.is_claimed = false;
     memset(&s_mqtt_cfg, 0, sizeof(s_mqtt_cfg));
     mqtt_connected = false;
-    s_ever_synced_time = false;
-    s_unanswered_time_sync_count = 0;
     nv_storage_clear_onloi_mqtt_config();
     nv_storage_clear_active_ota_job();
     ESP_LOGI(TAG, "Cloud config reset. Ready for new provision.");
@@ -1015,16 +987,6 @@ void api_client_tick(void) {
         if (s_last_session_keepalive == 0) {
             s_last_session_keepalive = now;
         } else if (now - s_last_session_keepalive >= 15000) {
-            // Check for orphan / deleted device condition:
-            // If device was previously talking to the cloud (s_ever_synced_time == true)
-            // but now 2 consecutive TIME_SYNC requests (~30 seconds) received no reply while connected to MQTT,
-            // the backend has deleted the device from the database!
-            if (s_ever_synced_time && s_unanswered_time_sync_count >= 2) {
-                ESP_LOGW(TAG, "Server stopped responding to TIME_SYNC (%d consecutive timeouts while MQTT connected). Device was deleted from App/Cloud! Triggering disconnect...",
-                         s_unanswered_time_sync_count);
-                execute_server_disconnect("Cloud stopped responding to TIME_SYNC (Device Deleted)");
-                return;
-            }
             api_client_send_session_keepalive();
         }
     }
@@ -1165,8 +1127,7 @@ void api_client_send_nfc_enrolled_event(uint32_t card_id) {
 
 int api_client_send_get_time(void) {
     if (!mqtt_connected) return -1;
-    s_unanswered_time_sync_count++;
-    ESP_LOGI(TAG, "Sending TIME_SYNC request (unanswered_sync_count=%d)", s_unanswered_time_sync_count);
+    ESP_LOGI(TAG, "Sending TIME_SYNC request (0x33)");
     publish_mqtt_frame(MSG_TYPE_REQUEST, CMD_TIME_SYNC, NULL, 0, topic_cmd, false);
     return 200;
 }
@@ -1193,9 +1154,4 @@ void api_client_send_local_factory_reset_event(void) {
     uint8_t payload[1] = { 0x01 }; // 0x01 = tuş kombinasyonu / yerel müdahale
     publish_lifecycle_event(CMD_LOCAL_FACTORY_RESET, payload, 1, false);
     ESP_LOGI(TAG, "Published LOCAL_FACTORY_RESET event to %s", topic_lifecycle);
-}
-
-void api_client_send_offline_logs(void) {
-    // Per system specification, offline logs are never sent to cloud;
-    // they are cleared upon switching to Online mode.
 }

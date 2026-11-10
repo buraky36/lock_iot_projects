@@ -17,7 +17,7 @@ import subprocess
 import sys
 import zipfile
 
-VERSION = "V2.0.26"
+VERSION = "V2.0.28"
 
 VARIANTS = [
     {

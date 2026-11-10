@@ -119,32 +119,6 @@ void wifi_manager_request_scan(void) {
     ESP_LOGI(TAG, "Starting non-blocking Wi-Fi scan");
 }
 
-bool wifi_manager_is_scan_ready(char *json_out, int max_len) {
-    if (!s_scan_completed) return false;
-
-    // Build JSON string
-    int pos = snprintf(json_out, max_len, "{\"command\":\"getSsids\",\"result\":{");
-    for (int i = 0; i < s_ap_count; i++) {
-        if (pos >= max_len - 100) break; // Buffer protection
-        int channel = s_ap_records[i].primary;
-        const char *freq = (channel < 15) ? "2.4" : "5";
-        
-        pos += snprintf(json_out + pos, max_len - pos, 
-            "\"%d\":{\"macAddress\":\"%02x:%02x:%02x:%02x:%02x:%02x\",\"rssi\":%d,\"frequency\":\"%s\",\"name\":\"%s\"}%s",
-            i, 
-            s_ap_records[i].bssid[0], s_ap_records[i].bssid[1], s_ap_records[i].bssid[2],
-            s_ap_records[i].bssid[3], s_ap_records[i].bssid[4], s_ap_records[i].bssid[5],
-            s_ap_records[i].rssi,
-            freq,
-            (char*)s_ap_records[i].ssid,
-            (i == s_ap_count - 1) ? "" : ",");
-    }
-    snprintf(json_out + pos, max_len - pos, "}}");
-
-    s_scan_completed = false; // Reset flag after reading
-    return true;
-}
-
 bool wifi_manager_is_scan_done(void) {
     return s_scan_completed;
 }
@@ -198,8 +172,4 @@ void wifi_manager_tick(void) {
             esp_wifi_connect();
         }
     }
-}
-
-void wifi_manager_trigger_time_sync(void) {
-    s_pending_get_time = true;
 }

@@ -16,22 +16,25 @@
 #include "hw_config.h"
 #include "driver/gpio.h"
 #include <string.h>
+#include <stdarg.h>
 #include "esp_chip_info.h"
 #include "esp_mac.h"
 #include "esp_log.h"
 #include "nvs_flash.h"
 #include "esp_system.h"
+#include "esp_ota_ops.h"
 
 // ============================================================
 // Firmware Version
 // ============================================================
-#define FW_VERSION_MAJOR  2
-#define FW_VERSION_MINOR  0
-#define FW_VERSION_PATCH  26
-#define FW_VERSION_STR    "v2.0.26"
-#define FW_BUILD_DATE     __DATE__
-#define FW_BUILD_TIME     __TIME__
-#define HW_BOARD_REVISION 1
+#define FW_VERSION_MAJOR   2
+#define FW_VERSION_MINOR   0
+#define FW_VERSION_PATCH   28
+#define FW_VERSION_STR     "v2.0.28"
+#define PRODUCTION_RELEASE 0
+#define FW_BUILD_DATE      __DATE__
+#define FW_BUILD_TIME      __TIME__
+#define HW_BOARD_REVISION  1
 // ============================================================
 
 char device_code_str[32] = {0};
@@ -78,6 +81,7 @@ static void app_generate_hw_info(void) {
     ESP_LOGI("MAIN", "Project Code: %s, BLE Name: %s", device_code_str, ble_name_str);
 }
 
+#if !PRODUCTION_RELEASE
 static void serial_cli_task(void *pvParameters) {
     char buf[128];
     int pos = 0;
@@ -113,6 +117,9 @@ static void serial_cli_task(void *pvParameters) {
                         if (nv_storage_get_user(i, &usr)) {
                             printf("User %d: PIN=%s, CARD=%s, QR=%s\n", i, usr.pin, usr.card_id, usr.qr_id);
                             count++;
+                        }
+                        if ((i & 0xFF) == 0) {
+                            vTaskDelay(1);
                         }
                     }
                     printf("Total Users: %d\n", count);
@@ -175,12 +182,32 @@ static void serial_cli_task(void *pvParameters) {
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
+#endif
+
+#if PRODUCTION_RELEASE
+static int silent_vprintf(const char *fmt, va_list args) {
+    (void)fmt;
+    (void)args;
+    return 0;
+}
+#endif
 
 void app_main(void) {
+#if PRODUCTION_RELEASE
+  esp_log_level_set("*", ESP_LOG_NONE);
+  esp_log_set_vprintf(silent_vprintf);
+  // UART0 TX (GPIO1) ve RX (GPIO3) pinlerini Newlib stream kilitlerine dokunmadan
+  // donanım sinyal matrisinden ayır (dışarıya tek bir karakter bile çıkmasını engeller):
+  gpio_reset_pin(GPIO_NUM_1);
+  gpio_set_direction(GPIO_NUM_1, GPIO_MODE_DISABLE);
+  gpio_reset_pin(GPIO_NUM_3);
+  gpio_set_direction(GPIO_NUM_3, GPIO_MODE_DISABLE);
+#else
   printf("\n============================================\n");
   printf(" Access Control Terminal Firmware %s\n", FW_VERSION_STR);
   printf(" Build: %s %s\n", FW_BUILD_DATE, FW_BUILD_TIME);
   printf("============================================\n\n");
+#endif
   // Force rebuild for timestamp update (bypass)
 
   // ESP-IDF core services
@@ -190,25 +217,43 @@ void app_main(void) {
   hal_io_init();
   hal_shift_reg_init(); // MUST be before touch and RFID due to RST pins
   nv_storage_init();
+  esp_ota_mark_app_valid_cancel_rollback();
   
 #if HW_HAS_KEYPAD
   bool has_tsm12 = hal_touch_init();
-  if (!has_tsm12) { printf("WARNING: TSM12 (Keypad) did NOT respond!\n"); has_hw_warning = true; }
+  if (!has_tsm12) {
+#if !PRODUCTION_RELEASE
+    printf("WARNING: TSM12 (Keypad) did NOT respond!\n");
+#endif
+    has_hw_warning = true;
+  }
 #endif
 
 #if HW_HAS_RFID
   hal_shift_reg_set_rfid_rst(true);
   vTaskDelay(pdMS_TO_TICKS(50)); // 50ms: safe margin after hard reset release
   bool has_mfrc522 = mfrc522_init();
-  if (!has_mfrc522) { printf("WARNING: MFRC522 (RFID) did NOT respond!\n"); has_hw_warning = true; }
+  if (!has_mfrc522) {
+#if !PRODUCTION_RELEASE
+    printf("WARNING: MFRC522 (RFID) did NOT respond!\n");
+#endif
+    has_hw_warning = true;
+  }
 #endif
 
 #if HW_HAS_QR
   bool has_qr = hal_qr_init();
-  if (!has_qr) { printf("WARNING: XR1300 (QR) did NOT respond!\n"); has_hw_warning = true; }
+  if (!has_qr) {
+#if !PRODUCTION_RELEASE
+    printf("WARNING: XR1300 (QR) did NOT respond!\n");
+#endif
+    has_hw_warning = true;
+  }
 #endif
 
+#if !PRODUCTION_RELEASE
   printf("FIRMWARE COMPILED FOR HARDWARE VERSION: %d\n", active_hw_version);
+#endif
 
   app_generate_hw_info();
 
@@ -288,7 +333,9 @@ void app_main(void) {
   api_client_init();
   osdp_pd_init();
 
-  xTaskCreate(serial_cli_task, "serial_cli", 4096, NULL, 5, NULL);
+#if !PRODUCTION_RELEASE
+  xTaskCreate(serial_cli_task, "serial_cli", 4096, NULL, 2, NULL);
+#endif
 
   // Main Super-Loop
   while (1) {

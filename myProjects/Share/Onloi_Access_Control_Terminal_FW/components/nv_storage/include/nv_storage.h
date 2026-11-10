@@ -1,0 +1,125 @@
+#ifndef NV_STORAGE_H
+#define NV_STORAGE_H
+
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
+
+typedef struct {
+    uint16_t user_id;
+    bool is_active;
+    char pin[8];        // 4-6 digits + null
+    char card_id[24];   // 8/10/17 digits + null
+    char qr_id[32];     // For QR codes
+} user_record_t;
+
+typedef struct {
+    char master_code[8];
+    uint8_t master_card_count;
+    char master_cards[10][32]; // Accommodates RFID or QR up to 31 chars
+    uint16_t master_ids[10];   // Stores corresponding Master IDs (10000-10010)
+    uint8_t relay_time;
+    uint8_t access_mode;
+    uint8_t alarm_time;
+    bool sound_enabled;
+    bool led_always_on;
+    uint8_t reserved_mode;      // Formerly working_mode (kept for NVS struct size compatibility)
+    bool is_online;             // Online or Offline
+    bool reserved_door_det;     // Formerly door_open_detection (kept for NVS struct size compatibility)
+    uint8_t reserved_0;         // Formerly wiegand_format (reserved for NVS layout backward compatibility)
+    uint8_t reserved_1;         // Formerly pin_wiegand_format (reserved for NVS layout backward compatibility)
+    bool reserved_2;            // Formerly wiegand_parity_en (reserved for NVS layout backward compatibility)
+} sys_config_t;
+
+void nv_storage_init(void);
+
+// Config Ops
+void nv_storage_get_config(sys_config_t *config);
+void nv_storage_set_config(sys_config_t *config);
+
+// Hardware Version Ops
+uint8_t nv_storage_get_hw_version(void);
+void nv_storage_set_hw_version(uint8_t hw_version);
+
+// Onloi MQTT Configuration
+typedef struct {
+    char host[128];
+    uint16_t port;
+    char client_id[64];
+    char username[64];
+    char password[64];
+    char reserved_secret[128]; // Reserved for backward compatibility
+    uint16_t session_epoch;
+    bool is_claimed;
+    uint8_t flags;             // bit0: 1=TLS (MQTTS), 0=plain MQTT
+    uint8_t device_secret[32]; // 32-byte raw HMAC key
+} onloi_mqtt_config_t;
+
+bool nv_storage_save_onloi_mqtt_config(const onloi_mqtt_config_t *config);
+bool nv_storage_get_onloi_mqtt_config(onloi_mqtt_config_t *config);
+void nv_storage_clear_onloi_mqtt_config(void);
+
+#pragma pack(push, 1)
+typedef struct {
+    uint64_t timestamp;
+    uint8_t accessMethod;
+    uint16_t localId;
+    uint8_t result;
+} offline_log_t;
+#pragma pack(pop)
+
+void nv_storage_init_offline_logs(void);
+void nv_storage_add_offline_log(offline_log_t log);
+void nv_storage_get_offline_logs(offline_log_t *logs, uint8_t *count);
+void nv_storage_clear_offline_logs(uint8_t count);
+
+// Master Credential Ops
+bool nv_storage_is_master_credential(const char *cred);
+bool nv_storage_find_master_by_wiegand34(uint32_t wg34_id, char *out_master);
+int32_t nv_storage_get_master_id(const char *cred);
+bool nv_storage_add_master_credential(uint16_t id, const char *cred);
+bool nv_storage_delete_master_credential(const char *cred);
+bool nv_storage_delete_master_by_id(uint16_t id);
+void nv_storage_clear_master_credentials(void);
+bool nv_storage_is_master_enroll_needed(void);
+void nv_storage_set_master_enroll_done(void);
+void nv_storage_clear_master_enroll_done(void);
+
+// User Ops
+bool nv_storage_add_user(const user_record_t *user);
+bool nv_storage_get_user(uint16_t user_id, user_record_t *user_out);
+bool nv_storage_delete_user(uint16_t user_id);
+bool nv_storage_delete_all_users(void);
+uint16_t nv_storage_get_free_user_id(void);
+bool nv_storage_find_user_by_pin(const char *input_pin_buffer, user_record_t *out_user);
+bool nv_storage_find_user_by_card(const char *card_id_str, user_record_t *out_user);
+bool nv_storage_find_user_by_qr(const char *qr_str, user_record_t *out_user);
+bool nv_storage_find_user_by_wiegand34(uint32_t wg34_id, user_record_t *out_user);
+
+// OSDP Configuration
+typedef struct {
+    uint8_t address;     // OSDP PD Address (0x00 - 0x7E, default: 0x00)
+    uint32_t baudrate;   // RS485 Baudrate (9600 - 115200, default: 9600)
+    bool enabled;        // OSDP PD enabled (default: true)
+} osdp_config_t;
+
+void nv_storage_get_osdp_config(osdp_config_t *cfg);
+void nv_storage_set_osdp_config(const osdp_config_t *cfg);
+
+// Active OTA Job Record (for power-loss recovery and post-boot verification)
+#define OTA_JOB_MAGIC 0x4F544131 // ASCII "OTA1"
+
+typedef struct {
+    uint32_t magic;          // Must match OTA_JOB_MAGIC
+    uint32_t request_id;     // MQTT command requestId
+    uint8_t target;          // Target component (0x01 = ESP32)
+    uint32_t target_version; // Target firmware version
+    char active_dev_id[32];  // Active device/topic ID
+    uint32_t crc32;          // CRC32 integrity check
+} ota_job_record_t;
+
+bool nv_storage_save_active_ota_job(uint32_t request_id, uint8_t target, uint32_t target_version, const char *active_dev_id);
+bool nv_storage_get_active_ota_job(ota_job_record_t *job);
+void nv_storage_clear_active_ota_job(void);
+
+#endif

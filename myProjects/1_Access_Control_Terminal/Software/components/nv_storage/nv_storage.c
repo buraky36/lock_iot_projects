@@ -12,9 +12,13 @@ static const char *NAMESPACE_USERS = "users";
 
 static uint8_t user_active_map[1250]; // 1250 bytes * 8 bits = 10000 bits. Bit 1 represents UserID 1, etc.
 
-#define MAX_OFFLINE_LOGS 250
-static offline_log_t s_offline_logs[MAX_OFFLINE_LOGS];
-static uint8_t s_log_count = 0;
+static inline bool is_numeric_card_str(const char *str) {
+    if (!str || *str == '\0') return false;
+    for (const char *p = str; *p; p++) {
+        if (*p < '0' || *p > '9') return false;
+    }
+    return true;
+}
 
 static void nv_storage_save_active_map(void) {
     nvs_handle_t handle;
@@ -73,63 +77,20 @@ void nv_storage_init(void) {
 }
 
 void nv_storage_init_offline_logs(void) {
-    nvs_handle_t handle;
-    if (nvs_open(NAMESPACE_CFG, NVS_READONLY, &handle) == ESP_OK) {
-        size_t len = sizeof(s_offline_logs);
-        if (nvs_get_blob(handle, "off_logs", s_offline_logs, &len) == ESP_OK) {
-            s_log_count = len / sizeof(offline_log_t);
-            if (s_log_count > MAX_OFFLINE_LOGS) s_log_count = MAX_OFFLINE_LOGS;
-            ESP_LOGI(TAG, "Loaded %d offline logs from NVS", s_log_count);
-        } else {
-            s_log_count = 0;
-        }
-        nvs_close(handle);
-    }
-}
-
-static void nv_storage_save_offline_logs(void) {
-    nvs_handle_t handle;
-    if (nvs_open(NAMESPACE_CFG, NVS_READWRITE, &handle) == ESP_OK) {
-        if (s_log_count > 0) {
-            nvs_set_blob(handle, "off_logs", s_offline_logs, s_log_count * sizeof(offline_log_t));
-        } else {
-            nvs_erase_key(handle, "off_logs");
-        }
-        nvs_commit(handle);
-        nvs_close(handle);
-    }
+    // No-op: offline logs not retained
 }
 
 void nv_storage_add_offline_log(offline_log_t log) {
-    if (s_log_count < MAX_OFFLINE_LOGS) {
-        s_offline_logs[s_log_count++] = log;
-    } else {
-        // Shift array to drop the oldest log if full
-        memmove(s_offline_logs, &s_offline_logs[1], (MAX_OFFLINE_LOGS - 1) * sizeof(offline_log_t));
-        s_offline_logs[MAX_OFFLINE_LOGS - 1] = log;
-    }
-    nv_storage_save_offline_logs();
-    ESP_LOGI(TAG, "Offline log added. Total: %d", s_log_count);
+    (void)log;
 }
 
 void nv_storage_get_offline_logs(offline_log_t *logs, uint8_t *count) {
-    *count = s_log_count;
-    if (s_log_count > 0 && logs != NULL) {
-        memcpy(logs, s_offline_logs, s_log_count * sizeof(offline_log_t));
-    }
+    (void)logs;
+    if (count) *count = 0;
 }
 
 void nv_storage_clear_offline_logs(uint8_t count) {
-    if (count == 0) return;
-    if (count >= s_log_count) {
-        s_log_count = 0;
-    } else {
-        uint8_t remaining = s_log_count - count;
-        memmove(s_offline_logs, &s_offline_logs[count], remaining * sizeof(offline_log_t));
-        s_log_count = remaining;
-    }
-    nv_storage_save_offline_logs();
-    ESP_LOGI(TAG, "Cleared %d offline logs. Remaining: %d", count, s_log_count);
+    (void)count;
 }
 
 uint8_t nv_storage_get_hw_version(void) {
@@ -247,6 +208,8 @@ bool nv_storage_add_user(const user_record_t *user) {
 
 bool nv_storage_get_user(uint16_t user_id, user_record_t *user_out) {
     if (user_id == 0 || user_id > 9988) return false;
+    if (!(user_active_map[user_id / 8] & (1 << (user_id % 8)))) return false;
+
     nvs_handle_t handle;
     if (nvs_open(NAMESPACE_USERS, NVS_READONLY, &handle) != ESP_OK) return false;
     
@@ -334,15 +297,27 @@ bool nv_storage_find_user_by_card(const char *card_id_str, user_record_t *out_us
     size_t size = sizeof(user_record_t);
     bool found = false;
     
+    bool in_is_num = is_numeric_card_str(card_id_str);
+    uint32_t in_val = in_is_num ? (uint32_t)strtoul(card_id_str, NULL, 10) : 0;
+
     for (uint16_t i = 1; i <= 9988; i++) {
         if (!(user_active_map[i / 8] & (1 << (i % 8)))) continue;
 
         snprintf(key, sizeof(key), "u%u", i);
         size = sizeof(user_record_t);
         if (nvs_get_blob(handle, key, out_user, &size) == ESP_OK) {
-            if (out_user->is_active && strcmp(out_user->card_id, card_id_str) == 0) {
-                found = true;
-                break;
+            if (out_user->is_active) {
+                if (strcmp(out_user->card_id, card_id_str) == 0) {
+                    found = true;
+                    break;
+                }
+                if (in_is_num && is_numeric_card_str(out_user->card_id)) {
+                    uint32_t db_val = (uint32_t)strtoul(out_user->card_id, NULL, 10);
+                    if ((db_val & 0x00FFFFFF) == (in_val & 0x00FFFFFF)) {
+                        found = true;
+                        break;
+                    }
+                }
             }
         }
     }
@@ -412,9 +387,18 @@ bool nv_storage_is_master_credential(const char *cred) {
     sys_config_t conf;
     nv_storage_get_config(&conf);
     
+    bool in_is_num = is_numeric_card_str(cred);
+    uint32_t in_val = in_is_num ? (uint32_t)strtoul(cred, NULL, 10) : 0;
+
     for (uint8_t i = 0; i < conf.master_card_count; i++) {
         if (strcmp(conf.master_cards[i], cred) == 0) {
             return true;
+        }
+        if (in_is_num && is_numeric_card_str(conf.master_cards[i])) {
+            uint32_t db_val = (uint32_t)strtoul(conf.master_cards[i], NULL, 10);
+            if ((db_val & 0x00FFFFFF) == (in_val & 0x00FFFFFF)) {
+                return true;
+            }
         }
     }
     return false;
@@ -449,9 +433,18 @@ int32_t nv_storage_get_master_id(const char *cred) {
     sys_config_t conf;
     nv_storage_get_config(&conf);
     
+    bool in_is_num = is_numeric_card_str(cred);
+    uint32_t in_val = in_is_num ? (uint32_t)strtoul(cred, NULL, 10) : 0;
+
     for (uint8_t i = 0; i < conf.master_card_count; i++) {
         if (strcmp(conf.master_cards[i], cred) == 0) {
             return conf.master_ids[i];
+        }
+        if (in_is_num && is_numeric_card_str(conf.master_cards[i])) {
+            uint32_t db_val = (uint32_t)strtoul(conf.master_cards[i], NULL, 10);
+            if ((db_val & 0x00FFFFFF) == (in_val & 0x00FFFFFF)) {
+                return conf.master_ids[i];
+            }
         }
     }
     return -1;
@@ -508,6 +501,19 @@ bool nv_storage_delete_master_credential(const char *cred) {
         if (strcmp(conf.master_cards[i], cred) == 0) {
             found_idx = i;
             break;
+        }
+    }
+
+    if (found_idx == -1 && is_numeric_card_str(cred)) {
+        uint32_t in_val = (uint32_t)strtoul(cred, NULL, 10);
+        for (uint8_t i = 0; i < conf.master_card_count; i++) {
+            if (is_numeric_card_str(conf.master_cards[i])) {
+                uint32_t db_val = (uint32_t)strtoul(conf.master_cards[i], NULL, 10);
+                if ((db_val & 0x00FFFFFF) == (in_val & 0x00FFFFFF)) {
+                    found_idx = i;
+                    break;
+                }
+            }
         }
     }
 
@@ -575,52 +581,6 @@ void nv_storage_clear_master_credentials(void) {
     memset(conf.master_cards, 0, sizeof(conf.master_cards));
     memset(conf.master_ids, 0, sizeof(conf.master_ids));
     nv_storage_set_config(&conf);
-}
-
-bool nv_storage_save_api_keys(const char *device_key, const char *pair_key) {
-    nvs_handle_t handle;
-    if (nvs_open(NAMESPACE_CFG, NVS_READWRITE, &handle) != ESP_OK) return false;
-    if (device_key) nvs_set_str(handle, "dev_k", device_key);
-    if (pair_key) nvs_set_str(handle, "pair_k", pair_key);
-    esp_err_t err = nvs_commit(handle);
-    nvs_close(handle);
-    return err == ESP_OK;
-}
-
-bool nv_storage_get_api_keys(char *device_key, char *pair_key) {
-    nvs_handle_t handle;
-    if (nvs_open(NAMESPACE_CFG, NVS_READONLY, &handle) != ESP_OK) return false;
-    size_t size;
-    if (device_key) { size = 64; nvs_get_str(handle, "dev_k", device_key, &size); }
-    if (pair_key) { size = 64; nvs_get_str(handle, "pair_k", pair_key, &size); }
-    nvs_close(handle);
-    return true;
-}
-
-bool nv_storage_save_prov_token(const char *token) {
-    nvs_handle_t handle;
-    if (nvs_open(NAMESPACE_CFG, NVS_READWRITE, &handle) != ESP_OK) return false;
-    if (token) nvs_set_str(handle, "prov_tok", token);
-    esp_err_t err = nvs_commit(handle);
-    nvs_close(handle);
-    return err == ESP_OK;
-}
-
-bool nv_storage_get_prov_token(char *token, size_t max_len) {
-    nvs_handle_t handle;
-    if (nvs_open(NAMESPACE_CFG, NVS_READONLY, &handle) != ESP_OK) return false;
-    esp_err_t err = nvs_get_str(handle, "prov_tok", token, &max_len);
-    nvs_close(handle);
-    return err == ESP_OK;
-}
-
-void nv_storage_clear_prov_token(void) {
-    nvs_handle_t handle;
-    if (nvs_open(NAMESPACE_CFG, NVS_READWRITE, &handle) == ESP_OK) {
-        nvs_erase_key(handle, "prov_tok");
-        nvs_commit(handle);
-        nvs_close(handle);
-    }
 }
 
 bool nv_storage_save_onloi_mqtt_config(const onloi_mqtt_config_t *config) {

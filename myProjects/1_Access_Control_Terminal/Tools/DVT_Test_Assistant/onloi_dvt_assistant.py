@@ -36,8 +36,28 @@ from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, QThread, QTimer
 
 from test_steps import Step, MODELS, build_steps
 
-APP_VERSION = "v1.0"
-TARGET_FW_VERSION = "v2.0.13"
+APP_VERSION = "V1.2"
+
+def detect_default_fw_version() -> str:
+    """Reads FW_VERSION_STR from Software/src/main.c if available, otherwise returns 'Otomatik Algılanır'."""
+    candidates = [
+        os.path.abspath(os.path.join(APP_DIR, "..", "..", "Software", "src", "main.c")),
+        os.path.abspath(os.path.join(APP_DIR, "..", "Software", "src", "main.c")),
+        os.path.abspath(os.path.join(APP_DIR, "Software", "src", "main.c")),
+    ]
+    for c in candidates:
+        if os.path.exists(c):
+            try:
+                with open(c, "r", encoding="utf-8", errors="ignore") as f:
+                    content = f.read()
+                m = re.search(r'#define\s+FW_VERSION_STR\s+"(v\d+\.\d+\.\d+)"', content)
+                if m:
+                    return m.group(1)
+            except Exception:
+                pass
+    return "Otomatik Algılanır"
+
+TARGET_FW_VERSION = detect_default_fw_version()
 
 # =============================================================================
 # SERIAL WORKER THREAD
@@ -416,6 +436,7 @@ class OnloiDvtApp(QtWidgets.QMainWindow):
         self.captured_vars: Dict[str, str] = {}
         self.detected_serial: str = ""
         self.detected_mac6: str = ""
+        self.detected_fw_version: str = ""
         self.current_expect_counts: Dict[int, int] = {}
         self.measure_start_time: Optional[float] = None
         self.window_deadline: Optional[float] = None
@@ -746,18 +767,21 @@ class OnloiDvtApp(QtWidgets.QMainWindow):
         self.setStyleSheet(MODERN_STYLE)
 
     def _update_serial_badge(self):
+        fw_txt = f" | 📦 FW: {self.detected_fw_version}" if self.detected_fw_version else ""
         if self.detected_serial:
-            self.lbl_serial_badge.setText(f"🆔 Cihaz Seri No: {self.detected_serial}")
+            self.lbl_serial_badge.setText(f"🆔 Cihaz Seri No: {self.detected_serial}{fw_txt}")
             self.lbl_serial_badge.setStyleSheet(
                 "color: #34D399; font-weight: bold; padding: 2px 10px; "
                 "background-color: #064E3B; border: 1px solid #10B981; border-radius: 4px;"
             )
         else:
-            self.lbl_serial_badge.setText("🆔 Cihaz Seri No: Otomatik Algılanacak (Log bekleniyor)")
+            self.lbl_serial_badge.setText(f"🆔 Cihaz Seri No: Otomatik Algılanacak{fw_txt}")
             self.lbl_serial_badge.setStyleSheet(
                 "color: #38BDF8; font-weight: bold; padding: 2px 10px; "
                 "background-color: #1E293B; border: 1px solid #334155; border-radius: 4px;"
             )
+        active_fw = self.detected_fw_version or TARGET_FW_VERSION
+        self.setWindowTitle(f"Onloi DVT Test Asistanı {APP_VERSION} — Geçiş Kontrol Terminali (Cihaz FW: {active_fw})")
 
     # -------------------------------------------------------------------------
     # SERIAL PORT HANDLING
@@ -883,6 +907,7 @@ class OnloiDvtApp(QtWidgets.QMainWindow):
             "tester": self.txt_tester.text(),
             "serial": self.detected_serial,
             "detected_mac6": self.detected_mac6,
+            "detected_fw_version": self.detected_fw_version,
             "captured_vars": self.captured_vars,
             "step_results": self.step_results,
             "updated_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -908,6 +933,7 @@ class OnloiDvtApp(QtWidgets.QMainWindow):
 
             self.detected_mac6 = data.get("detected_mac6", "")
             self.detected_serial = data.get("serial", "")
+            self.detected_fw_version = data.get("detected_fw_version", "")
             if self.detected_mac6:
                 self.detected_serial = f"{model}_{self.detected_mac6}"
             self._update_serial_badge()
@@ -1048,12 +1074,13 @@ class OnloiDvtApp(QtWidgets.QMainWindow):
     def _substitute_vars(self, text: str, for_regex: bool = False) -> str:
         for k, v in self.captured_vars.items():
             text = text.replace(f"<<{k}>>", v)
+        active_fw = self.detected_fw_version or self.captured_vars.get("FW_VER") or TARGET_FW_VERSION
         if not for_regex:
             defaults = {
                 "PINID": "3",
                 "QLID": "2",
                 "BLE": self.detected_serial or f"{self.current_model}_XXXX",
-                "FW": TARGET_FW_VERSION,
+                "FW": active_fw,
                 "MODEL": self.current_model,
             }
             for k, v in defaults.items():
@@ -1063,7 +1090,7 @@ class OnloiDvtApp(QtWidgets.QMainWindow):
                 "PINID": r"\d+",
                 "QLID": r"\d+",
                 "BLE": rf"{self.current_model}_[0-9A-Fa-f]+",
-                "FW": re.escape(TARGET_FW_VERSION),
+                "FW": r"v\d+\.\d+\.\d+",
                 "MODEL": re.escape(self.current_model),
                 "M1": r"\S+",
                 "M2": r"\S+",
@@ -1285,6 +1312,22 @@ class OnloiDvtApp(QtWidgets.QMainWindow):
                 self._update_serial_badge()
                 self._save_session()
                 self.append_console(f"🆔 Cihaz Seri Numarası (BLE) Algılandı: {self.detected_serial}", "#34D399")
+
+        # 3b. Check Firmware Version from boot banner, onloi_ota_info, or FIRMWARE_INFO (0x3A)
+        m_fw = re.search(
+            r"(?:Access Control Terminal Firmware\s+(v\d+\.\d+\.\d+)|Firmware Version\s*:.*\((v\d+\.\d+\.\d+)\))",
+            line
+        )
+        if m_fw:
+            fw_ver = (m_fw.group(1) or m_fw.group(2)).strip()
+            self.captured_vars["FW"] = fw_ver
+            self.captured_vars["FW_VER"] = fw_ver
+            if fw_ver != self.detected_fw_version:
+                self.detected_fw_version = fw_ver
+                self._update_serial_badge()
+                self._update_step_ui()
+                self._save_session()
+                self.append_console(f"📦 Cihaz Firmware Sürümü Algılandı: {self.detected_fw_version}", "#38BDF8")
 
         # 4. Sync variables from onloi_master_list_view
         m_master = re.search(r"Master\s+(\d+)\s+\(ID\s+(\d+)\):\s+(\S+)", line)
@@ -1509,6 +1552,7 @@ class OnloiDvtApp(QtWidgets.QMainWindow):
         now_str = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         tester = self.txt_tester.text().strip() or "Bilinmiyor"
         sn = self.detected_serial or self.captured_vars.get("BLE") or f"{self.current_model}_Bilinmiyor"
+        report_fw = self.detected_fw_version or self.captured_vars.get("FW_VER") or TARGET_FW_VERSION
         model = self.current_model
 
         html_path = os.path.join(reports_dir, f"Onloi_Test_Raporu_{model}_{now_str}.html")
@@ -1586,7 +1630,7 @@ class OnloiDvtApp(QtWidgets.QMainWindow):
         <div>
             <b>Model:</b> {model} ({MODELS[model]['title']})<br>
             <b>Yazılım Versiyonu:</b> Test Asistanı {APP_VERSION}<br>
-            <b>Firmware Versiyonu:</b> {TARGET_FW_VERSION}<br>
+            <b>Firmware Versiyonu:</b> {report_fw}<br>
             <b>Cihaz Seri No / MAC:</b> {sn}
         </div>
         <div>
@@ -1617,7 +1661,7 @@ class OnloiDvtApp(QtWidgets.QMainWindow):
     </table>
 
     <div class="footer">
-        <div>Onloi DVT Test Asistanı {APP_VERSION} (Hedef Cihaz FW: {TARGET_FW_VERSION})</div>
+        <div>Onloi DVT Test Asistanı {APP_VERSION} (Test Edilen Cihaz FW: {report_fw})</div>
         <div>İmza: ......................................................</div>
     </div>
 </body>
@@ -1628,7 +1672,7 @@ class OnloiDvtApp(QtWidgets.QMainWindow):
 
         # CSV Generation
         with open(csv_path, "w", encoding="utf-8-sig") as f:
-            f.write(f"# Onloi DVT Test Asistani {APP_VERSION} | Cihaz FW: {TARGET_FW_VERSION} | Model: {model} | Seri No: {sn} | Personel: {tester}\n")
+            f.write(f"# Onloi DVT Test Asistani {APP_VERSION} | Cihaz FW: {report_fw} | Model: {model} | Seri No: {sn} | Personel: {tester}\n")
             f.write("Adim_No;Bolum;Baslik;Sonuc;Zaman;Not\n")
             for s in self.steps:
                 r = self.step_results.get(s.id, {"status": "BEKLIYOR", "timestamp": "-", "note": ""})

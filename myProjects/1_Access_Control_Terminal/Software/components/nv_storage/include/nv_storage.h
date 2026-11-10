@@ -41,15 +41,6 @@ void nv_storage_set_config(sys_config_t *config);
 uint8_t nv_storage_get_hw_version(void);
 void nv_storage_set_hw_version(uint8_t hw_version);
 
-// API Keys (Legacy)
-bool nv_storage_save_api_keys(const char *device_key, const char *pair_key);
-bool nv_storage_get_api_keys(char *device_key, char *pair_key);
-
-// Onloi Provisioning Token
-bool nv_storage_save_prov_token(const char *token);
-bool nv_storage_get_prov_token(char *token, size_t max_len);
-void nv_storage_clear_prov_token(void);
-
 // Onloi MQTT Configuration
 typedef struct {
     char host[128];
@@ -57,7 +48,7 @@ typedef struct {
     char client_id[64];
     char username[64];
     char password[64];
-    char secret[128];          // Hex string format for backward compatibility
+    char reserved_secret[128]; // Reserved for backward compatibility
     uint16_t session_epoch;
     bool is_claimed;
     uint8_t flags;             // bit0: 1=TLS (MQTTS), 0=plain MQTT

@@ -94,42 +94,8 @@ static uint32_t app_normalize_rfid_card_id(uint32_t raw_card_id,
 
 static int64_t state_timer_start = 0;
 static int64_t led_revert_timer_ms = 0;
-
-#if 0 // [V2.0.6 debug cleanup]
-static void app_dump_user_list(void) {
-  ESP_LOGI(TAG, "==== USER LIST PLEASE ====");
-  ESP_LOGI(TAG, "System Passwords Table");
-  ESP_LOGI(TAG, "1. MasterCode : \"%s\"", config.master_code);
-
-  for (int i = 0; i < config.master_card_count; i++) {
-    ESP_LOGI(TAG, "%c. MasterID %d - Master Card Number: %s", 'a' + i,
-             config.master_ids[i], config.master_cards[i]);
-  }
-
-  ESP_LOGI(TAG, "Users Table");
-  for (uint16_t i = 1; i <= 9988; i++) {
-    user_record_t u;
-    if (nv_storage_get_user(i, &u)) {
-      if (strlen(u.pin) > 0) {
-        ESP_LOGI(TAG, "UserID %d - PIN: %s", u.user_id, u.pin);
-      }
-      if (strlen(u.card_id) > 0) {
-        ESP_LOGI(TAG, "UserID %d - User Card Number: %s", u.user_id, u.card_id);
-      }
-      if (strlen(u.qr_id) > 0) {
-        ESP_LOGI(TAG, "UserID %d - User QR: %s", u.user_id, u.qr_id);
-      }
-    }
-  }
-  ESP_LOGI(TAG, "==========================");
-
-  // Visual and Audio feedback for the dump
-  hal_io_led_set(LED_COLOR_GREEN,
-                 LED_MODE_SOLID); // Using set directly because app_set_temp_led
-                                  // is static below
-  hal_io_buzzer_beep(2700, 100, 2);
-}
-#endif
+static uint8_t s_failed_auth_count = 0;
+static int64_t s_lockout_until_ms = 0;
 
 static const char *state_to_string(app_state_t state) {
   switch (state) {
@@ -210,6 +176,12 @@ void app_set_state(app_state_t new_state) {
   current_state = new_state;
   state_timer_start = esp_timer_get_time();
   led_revert_timer_ms = 0; // Clear temporary led override
+
+  if (new_state == STATE_PROGRAMMING || new_state == STATE_MASTER_ADD_MODE ||
+      new_state == STATE_FACTORY_RESET) {
+    s_failed_auth_count = 0;
+    s_lockout_until_ms = 0;
+  }
 
   switch (new_state) {
   case STATE_IDLE:
@@ -294,6 +266,8 @@ void app_state_machine_init(void) {
 }
 
 void app_trigger_door_open(void) {
+  s_failed_auth_count = 0;
+  s_lockout_until_ms = 0;
   uint32_t dur = config.relay_time > 0 ? (config.relay_time * 1000) : 3000;
   hal_shift_reg_play_anim(ANIM_SUCCESS_TICK, dur);
   if (config.relay_time == 0) {
@@ -327,7 +301,24 @@ void app_trigger_door_close(void) {
 
 void app_trigger_alarm(void) { app_set_state(STATE_ALARM); }
 
+static void app_set_temp_led(led_color_t color, led_mode_t mode,
+                             uint32_t duration_ms) {
+  hal_io_led_set(color, mode);
+  led_revert_timer_ms = (esp_timer_get_time() / 1000) + duration_ms;
+}
+
 void app_trigger_access_denied(void) {
+  if (current_state == STATE_IDLE) {
+    s_failed_auth_count++;
+    if (s_failed_auth_count >= 5) {
+      s_lockout_until_ms = (esp_timer_get_time() / 1000) + 30000;
+      s_failed_auth_count = 0;
+      ESP_LOGW(TAG, "Brute-force protection: 5 failed attempts! Locking inputs for 30 seconds.");
+      app_set_temp_led(LED_COLOR_RED, LED_MODE_BLINK_FAST, 30000);
+      hal_io_buzzer_beep(1000, 1000, 1);
+      return;
+    }
+  }
   hal_io_buzzer_beep(1000, 300, 3); // 3 Slow Beeps
   hal_shift_reg_play_anim(ANIM_ERROR_FLASH, 3000);
 }
@@ -351,12 +342,6 @@ static bool app_is_access_granted(const char *prefix) {
       (strcmp(prefix, "KEYPAD") == 0 || strcmp(prefix, "QR") == 0))
     return true; // PIN or QR
   return false;
-}
-
-static void app_set_temp_led(led_color_t color, led_mode_t mode,
-                             uint32_t duration_ms) {
-  hal_io_led_set(color, mode);
-  led_revert_timer_ms = (esp_timer_get_time() / 1000) + duration_ms;
 }
 
 static void process_auth_pass_command(const char *prefix, const char *data) {
@@ -449,8 +434,7 @@ static void process_auth_pass_command(const char *prefix, const char *data) {
   } else {
     ESP_LOGW(TAG, "Offline Mode Denied Access for %s", payload);
     app_set_temp_led(LED_COLOR_RED, LED_MODE_SOLID, 3000);
-    hal_io_buzzer_beep(1000, 300, 3); // 3 Slow Beeps
-    hal_shift_reg_play_anim(ANIM_ERROR_FLASH, 3000);
+    app_trigger_access_denied();
   }
 
   offline_log_t log = {0};
@@ -472,6 +456,7 @@ static void process_auth_pass_command(const char *prefix, const char *data) {
 }
 
 void app_state_machine_tick(void) {
+  static char s_raw_qr_buf[128];
   hal_io_tick();
   hal_shift_reg_tick();
   int64_t now_us = esp_timer_get_time();
@@ -549,14 +534,12 @@ void app_state_machine_tick(void) {
     master_enroll_closed = true;
     if (active_hw_version == HW_VERSION_RFID_ONLY &&
         nv_storage_is_master_enroll_needed()) {
-      sys_config_t cfg_snap;
-      nv_storage_get_config(&cfg_snap);
-      if (cfg_snap.master_card_count > 0) {
+      if (config.master_card_count > 0) {
         nv_storage_set_master_enroll_done();
         ESP_LOGI(TAG,
                  "[BOOT_MASTER] 10s window closed with %d Master Cards. "
                  "Enrollment locked.",
-                 cfg_snap.master_card_count);
+                 config.master_card_count);
       } else {
         ESP_LOGI(TAG, "[BOOT_MASTER] 10s window closed with 0 Master Cards. "
                       "Remains in fresh enroll state for next boot.");
@@ -672,7 +655,7 @@ void app_state_machine_tick(void) {
         in2_state_start_ms = uptime_ms;
         ESP_LOGW(TAG,
                  "[IN2_RESET] 5s HIGH completed! Disconnect 12V (set IN2 LOW) "
-                 "within 3 seconds... (uptime=%lld ms)",
+                 "within 6 seconds... (uptime=%lld ms)",
                  (long long)uptime_ms);
         hal_io_set_sound_enabled(true);
         hal_io_buzzer_beep(2700, 600, 1);
@@ -693,18 +676,18 @@ void app_state_machine_tick(void) {
                       "seconds (3 beeps) to confirm Factory Reset...");
         hal_io_set_sound_enabled(true);
         hal_io_buzzer_beep(2700, 450, 3);
-      } else if (uptime_ms - in2_state_start_ms >= 3000) {
+      } else if (uptime_ms - in2_state_start_ms >= 6000) {
         in2_rst_state = IN2_RST_DONE;
-        ESP_LOGE(TAG, "[IN2_RESET] Timeout! IN2 was NOT disconnected within 3s "
+        ESP_LOGE(TAG, "[IN2_RESET] Timeout! IN2 was NOT disconnected within 6s "
                       "(short-circuit protection). Factory Reset ABORTED.");
         hal_io_set_sound_enabled(true);
         hal_io_buzzer_beep(1000, 200, 2);
         hal_io_led_set(LED_COLOR_RED, LED_MODE_BLINK_SLOW);
       } else if (periodic_log) {
         ESP_LOGW(TAG,
-                 "[IN2_RESET] [WAIT_FALLING_3S] Time left to release 12V: %lld "
-                 "/ 3000 ms... RELEASE 12V NOW! (IN2=%d)",
-                 (long long)(3000 - (uptime_ms - in2_state_start_ms)),
+                 "[IN2_RESET] [WAIT_FALLING_6S] Time left to release 12V: %lld "
+                 "/ 6000 ms... RELEASE 12V NOW! (IN2=%d)",
+                 (long long)(6000 - (uptime_ms - in2_state_start_ms)),
                  in2_debounced);
       }
       break;
@@ -806,6 +789,38 @@ void app_state_machine_tick(void) {
     break;
   }
   case STATE_IDLE: {
+    if ((esp_timer_get_time() / 1000) < s_lockout_until_ms) {
+      char discard_key = '\0';
+      uint32_t discard_uid = 0;
+      bool input_attempted = false;
+
+      if (hal_touch_read_key(&discard_key)) {
+        input_attempted = true;
+      }
+      if (active_hw_version != HW_VERSION_PIN_QR) {
+        if (mfrc522_check_card(&discard_uid)) {
+          input_attempted = true;
+        }
+      }
+      if (hal_wiegand_available()) {
+        uint8_t discard_bits;
+        hal_wiegand_read(&discard_bits);
+        input_attempted = true;
+      }
+      if (active_hw_version == HW_VERSION_PIN_QR) {
+        if (hal_qr_read(s_raw_qr_buf, sizeof(s_raw_qr_buf))) {
+          input_attempted = true;
+        }
+      }
+
+      if (input_attempted) {
+        input_len = 0;
+        is_entering_master = false;
+        hal_io_buzzer_beep(1000, 150, 2);
+      }
+      break;
+    }
+
     if ((input_len > 0 || is_entering_master) && elapsed_ms > 5000) {
       ESP_LOGI(TAG, "[IDLE] Keypad timeout, resetting buffer.");
       input_len = 0;
@@ -1036,9 +1051,8 @@ void app_state_machine_tick(void) {
       }
     }
 
-    char raw_qr_str[128];
     if (active_hw_version == HW_VERSION_PIN_QR &&
-        hal_qr_read(raw_qr_str, sizeof(raw_qr_str))) {
+        hal_qr_read(s_raw_qr_buf, sizeof(s_raw_qr_buf))) {
       if (hal_shift_reg_is_blocking_anim_playing())
         break;
       hal_shift_reg_wakeup_keypad();
@@ -1047,12 +1061,8 @@ void app_state_machine_tick(void) {
       }
 
       char qr_str[32];
-      app_normalize_qr_string(raw_qr_str, qr_str, sizeof(qr_str));
+      app_normalize_qr_string(s_raw_qr_buf, qr_str, sizeof(qr_str));
 
-      // USERLISTPLEASE debug QR code disabled for security in V2.0.6
-      // if (strcmp(raw_qr_str, "USERLISTPLEASE") == 0) {
-      //   app_dump_user_list();
-      // } else
       if (is_entering_master && nv_storage_is_master_credential(qr_str)) {
         ESP_LOGI(TAG, "Master QR read after *! Entering Programming Mode.");
         hal_shift_reg_play_anim(ANIM_MASTER_WAVE, 0);
@@ -1068,7 +1078,7 @@ void app_state_machine_tick(void) {
           hal_shift_reg_play_anim(ANIM_MASTER_WAVE, 0);
           app_set_state(STATE_MASTER_ADD_MODE);
         } else {
-          process_auth_pass_command("QR", raw_qr_str);
+          process_auth_pass_command("QR", s_raw_qr_buf);
         }
         is_entering_master = false;
       }
@@ -1385,16 +1395,15 @@ void app_state_machine_tick(void) {
       }
     }
 
-    char raw_qr_mode[128];
     if (active_hw_version == HW_VERSION_PIN_QR &&
-        hal_qr_read(raw_qr_mode, sizeof(raw_qr_mode))) {
+        hal_qr_read(s_raw_qr_buf, sizeof(s_raw_qr_buf))) {
       state_timer_start = esp_timer_get_time();
       hal_shift_reg_wakeup_keypad();
       if (config.is_online) {
         api_client_send_session_start(0x01);
       }
       char qr_str[32];
-      app_normalize_qr_string(raw_qr_mode, qr_str, sizeof(qr_str));
+      app_normalize_qr_string(s_raw_qr_buf, qr_str, sizeof(qr_str));
 
       if (nv_storage_is_master_credential(qr_str)) {
         if (current_state == STATE_MASTER_ADD_MODE && elapsed_ms < 5000) {
@@ -2174,16 +2183,15 @@ void app_state_machine_tick(void) {
       }
     }
 
-    char raw_prog_qr[128];
     if (active_hw_version == HW_VERSION_PIN_QR &&
-        hal_qr_read(raw_prog_qr, sizeof(raw_prog_qr))) {
+        hal_qr_read(s_raw_qr_buf, sizeof(s_raw_qr_buf))) {
       state_timer_start = esp_timer_get_time();
       hal_shift_reg_wakeup_keypad();
       if (config.is_online) {
         api_client_send_session_start(0x01);
       }
       char qr_str[32];
-      app_normalize_qr_string(raw_prog_qr, qr_str, sizeof(qr_str));
+      app_normalize_qr_string(s_raw_qr_buf, qr_str, sizeof(qr_str));
 
       if (prog_state == PROG_STATE_ADD_MASTER_CARD) {
         ESP_LOGI(TAG, "[PROG] QR read: %s -> Add Master Card (AutoID)", qr_str);
@@ -2314,9 +2322,8 @@ void app_state_machine_tick(void) {
     // to prevent instant toggling or duplicate beeping from the initial
     // presentation.
     if (elapsed_ms < 2500) {
-      char discard_qr[128];
       if (active_hw_version == HW_VERSION_PIN_QR) {
-        hal_qr_read(discard_qr, sizeof(discard_qr));
+        hal_qr_read(s_raw_qr_buf, sizeof(s_raw_qr_buf));
       }
       if (hal_wiegand_available()) {
         uint8_t discard_bits;
@@ -2434,11 +2441,10 @@ void app_state_machine_tick(void) {
       }
     }
 
-    char raw_door_qr[128];
     if (active_hw_version == HW_VERSION_PIN_QR &&
-        hal_qr_read(raw_door_qr, sizeof(raw_door_qr))) {
+        hal_qr_read(s_raw_qr_buf, sizeof(s_raw_qr_buf))) {
       char norm_door_qr[32];
-      app_normalize_qr_string(raw_door_qr, norm_door_qr, sizeof(norm_door_qr));
+      app_normalize_qr_string(s_raw_qr_buf, norm_door_qr, sizeof(norm_door_qr));
       if (nv_storage_is_master_credential(norm_door_qr)) {
         ESP_LOGI(TAG,
                  "Master QR scanned during DOOR_OPEN. Entering Master Mode.");
@@ -2520,30 +2526,29 @@ void app_state_machine_tick(void) {
   }
   case STATE_HW_ERROR:
     // Device is locked due to hardware failure
-    // Poll hardware every 2.5 seconds to see if it recovered (without
-    // rebooting)
+    // Poll hardware every 2.5 seconds to see if it recovered (without rebooting)
     if (elapsed_ms >= 2500) {
-      ESP_LOGW(TAG, "Hardware unresponsive. Polling modules...");
+      ESP_LOGW(TAG, "Hardware unresponsive. Polling modules for hw_version=%d...", active_hw_version);
       extern bool mfrc522_init(void);
       extern bool hal_qr_init(void);
       extern bool hal_touch_init(void);
 
-      bool has_mfrc = mfrc522_init();
-      hal_qr_init();
-      bool has_touch = hal_touch_init();
-
-      // Check for valid combinations
       bool is_valid = false;
-      if (has_touch && has_mfrc)
-        is_valid = true; // PIN + RFID
-      else if (has_touch && !has_mfrc)
-        is_valid = true; // PIN + QR
-      else if (!has_touch && has_mfrc)
-        is_valid = true; // RFID ONLY
+      if (active_hw_version == HW_VERSION_PIN_RFID) {
+        bool has_touch = hal_touch_init();
+        bool has_mfrc = mfrc522_init();
+        if (has_touch && has_mfrc) is_valid = true;
+      } else if (active_hw_version == HW_VERSION_PIN_QR) {
+        bool has_touch = hal_touch_init();
+        bool has_qr = hal_qr_init();
+        if (has_touch && has_qr) is_valid = true;
+      } else if (active_hw_version == HW_VERSION_RFID_ONLY) {
+        bool has_mfrc = mfrc522_init();
+        if (has_mfrc) is_valid = true;
+      }
 
       if (is_valid) {
-        ESP_LOGI(TAG, "Hardware combination RECOVERED and is VALID! Resuming "
-                      "normal operation.");
+        ESP_LOGI(TAG, "Hardware combination RECOVERED and is VALID! Resuming normal operation.");
         app_state_machine_init(); // Restarts logic and returns to IDLE
         break;
       }

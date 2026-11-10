@@ -109,14 +109,14 @@ bool tsm12_init(void) {
       
       if (ret == ESP_OK) {
           found_tsm12 = true;
-          printf("[TSM12] FOUND device at 7-bit=0x%02X\n", TSM12_I2C_ADDR);
+          ESP_LOGI(TAG, "FOUND device at 7-bit=0x%02X", TSM12_I2C_ADDR);
           break;
       }
       vTaskDelay(pdMS_TO_TICKS(50));
   }
 
   if (!found_tsm12) {
-      printf("[TSM12] Not found on I2C bus!\n");
+      ESP_LOGE(TAG, "Not found on I2C bus!");
       return false;
   }
 
@@ -165,7 +165,7 @@ bool tsm12_init(void) {
   tsm12_write_reg(TSM12_REG_REF_RST2, 0x00);
 
   vTaskDelay(pdMS_TO_TICKS(10));
-  printf("[TSM12] Init complete. Configured per reference project.\n");
+  ESP_LOGI(TAG, "Init complete. Configured per reference project.");
   
   return true;
 }

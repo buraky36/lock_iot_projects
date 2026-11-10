@@ -8,6 +8,7 @@
 #include "driver/gpio.h"
 #include "driver/spi_master.h"
 #include "esp_rom_sys.h"
+#include "esp_log.h"
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -179,14 +180,14 @@ bool mfrc522_init(void) {
       uint8_t version = read_reg(VersionReg);
       if (version != 0x00 && version != 0xFF) {
           found_mfrc = true;
-          printf("[MFRC522] SPI Init. Version Register: 0x%02X\n", version);
+          ESP_LOGI("MFRC522", "SPI Init. Version Register: 0x%02X", version);
           break;
       }
       vTaskDelay(pdMS_TO_TICKS(50));
   }
 
   if (!found_mfrc) {
-      printf("[MFRC522] Hardware not found!\n");
+      ESP_LOGE("MFRC522", "Hardware not found!");
       return false; 
   }
 
@@ -210,15 +211,10 @@ bool mfrc522_init(void) {
     set_bit_mask(TxControlReg, 0x03);
   }
   // Verify key registers after init (printed once at boot)
-  printf(
-      "[MFRC522 DBG] TxControlReg=0x%02X (expect 0x8x or 0x03 in bits[1:0])\n",
-      read_reg(TxControlReg));
-  printf("[MFRC522 DBG] TxAutoReg    =0x%02X (expect 0x40)\n",
-         read_reg(TxAutoReg));
-  printf("[MFRC522 DBG] ModeReg     =0x%02X (expect 0x3D)\n",
-         read_reg(ModeReg));
-  printf("[MFRC522 DBG] TModeReg    =0x%02X (expect 0x80)\n",
-         read_reg(TModeReg));
+  ESP_LOGI("MFRC522", "TxControlReg=0x%02X (expect 0x8x or 0x03 in bits[1:0])", read_reg(TxControlReg));
+  ESP_LOGI("MFRC522", "TxAutoReg    =0x%02X (expect 0x40)", read_reg(TxAutoReg));
+  ESP_LOGI("MFRC522", "ModeReg      =0x%02X (expect 0x3D)", read_reg(ModeReg));
+  ESP_LOGI("MFRC522", "TModeReg     =0x%02X (expect 0x80)", read_reg(TModeReg));
   
   return true;
 }
@@ -275,20 +271,9 @@ static int to_card(uint8_t command, uint8_t *send_data, uint8_t send_len,
   return status;
 }
 
-static uint32_t simulated_uid = 0;
-
-void mfrc522_inject(uint32_t uid) {
-    simulated_uid = uid;
-}
-
 bool mfrc522_check_card(uint32_t *uid) {
   if (spi == NULL) {
     return false;
-  }
-  if (simulated_uid != 0) {
-      if (uid) *uid = simulated_uid;
-      simulated_uid = 0;
-      return true;
   }
 
   uint8_t reqMode = PICC_REQIDL;
@@ -363,10 +348,6 @@ bool mfrc522_init(void) {
 bool mfrc522_check_card(uint32_t *uid) {
   (void)uid;
   return false;
-}
-
-void mfrc522_inject(uint32_t uid) {
-  (void)uid;
 }
 
 #endif

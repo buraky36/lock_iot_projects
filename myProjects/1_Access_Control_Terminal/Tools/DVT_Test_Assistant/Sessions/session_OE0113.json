@@ -1,10 +1,333 @@
 {
   "model": "OE0113",
-  "current_step_idx": 20,
+  "current_step_idx": 43,
   "tester": "",
-  "serial": "OE0113_A4C97E",
-  "detected_mac6": "A4C97E",
-  "captured_vars": {},
-  "step_results": {},
-  "updated_at": "2026-10-30 03:17:17"
+  "serial": "OE0113_6E1EAA",
+  "detected_mac6": "6E1EAA",
+  "detected_fw_version": "v2.0.27",
+  "captured_vars": {
+    "FW": "v2.0.27",
+    "FW_VER": "v2.0.27",
+    "BLE": "OE0113_1EAA",
+    "MQ1": "99887766",
+    "M1": "99887766",
+    "MQ2": "55443322",
+    "M2": "55443322",
+    "Q1": "12345678",
+    "QL": "693e580744af9f4d9577e0a0097293a",
+    "QLID": "2",
+    "PINID": "3",
+    "OTA_DOWN_VER": "v2.0.13"
+  },
+  "step_results": {
+    "P-00": {
+      "title": "Test masası ve etiketli kartların hazırlanması",
+      "section": "0. Hazırlık",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:19:43",
+      "note": ""
+    },
+    "P-01": {
+      "title": "Model ve firmware kimlik doğrulaması",
+      "section": "0. Hazırlık",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:19:54",
+      "note": ""
+    },
+    "P-02": {
+      "title": "Fabrika ayarlarına sıfırlama ve açılış donanım kontrolü",
+      "section": "0. Hazırlık",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:20:19",
+      "note": ""
+    },
+    "P-03": {
+      "title": "Dokunmatik tuş takımı - 12 tuşun tek tek kontrolü",
+      "section": "0. Hazırlık",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:21:16",
+      "note": ""
+    },
+    "B-01": {
+      "title": "Varsayılan Master Kod (123456) ile programlama girişi ve çıkış",
+      "section": "1. Programlama Girişi ve Menü 1 (Master Kod)",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:22:41",
+      "note": ""
+    },
+    "B-02": {
+      "title": "Menü 1: Master Kodu 654321 yapma",
+      "section": "1. Programlama Girişi ve Menü 1 (Master Kod)",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:23:13",
+      "note": ""
+    },
+    "B-03": {
+      "title": "Eski kodun reddi, yeni kodun kabulü, kodu 123456'ya geri alma",
+      "section": "1. Programlama Girişi ve Menü 1 (Master Kod)",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:24:04",
+      "note": ""
+    },
+    "B-04": {
+      "title": "Menü 2: MASTER-QR-1 ekleme (otomatik ID)",
+      "section": "2. Menü 2: Master QR Ekleme",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:24:30",
+      "note": ""
+    },
+    "B-05": {
+      "title": "Menü 2: MASTER-QR-2'yi özel ID (10005) ile ekleme",
+      "section": "2. Menü 2: Master QR Ekleme",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:24:59",
+      "note": ""
+    },
+    "B-06": {
+      "title": "Menü 3: Kısa QR (QR-KISA-1) ekleme ve mükerrer red",
+      "section": "3. Menü 3: QR / PIN Kullanıcı ve Geçiş",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:25:25",
+      "note": ""
+    },
+    "B-07": {
+      "title": "Menü 3: Uzun QR (>31 karakter, SHA-256) ekleme",
+      "section": "3. Menü 3: QR / PIN Kullanıcı ve Geçiş",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:25:40",
+      "note": ""
+    },
+    "B-08": {
+      "title": "Menü 3: PIN kullanıcı ekleme (2580) ve hatalı girişler",
+      "section": "3. Menü 3: QR / PIN Kullanıcı ve Geçiş",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:26:16",
+      "note": ""
+    },
+    "B-09": {
+      "title": "Kısa ve uzun QR ile kapı açma",
+      "section": "3. Menü 3: QR / PIN Kullanıcı ve Geçiş",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:26:31",
+      "note": ""
+    },
+    "B-10": {
+      "title": "PIN 2580 ile kapı açma; yabancı QR ve yanlış PIN reddi",
+      "section": "3. Menü 3: QR / PIN Kullanıcı ve Geçiş",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:26:50",
+      "note": ""
+    },
+    "B-11": {
+      "title": "Master Ekleme Modu: MASTER-QR-1 ile QR-YABANCI ekleme",
+      "section": "4. Master QR ile Yönetim",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:27:09",
+      "note": ""
+    },
+    "B-12": {
+      "title": "Master Silme Modu: MASTER-QR-1'i 2 kez göstererek QR-YABANCI silme",
+      "section": "4. Master QR ile Yönetim",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:27:36",
+      "note": ""
+    },
+    "B-13": {
+      "title": "* + Master QR ile programlama girişi",
+      "section": "4. Master QR ile Yönetim",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:27:48",
+      "note": ""
+    },
+    "B-14": {
+      "title": "Menü 5 kilidi (bu modelde RFID yok)",
+      "section": "5. Menü 5 Kilidi ve PIN Değiştirme",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:28:01",
+      "note": ""
+    },
+    "B-15": {
+      "title": "Kullanıcının kendi PIN'ini değiştirmesi (2580 → 3690)",
+      "section": "5. Menü 5 Kilidi ve PIN Değiştirme",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:28:31",
+      "note": ""
+    },
+    "B-16": {
+      "title": "Menü 6: Röle süresini 2 sn yapma ve ölçme",
+      "section": "6. Menü 6 / Menü 7 Ayarları",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:28:56",
+      "note": ""
+    },
+    "B-17": {
+      "title": "Menü 6: Toggle (Aç/Kapa) modu - 0 sn",
+      "section": "6. Menü 6 / Menü 7 Ayarları",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:29:43",
+      "note": ""
+    },
+    "B-18": {
+      "title": "Menü 6: Röle süresini tekrar 5 sn yapma",
+      "section": "6. Menü 6 / Menü 7 Ayarları",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:29:58",
+      "note": ""
+    },
+    "B-19": {
+      "title": "Menü 7: Ses kapat/aç, LED kapat/aç ve Menü 0: Wiegand formatı (26 / 34 bit)",
+      "section": "6. Menü 6 / Menü 7 Ayarları",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:32:33",
+      "note": ""
+    },
+    "B-20": {
+      "title": "Menü 4: QR göstererek ve ID ile tekil silme",
+      "section": "7. Menü 4: Kullanıcı Silme",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:37:34",
+      "note": ""
+    },
+    "B-21": {
+      "title": "Menü 4: Master Kod ile TÜM kullanıcıları silme",
+      "section": "7. Menü 4: Kullanıcı Silme",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:40:28",
+      "note": ""
+    },
+    "B-22": {
+      "title": "Menü 4: Master QR + # ile TÜM kullanıcıları silme",
+      "section": "7. Menü 4: Kullanıcı Silme",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:44:12",
+      "note": ""
+    },
+    "B-23": {
+      "title": "Menü 8: Master QR göstererek ve Master ID ile silme",
+      "section": "8. Menü 8: Master QR Silme",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:46:00",
+      "note": ""
+    },
+    "B-24": {
+      "title": "Menü 8: Master Kod ile TÜM master QR'ları silme ve Master QR'ı geri yükleme",
+      "section": "8. Menü 8: Master QR Silme",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:47:12",
+      "note": ""
+    },
+    "B-25": {
+      "title": "Menü 9: Tuş takımından fabrika ayarına dönüş (9 9 #)",
+      "section": "9. Menü 9: Fabrika Ayarı",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:47:34",
+      "note": ""
+    },
+    "D-01": {
+      "title": "IN1 (Çıkış Butonu) ile kapı açma",
+      "section": "D. Ortak Donanım ve Protokol",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:47:57",
+      "note": ""
+    },
+    "D-02": {
+      "title": "Harici Wiegand okuyucu girişi (D0/D1)",
+      "section": "D. Ortak Donanım ve Protokol",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:48:09",
+      "note": ""
+    },
+    "D-03": {
+      "title": "RS-485 / OSDP durum bilgisi",
+      "section": "D. Ortak Donanım ve Protokol",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:48:20",
+      "note": ""
+    },
+    "D-04": {
+      "title": "Bluetooth (BLE) yayın kontrolü",
+      "section": "D. Ortak Donanım ve Protokol",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:48:50",
+      "note": ""
+    },
+    "D-05": {
+      "title": "IN2: İlk 10 sn penceresinden sonra uygulanan +12V'un DİKKATE ALINMAMASI",
+      "section": "D. Ortak Donanım ve Protokol",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:49:52",
+      "note": ""
+    },
+    "D-06": {
+      "title": "IN2: +12V bırakılmazsa resetin İPTAL edilmesi (kısa devre / arıza koruması)",
+      "section": "D. Ortak Donanım ve Protokol",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:50:39",
+      "note": ""
+    },
+    "D-07": {
+      "title": "IN2: Donanımsal fabrika reseti (5 sn tut → 3 sn içinde bırak → 3 sn bekle)",
+      "section": "D. Ortak Donanım ve Protokol",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:51:03",
+      "note": ""
+    },
+    "E-01": {
+      "title": "BLE Provisioning, Wi-Fi ve Bulut (MQTT) Bağlantısı (Online Moda Geçiş)",
+      "section": "E. Online Mod ve OTA Güncelleme Testleri",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:51:33",
+      "note": ""
+    },
+    "E-02": {
+      "title": "Online Modda Yerel Kullanıcı Menülerinin (Menü 3, 4, 5) Kilitlenmesi",
+      "section": "E. Online Mod ve OTA Güncelleme Testleri",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:51:52",
+      "note": ""
+    },
+    "E-03": {
+      "title": "Online Geçiş Doğrulama Protokolü (0x12 PIN / 0x13 RFID / 0x14 QR)",
+      "section": "E. Online Mod ve OTA Güncelleme Testleri",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:52:26",
+      "note": ""
+    },
+    "E-04": {
+      "title": "Mobil Uygulama / Bulut Üzerinden Uzaktan Kapı Açma (0x40)",
+      "section": "E. Online Mod ve OTA Güncelleme Testleri",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:54:30",
+      "note": ""
+    },
+    "E-05": {
+      "title": "Bulut Üzerinden Cihaz ve Firmware Bilgisi Raporlama (0x5C / 0x3A)",
+      "section": "E. Online Mod ve OTA Güncelleme Testleri",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:54:39",
+      "note": ""
+    },
+    "E-06": {
+      "title": "OTA ile Eski Versiyona Dönüş Testi (Downgrade)",
+      "section": "E. Online Mod ve OTA Güncelleme Testleri",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:55:33",
+      "note": ""
+    },
+    "E-07": {
+      "title": "OTA ile Güncel Versiyona Yükseltme Testi (Upgrade)",
+      "section": "E. Online Mod ve OTA Güncelleme Testleri",
+      "status": "PASS",
+      "timestamp": "2026-11-07 17:56:19",
+      "note": ""
+    },
+    "E-08": {
+      "title": "Test Sonu: Buluttan Ayırma ve Fabrika Ayarlarına Dönüş (0x59 / 0x50)",
+      "section": "E. Online Mod ve OTA Güncelleme Testleri",
+      "status": "FAIL",
+      "timestamp": "2026-11-07 17:57:05",
+      "note": ""
+    }
+  },
+  "updated_at": "2026-11-07 17:58:04"
 }

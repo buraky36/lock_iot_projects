@@ -10,14 +10,9 @@
 static const char key_map_qr  [12] = {'1',  '2',  '3',  '4',  '5',  '6',  '7',  '8',  '9',  '*',  '0',  '#'}; // PIN+QR  (original)
 static const char key_map_rfid[12] = {'#',  '6',  '3',  '*',  '2',  '9',  '4',  '1',  '5',  '7',  '0',  '8'}; // PIN+RFID (corrected)
 static uint16_t last_mask = 0;
-static char injected_key = '\0';
 
 bool hal_touch_init(void) {
     return tsm12_init();
-}
-
-void hal_touch_inject(char key) {
-    injected_key = key;
 }
 
 bool hal_touch_read_key(char *key_out) {
@@ -25,14 +20,7 @@ bool hal_touch_read_key(char *key_out) {
         uint16_t mask;
         while (tsm12_read_keys(&mask)); // drain queue
         last_mask = 0; // reset
-        injected_key = '\0';
         return false;
-    }
-
-    if (injected_key != '\0') {
-        if (key_out) *key_out = injected_key;
-        injected_key = '\0'; // Clear after reading
-        return true;
     }
 
     uint16_t mask;
@@ -61,10 +49,6 @@ bool hal_touch_read_key(char *key_out) {
 
 bool hal_touch_init(void) {
     return false;
-}
-
-void hal_touch_inject(char key) {
-    (void)key;
 }
 
 bool hal_touch_read_key(char *key_out) {

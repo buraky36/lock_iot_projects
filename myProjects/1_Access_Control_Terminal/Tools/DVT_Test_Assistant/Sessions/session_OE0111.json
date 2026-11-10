@@ -4,7 +4,11 @@
   "tester": "",
   "serial": "",
   "detected_mac6": "",
-  "captured_vars": {},
+  "detected_fw_version": "v2.0.27",
+  "captured_vars": {
+    "FW": "v2.0.27",
+    "FW_VER": "v2.0.27"
+  },
   "step_results": {},
-  "updated_at": "2026-10-30 03:17:17"
+  "updated_at": "2026-11-07 18:15:30"
 }

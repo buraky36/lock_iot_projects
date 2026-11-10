@@ -43,12 +43,37 @@ import serial.tools.list_ports
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, QThread, QTimer
 
-STUDIO_VERSION = "v1.0"
-DEFAULT_FW_VERSION = "V2.0.13"
+STUDIO_VERSION = "v1.1"
 
 def parse_version_tuple(ver_str: str):
     nums = re.findall(r'\d+', ver_str)
     return tuple(map(int, nums)) if nums else (0,)
+
+def detect_default_fw_version() -> str:
+    """Dynamically detects the latest firmware version from Software/src/main.c or outputs/."""
+    main_c = os.path.join(SOFTWARE_DIR, "src", "main.c")
+    if os.path.exists(main_c):
+        try:
+            with open(main_c, "r", encoding="utf-8", errors="ignore") as f:
+                content = f.read()
+            m = re.search(r'#define\s+FW_VERSION_STR\s+"v?(\d+\.\d+\.\d+)"', content, re.IGNORECASE)
+            if m:
+                return f"V{m.group(1)}"
+        except Exception:
+            pass
+    # Fallback: check outputs directory for highest version folder
+    if os.path.exists(OUTPUTS_DIR):
+        best_ver = None
+        for root, dirs, _ in os.walk(OUTPUTS_DIR):
+            for d in dirs:
+                if re.match(r'^[vV]?\d+\.\d+\.\d+$', d):
+                    if best_ver is None or parse_version_tuple(d) > parse_version_tuple(best_ver):
+                        best_ver = d
+        if best_ver:
+            return best_ver.upper() if best_ver.lower().startswith('v') else f"V{best_ver}"
+    return "V2.0.27"
+
+DEFAULT_FW_VERSION = detect_default_fw_version()
 
 def find_merged_bin_in_dir(dir_path: str, model_code: str) -> Optional[str]:
     """Finds merged binary in given version directory regardless of exact naming convention."""
@@ -246,6 +271,26 @@ class BuildWorker(QThread):
             self.log_line.emit(f"HATA: 'Software' dizini bulunamadı: {SOFTWARE_DIR}", "#EF4444")
             self.build_finished.emit(False, "Software klasörü bulunamadı!")
             return
+
+        # 0. Sync version in Software/src/main.c if it differs from self.version
+        main_c_path = os.path.join(SOFTWARE_DIR, "src", "main.c")
+        nums = re.findall(r'\d+', self.version)
+        if len(nums) >= 3 and os.path.exists(main_c_path):
+            maj, min_, pat = nums[0], nums[1], nums[2]
+            ver_str_lower = f"v{maj}.{min_}.{pat}"
+            try:
+                with open(main_c_path, "r", encoding="utf-8") as mf:
+                    mc = mf.read()
+                new_mc = re.sub(r'(#define\s+FW_VERSION_MAJOR\s+)\d+', rf'\g<1>{maj}', mc)
+                new_mc = re.sub(r'(#define\s+FW_VERSION_MINOR\s+)\d+', rf'\g<1>{min_}', new_mc)
+                new_mc = re.sub(r'(#define\s+FW_VERSION_PATCH\s+)\d+', rf'\g<1>{pat}', new_mc)
+                new_mc = re.sub(r'(#define\s+FW_VERSION_STR\s+)"[^"]+"', rf'\g<1>"{ver_str_lower}"', new_mc)
+                if new_mc != mc:
+                    with open(main_c_path, "w", encoding="utf-8") as mf:
+                        mf.write(new_mc)
+                    self.log_line.emit(f"📝 main.c versiyon tanımı güncellendi: {ver_str_lower}", "#10B981")
+            except Exception as e:
+                self.log_line.emit(f"⚠️ main.c versiyonu güncellenemedi: {e}", "#F59E0B")
 
         # 1. Clean if requested
         if self.clean_first:

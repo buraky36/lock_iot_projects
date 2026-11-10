@@ -1,4 +1,5 @@
 #include "ble_prov.h"
+#include "esp_bt.h"
 #include "../hal_io/include/hw_config.h"
 #include "hal_io.h"
 #include "esp_log.h"
@@ -259,9 +260,6 @@ static void handle_ble_command(uint8_t cmd, uint16_t seq, const uint8_t *payload
             strncpy(cfg.password, password, sizeof(cfg.password) - 1);
             cfg.flags = flags;
             memcpy(cfg.device_secret, device_secret, 32);
-            for (int i = 0; i < 32; i++) {
-                sprintf(cfg.secret + (i * 2), "%02x", device_secret[i]);
-            }
             cfg.session_epoch = session_epoch;
             cfg.is_claimed = true;
 
@@ -493,6 +491,9 @@ static void ble_app_on_sync(void) {
 static void ble_host_task(void *param) {
     ESP_LOGI(TAG, "BLE Host Task Started");
     nimble_port_run();
+    nimble_port_deinit();
+    s_ble_initialized = false;
+    ESP_LOGI(TAG, "BLE Host Task Stopped and NimBLE RAM freed");
     nimble_port_freertos_deinit();
 }
 
@@ -503,7 +504,8 @@ void ble_prov_init(void) {
     nv_storage_get_config(&cfg);
     s_ble_advertising_enabled = !cfg.is_online;
     if (cfg.is_online) {
-        ESP_LOGI(TAG, "Device is in ONLINE mode at boot. Skipping NimBLE init to save ~45KB heap RAM.");
+        esp_bt_controller_mem_release(ESP_BT_MODE_BTDM);
+        ESP_LOGI(TAG, "Device is in ONLINE mode at boot. Released BT Controller & NimBLE (~75KB total RAM saved).");
         s_ble_initialized = false;
         return;
     }
@@ -600,10 +602,5 @@ void ble_prov_stop(void) {
         conn_handle = BLE_HS_CONN_HANDLE_NONE;
     }
     ble_gap_adv_stop();
-    int rc = nimble_port_stop();
-    if (rc == 0) {
-        nimble_port_deinit();
-        s_ble_initialized = false;
-        ESP_LOGI(TAG, "NimBLE stack deinitialized and RAM freed.");
-    }
+    nimble_port_stop();
 }

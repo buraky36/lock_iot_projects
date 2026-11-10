@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Onloi DVT Test Asistanı - Test Adımı Tanımları (Hedef Firmware v2.0.12)
+Onloi DVT Test Asistanı - Test Adımı Tanımları (Sürümden Bağımsız / v2.0.27+ Uyumlu)
 
 Her adım bir Step nesnesidir. Motor (onloi_dvt_assistant.py) şu alanları kullanır:
 
@@ -99,12 +99,12 @@ def prep_steps(model: str, fw: str) -> List[Step]:
             id="P-01", section="0. Hazırlık", title="Model ve firmware kimlik doğrulaması",
             rows=[
                 ("[🔍 Model ve Sürümü Sorgula]", "Aşağıdaki mavi sorgulama butonuna tıklayarak <b>onloi_ota_info</b> komutunu gönderin."),
-                ("[UART Doğrulama]", f"Cihazın <b>{model} (0x{m['pid']})</b> modelini ve <b>{fw}</b> sürümünü raporladığını doğrulayın."),
+                ("[UART Doğrulama]", f"Cihazın <b>{model} (0x{m['pid']})</b> modelini ve güncel firmware sürümünü (<b><<FW>></b>) raporladığını doğrulayın."),
             ],
             send=["onloi_ota_info"],
             expect=[
                 (f"Model: {model} (0x{m['pid']})", rf"Product ID\s*:\s*0x{m['pid']}\s*\({model}\)"),
-                (f"Firmware sürümü: {fw}", rf"Firmware Version\s*:.*\((?P<FW_VER>{fw_escaped}|v2\.0\.\d+)\)"),
+                ("Firmware sürümü algılandı", r"Firmware Version\s*:.*\((?P<FW_VER>v\d+\.\d+\.\d+)\)"),
             ],
             manual="Model ve firmware sürümü seri port logunda doğrulandı mı?",
             timeout=20,
@@ -428,16 +428,18 @@ def oe0111_steps() -> List[Step]:
             expect=[("Röle süresi 5 sn", r"Config: Relay Time = 5\b"), T_PROG_IDLE],
         ),
         Step(
-            id="A-22", section=s6, title="Menü 7: Ses kapat/aç, LED kapat/aç",
+            id="A-22", section=s6, title="Menü 7: Ses kapat/aç, LED kapat/aç ve Menü 0: Wiegand formatı (26 / 34 bit)",
             rows=[
                 (ENTER_MENU_TOKENS + " -> [7] -> [0] [#] -> [*]", "Programlamaya girip <b>Menü 7 → 0#</b> ile buzzer sesini kapatın ve <b>*</b> ile çıkın."),
                 ("[1] [2] [3]", "Bekleme modunda tuşlara basın → Buzzer'dan <b>BİP SESİ DUYULMAMALI</b>."),
                 (ENTER_MENU_TOKENS + " -> [7] -> [1] [#]", "Tekrar programlamaya girip <b>Menü 7 → 1#</b> ile buzzer sesini geri açın."),
-                ("[7] -> [2] [#]", "<b>Menü 7 → 2#</b> ile bekleme modu LED'ini (Always On) kapatın."),
-                ("[7] -> [3] [#] -> [*]", "<b>Menü 7 → 3#</b> ile bekleme LED'ini tekrar açıp <b>*</b> ile çıkın."),
+                ("[7] -> [2] [#] -> [7] -> [3] [#]", "<b>Menü 7 → 2#</b> ile bekleme LED'ini kapatıp <b>Menü 7 → 3#</b> ile tekrar açın."),
+                ("[0] -> [3] [4] [#] -> [0] -> [2] [6] [#] -> [*]", "<b>Menü 0 → 34#</b> ile Wiegand 34-bit modunu test edin, ardından <b>Menü 0 → 26#</b> ile varsayılan 26-bit moduna geri alıp <b>*</b> ile çıkın."),
             ],
             expect=[("Ses kapatıldı", r"Config: Sound Disabled"), ("Ses açıldı", r"Config: Sound Enabled"),
                     ("LED kapatıldı", r"Config: LED Always On Disabled"), ("LED açıldı", r"Config: LED Always On Enabled"),
+                    ("Wiegand 34-bit seçildi", r"Config: Wiegand/RFID Format set to 34-bit"),
+                    ("Wiegand 26-bit (varsayılan) seçildi", r"Config: Wiegand/RFID Format set to 26-bit"),
                     T_PROG_IDLE],
             manual="Ses kapalıyken tuşlarda bip DUYULMADI ve ses açılınca geri geldi mi?",
         ),
@@ -749,16 +751,18 @@ def oe0113_steps() -> List[Step]:
             expect=[("Röle süresi 5 sn", r"Config: Relay Time = 5\b"), T_PROG_IDLE],
         ),
         Step(
-            id="B-19", section=s6, title="Menü 7: Ses kapat/aç, LED kapat/aç",
+            id="B-19", section=s6, title="Menü 7: Ses kapat/aç, LED kapat/aç ve Menü 0: Wiegand formatı (26 / 34 bit)",
             rows=[
                 (ENTER_MENU_TOKENS + " -> [7] -> [0] [#] -> [*]", "Programlamaya girip <b>Menü 7 → 0#</b> ile buzzer sesini kapatın ve <b>*</b> ile çıkın."),
                 ("[1] [2] [3]", "Bekleme modunda tuşlara basın → Buzzer'dan <b>BİP SESİ DUYULMAMALI</b>."),
                 (ENTER_MENU_TOKENS + " -> [7] -> [1] [#]", "Tekrar programlamaya girip <b>Menü 7 → 1#</b> ile buzzer sesini geri açın."),
-                ("[7] -> [2] [#]", "<b>Menü 7 → 2#</b> ile bekleme modu LED'ini (Always On) kapatın."),
-                ("[7] -> [3] [#] -> [*]", "<b>Menü 7 → 3#</b> ile bekleme LED'ini tekrar açıp <b>*</b> ile çıkın."),
+                ("[7] -> [2] [#] -> [7] -> [3] [#]", "<b>Menü 7 → 2#</b> ile bekleme LED'ini kapatıp <b>Menü 7 → 3#</b> ile tekrar açın."),
+                ("[0] -> [3] [4] [#] -> [0] -> [2] [6] [#] -> [*]", "<b>Menü 0 → 34#</b> ile Wiegand 34-bit modunu test edin, ardından <b>Menü 0 → 26#</b> ile varsayılan 26-bit moduna geri alıp <b>*</b> ile çıkın."),
             ],
             expect=[("Ses kapatıldı", r"Config: Sound Disabled"), ("Ses açıldı", r"Config: Sound Enabled"),
                     ("LED kapatıldı", r"Config: LED Always On Disabled"), ("LED açıldı", r"Config: LED Always On Enabled"),
+                    ("Wiegand 34-bit seçildi", r"Config: Wiegand/RFID Format set to 34-bit"),
+                    ("Wiegand 26-bit (varsayılan) seçildi", r"Config: Wiegand/RFID Format set to 26-bit"),
                     T_PROG_IDLE],
             manual="Ses kapalıyken tuşlarda bip DUYULMADI ve ses açılınca geri geldi mi?",
         ),
@@ -1003,42 +1007,42 @@ def common_hw_steps(model: str) -> List[Step]:
             manual="Telefonda <<BLE>> isimli cihaz göründü mü?",
         ),
         Step(
-            id="D-05", section=sec, title="IN2: 25 sn sonra uygulanan +12V'un DİKKATE ALINMAMASI",
+            id="D-05", section=sec, title="IN2: İlk 10 sn penceresinden sonra uygulanan +12V'un DİKKATE ALINMAMASI",
             rows=[
-                ("[⏳ 25 sn Kontrolü]", "Cihaz açılalı en az 25 saniye olduğundan emin olun."),
-                ("[IN2] -> [+12V] -> [⏳ 15 sn Tut]", "<b>IN2</b> girişine <b>+12V</b>'u bağlayın, <b>15 saniye</b> basılı tutup çekin → <b>HİÇBİR ŞEY OLMAMALI</b>."),
+                ("[⏳ 15 sn Kontrolü]", "Cihaz açılalı en az 15 saniye olduğundan emin olun <i>(10 sn'lik IN2 açılış penceresi kapanmış olmalı)</i>."),
+                ("[IN2] -> [+12V] -> [⏳ 10 sn Tut]", "<b>IN2</b> girişine <b>+12V</b>'u bağlayın, <b>10 saniye</b> basılı tutup çekin → <b>HİÇBİR ŞEY OLMAMALI</b>."),
             ],
             instruction="<i>Süre dolduğunda herhangi bir sıfırlama tetiklenmezse adım otomatik olarak GEÇER.</i>",
-            fail_on=[("25 sn sonra IN2 reset sayacı başladı!", r"IN2 held at 12V for 10s"), T_BANNER],
-            timeout=25, pass_on_timeout=True,
+            fail_on=[("Pencere kapandıktan sonra IN2 reset sayacı başladı!", r"\[IN2_RESET\] IN2 is HIGH \(12V\)!|IN2 held at 12V"), T_BANNER],
+            timeout=20, pass_on_timeout=True,
         ),
         Step(
-            id="D-06", section=sec, title="IN2: +12V bırakılmazsa resetin İPTAL edilmesi (arıza koruması)",
+            id="D-06", section=sec, title="IN2: +12V bırakılmazsa resetin İPTAL edilmesi (kısa devre / arıza koruması)",
             rows=[
-                ("[⚡ Cihazı Resetle]", "Üst menüdeki <b>⚡ Cihazı Resetle</b> butonuna basın <i>(veya cihazın enerjisini kesip verin)</i>."),
-                ("[IN2] -> [+12V] -> [⏳ 15 sn Tut]", "Cihaz açılır açılmaz <b>IN2</b>'ye <b>+12V</b> bağlayın ve <b>en az 15 saniye</b> KESİNLİKLE BIRAKMAYIN."),
-                ("[🔊 3 Hata Bipi]", "10. saniyede uzun bip başlar; yine bırakmayın → 13. saniyede <b>3 hata bipi</b> duyulup reset İPTAL olunca kabloyu çekin."),
+                ("[⚡ Cihazı Resetle]", "Üst menüdeki <b>⚡ Reset</b> butonuna basın <i>(veya cihazın enerjisini kesip verin)</i>."),
+                ("[IN2] -> [+12V] -> [⏳ 12 sn Tut]", "Cihaz açılır açılmaz (ilk 10 sn içinde) <b>IN2</b>'ye <b>+12V</b> bağlayın ve <b>en az 12 saniye</b> KESİNLİKLE BIRAKMAYIN."),
+                ("[🔊 2 Hata Bipi]", "5. saniyede uzun bip + hızlı sarı LED başlar; yine bırakmayın → 11. saniyede (6 sn sonra) <b>2 hata bipi</b> duyulup reset İPTAL olunca kabloyu çekin."),
             ],
-            observe="10. sn: 3 sn uzun bip + hızlı sarı LED. 13. sn: 3 hata bipi, reset İPTAL.",
-            window=(r"Access Control Terminal Firmware", 25, "IN2 için 25 sn pencere"),
-            expect=[("10 sn +12V algılandı", r"IN2 held at 12V for 10s"),
-                    ("Reset iptal edildi", r"NOT released within 3s! Aborting reset")],
-            fail_on=[("Bırakılmadığı halde reset yapıldı!", r"IN2 released! Confirmation acknowledged")],
+            observe="5. sn: uzun bip + hızlı sarı LED. 11. sn: 2 hata bipi, reset İPTAL (kırmızı yavaş yanıp sönmeye döner).",
+            window=(r"Access Control Terminal Firmware", 12, "IN2 için 10 sn açılış penceresi"),
+            expect=[("5 sn +12V algılandı", r"\[IN2_RESET\] 5s HIGH completed!|IN2 held at 12V"),
+                    ("Reset iptal edildi (kısa devre koruması)", r"\[IN2_RESET\] Timeout! IN2 was NOT disconnected within [36]s|NOT released within [36]s! Aborting reset")],
+            fail_on=[("Bırakılmadığı halde reset yapıldı!", r"\[IN2_RESET\] 3s LOW confirmed!|IN2 released! Confirmation acknowledged")],
             timeout=90,
         ),
         Step(
-            id="D-07", section=sec, title="IN2: Donanımsal fabrika reseti (10 sn tut → 3 sn içinde bırak)",
+            id="D-07", section=sec, title="IN2: Donanımsal fabrika reseti (5 sn tut → 6 sn içinde bırak → 3 sn bekle)",
             rows=[
                 ("[⚡ Cihazı Resetle]", "Üst menüdeki <b>⚡ Reset</b> butonuna basın <i>(veya cihazın enerjisini kesip verin)</i>."),
-                ("[IN2] -> [+12V]", "Cihaz açılır açılmaz <b>IN2</b>'ye <b>+12V</b> bağlayın ve tutmaya başlayın."),
-                ("[🔊 Uzun Bip] -> [Kabloyu Çek]", "10. saniyede <b>uzun bip + hızlı sarı LED</b> başladığı anda <b>3 saniye içinde</b> +12V kablosunu çekin."),
+                ("[IN2] -> [+12V]", "Cihaz açılır açılmaz (ilk 10 sn içinde) <b>IN2</b>'ye <b>+12V</b> bağlayın ve tutmaya başlayın."),
+                ("[🔊 Uzun Bip] -> [Kabloyu Çek]", "5. saniyede <b>uzun bip + hızlı sarı LED</b> başladığı anda <b>6 saniye içinde</b> +12V kablosunu çekin ve 3 onay bipi boyunca (3 sn) boşta bırakın."),
             ],
-            observe="Çekince 2 bip, turuncu LED, cihaz kendini sıfırlayıp yeniden başlar.",
-            window=(r"Access Control Terminal Firmware", 25, "IN2 için 25 sn pencere"),
-            expect=[("10 sn +12V algılandı", r"IN2 held at 12V for 10s"),
-                    ("Bırakma onaylandı", r"IN2 released! Confirmation acknowledged"),
+            observe="5. sn'de çekince 3 onay bipi (3 sn), ardından turuncu LED + uzun bip ile cihaz kendini sıfırlayıp yeniden başlar.",
+            window=(r"Access Control Terminal Firmware", 12, "IN2 için 10 sn açılış penceresi"),
+            expect=[("5 sn +12V algılandı", r"\[IN2_RESET\] 5s HIGH completed!|IN2 held at 12V"),
+                    ("Bırakma ve 3 sn LOW onayı tamamlandı", r"\[IN2_RESET\] 3s LOW confirmed! Triggering Factory Reset|IN2 released! Confirmation acknowledged"),
                     ("Hafıza silindi", r"Wipe complete")],
-            fail_on=[("Reset iptal oldu (geç bırakıldı)", r"NOT released within 3s")],
+            fail_on=[("Reset iptal oldu (geç bırakıldı veya tekrar değdi)", r"NOT disconnected within [36]s|re-asserted HIGH|NOT released within [36]s")],
             timeout=90,
         ),
     ]
@@ -1047,7 +1051,7 @@ def common_hw_steps(model: str) -> List[Step]:
 # =============================================================================
 # ONLINE MOD VE OTA GÜNCELLEME ADIMLARI (Offline ve Donanım testlerinden sonra)
 # =============================================================================
-def online_steps(model: str, new_fw: str = "v2.0.13", old_fw: str = "v2.0.12") -> List[Step]:
+def online_steps(model: str, new_fw: str = "v2.0.27", old_fw: str = "v2.0.26") -> List[Step]:
     sec = "E. Online Mod ve OTA Güncelleme Testleri"
     steps: List[Step] = [
         Step(
@@ -1055,16 +1059,16 @@ def online_steps(model: str, new_fw: str = "v2.0.13", old_fw: str = "v2.0.12") -
             rows=[
                 ("[📱 Onloi Mobil Uygulama] -> [<<BLE>>]", "Onloi mobil uygulamasından <b><<BLE>></b> cihazını seçip eşleştirmeyi başlatın <i>(Handshake 0x01 ve Bulut Ayarları 0x06 gönderilir)</i>."),
                 ("[📶 Wi-Fi Seçimi] -> [Şifre Gir]", "Wi-Fi ağını seçip şifreyi göndererek cihazı internete bağlayın <i>(CMD_CONNECT_WIFI 0x04)</i>."),
-                ("[🌐 MQTT Bağlantısı] -> [🔴 Sabit Kırmızı LED]", "Cihazın IP aldığını, kalıcı olarak <b>Online Moda</b> geçtiğini, yerel kullanıcıları sildiğini ve <b>MQTT</b> sunucusuna bağlandığını gözlemleyin."),
+                ("[🌐 MQTT Bağlantısı] -> [🔴 Yanıp Sönen Kırmızı LED]", "Cihazın IP aldığını, kalıcı olarak <b>Online Moda</b> geçtiğini, yerel kullanıcıları sildiğini ve <b>MQTT</b> sunucusuna bağlandığını gözlemleyin."),
             ],
-            observe="Online modda bekleme LED'i YAVAŞ YANIP SÖNME yerine SABİT KIRMIZI yanar.",
+            observe="Online modda da bekleme LED'i cihazın çalıştığını göstermek için KIRMIZI YANIP SÖNER (350ms açık / 350ms kapalı).",
             expect=[
                 ("Bulut ayarları kaydedildi (0x06)", r"SET_CLOUD_CONFIG:|Cloud config reloaded:"),
                 ("Wi-Fi bağlandı ve kalıcı Online moda geçildi", r"Device is now permanently in ONLINE mode|Switched permanently to Online Mode"),
                 ("MQTT Bulut bağlantısı kuruldu", r"MQTT Connected! Active Cloud DeviceId:"),
                 ("Zaman senkronizasyonu (0x33) / Firmware bilgisi (0x3A) gönderildi", r"Time synced!|Sent FIRMWARE_INFO:"),
             ],
-            manual="Cihaz buluta bağlandı ve bekleme LED'i SABİT KIRMIZI yanıyor mu?",
+            manual="Cihaz buluta bağlandı ve bekleme LED'i KIRMIZI yanıp sönüyor mu?",
             timeout=120,
         ),
     ]
@@ -1139,7 +1143,7 @@ def online_steps(model: str, new_fw: str = "v2.0.13", old_fw: str = "v2.0.12") -
             expect=[
                 ("Online geçiş verisi yakalandı", r"Online Mode Auth: (RFID|QR|KEYPAD):"),
                 ("MQTT geçiş paketi (0x12/0x13/0x14) gönderildi", r"MQTT TX CMD: 0x1[234]|Online Event Sent! Waiting for server"),
-                ("Sunucu yanıtı işlendi (Onay veya Red)", r"Server (Approved|Denied) Access via CMD 0x1[234]|MQTT RX CMD: 0x40"),
+                ("Sunucu yanıtı işlendi (Onay veya Red)", r"Server (Approved|Denied) Access via CMD 0x1[234]|CMD=0x40|MQTT RX CMD: 0x40"),
             ],
         )
     )
@@ -1154,7 +1158,7 @@ def online_steps(model: str, new_fw: str = "v2.0.13", old_fw: str = "v2.0.12") -
             ],
             observe="Uzaktan komut geldiğinde röle 'TIK' sesiyle çeker, YEŞİL LED yanar ve ~5 sn sonra kapanır.",
             expect=[
-                ("Uzaktan kapı açma komutu (0x40) alındı", r"MQTT RX CMD: 0x40"),
+                ("Uzaktan kapı açma komutu (0x40) alındı", r"CMD=0x40|MQTT TX CMD: 0x40|MQTT RX CMD: 0x40"),
                 T_DOOR_OPEN,
                 T_DOOR_CLOSE,
             ],
@@ -1174,7 +1178,7 @@ def online_steps(model: str, new_fw: str = "v2.0.13", old_fw: str = "v2.0.12") -
                 ],
                 observe="0x44 komutu geldiğinde SARI LED hızlı yanıp söner; kart okutulunca YEŞİL LED + 2 bip ile sunucuya kaydedilir.",
                 expect=[
-                    ("Kart tanıtma modu (0x44) başlatıldı", r"MQTT RX CMD: 0x44|IDLE -> ONLINE_CARD_ENROLL"),
+                    ("Kart tanıtma modu (0x44) başlatıldı", r"CMD=0x44|MQTT RX CMD: 0x44|IDLE -> ONLINE_CARD_ENROLL"),
                     ("Kart okutuldu ve sunucuya bildirildi (0x23)", r"Online Card Enrolled! Card ID:|ONLINE_CARD_ENROLL -> IDLE"),
                 ],
                 timeout=90,
@@ -1196,22 +1200,22 @@ def online_steps(model: str, new_fw: str = "v2.0.13", old_fw: str = "v2.0.12") -
             )
         )
 
-    # E-06: OTA ile Eski Versiyona Dönüş Testi (Downgrade: v2.0.13 -> v2.0.12)
+    # E-06: OTA ile Eski Versiyona Dönüş Testi (Downgrade)
     steps.append(
         Step(
-            id="E-06", section=sec, title=f"OTA ile Eski Versiyona Dönüş Testi (Downgrade: {new_fw} ➜ {old_fw})",
+            id="E-06", section=sec, title="OTA ile Eski Versiyona Dönüş Testi (Downgrade)",
             rows=[
-                (f"[☁️ OTA Hedef: {old_fw}]", f"OTA sunucusunda / bulut panelinde cihaz için hedef sürümü <b>eski versiyon ({old_fw})</b> olarak seçip güncellemeyi başlatın <i>(0x53 / 0x60)</i> veya aşağıdaki <b>🔄 OTA Güncelleme İsteği Gönder (onloi_ota_req)</b> butonuna tıklayın."),
+                ("[☁️ OTA Hedef: Eski Sürüm]", "OTA sunucusunda / bulut panelinde cihaz için hedef sürümü <b>bir önceki (eski) versiyon</b> olarak seçip güncellemeyi başlatın <i>(0x53 / 0x60)</i> veya aşağıdaki <b>🔄 OTA Güncelleme İsteği Gönder (onloi_ota_req)</b> butonuna tıklayın."),
                 ("[⏳ İndirme ve Doğrulama]", "Cihazın <b>OTA_UPDATING</b> moduna geçtiğini, yazılımı indirip <i>(0x02 DOWNLOADING)</i> SHA-256/CRC-32 doğrulamasını <i>(0x04 DOWNLOAD_VERIFIED)</i> tamamladığını izleyin."),
-                (f"[🚀 {old_fw} Açılış Kontrolü]", f"Cihaz otomatik yeniden başladığında açılış logunda <b>Access Control Terminal Firmware {old_fw}</b> ve <b>OTA succeeded!</b> mesajının görüldüğünü doğrulayın."),
+                ("[🚀 Açılış Kontrolü]", "Cihaz otomatik yeniden başladığında açılış logunda <b>Access Control Terminal Firmware</b> ve <b>OTA succeeded!</b> mesajının görüldüğünü doğrulayın."),
             ],
-            observe=f"OTA sırasında durum paketleri (0x01..0x06) gönderilir, cihaz kapanıp {old_fw} sürümüyle yeniden açılır.",
+            observe="OTA sırasında durum paketleri (0x01..0x06) gönderilir, cihaz kapanıp indirilen sürümle yeniden açılır.",
             send=["onloi_ota_req"],
             expect=[
                 ("OTA güncelleme işlemi başladı", r"Starting Onloi OTA Update|IDLE -> OTA_UPDATING"),
                 ("Yazılım indirildi ve doğrulandı (0x04)", r"HTTP download finished|OTA State -> 0x04 \(DOWNLOAD_VERIFIED\)"),
                 ("OTA tamamlandı, cihaz yeniden başlatılıyor", r"OTA UPDATE SUCCESSFUL! Rebooting"),
-                (f"Eski versiyon ({old_fw}) ile açıldı", rf"Access Control Terminal Firmware {re.escape(old_fw)}"),
+                ("Hedef versiyon ile açıldı", r"Access Control Terminal Firmware (?P<OTA_DOWN_VER>v\d+\.\d+\.\d+)"),
             ],
             fail_on=[
                 ("OTA güncelleme başarısız oldu!", r"OTA State -> 0x07 \(FAILED\)|OTA Error:"),
@@ -1220,22 +1224,22 @@ def online_steps(model: str, new_fw: str = "v2.0.13", old_fw: str = "v2.0.12") -
         )
     )
 
-    # E-07: OTA ile Yeni Versiyona Dönüş Testi (Upgrade: v2.0.12 -> v2.0.13)
+    # E-07: OTA ile Yeni Versiyona Yükseltme Testi (Upgrade)
     steps.append(
         Step(
-            id="E-07", section=sec, title=f"OTA ile Yeni Versiyona Yükseltme Testi (Upgrade: {old_fw} ➜ {new_fw})",
+            id="E-07", section=sec, title="OTA ile Güncel Versiyona Yükseltme Testi (Upgrade)",
             rows=[
-                (f"[☁️ OTA Hedef: {new_fw}]", f"Şimdi OTA sunucusunda / bulut panelinde hedef sürümü tekrar <b>yeni güncel versiyon ({new_fw})</b> olarak seçip güncellemeyi başlatın <i>(0x53 / 0x60)</i> veya aşağıdaki <b>🔄 OTA Güncelleme İsteği Gönder (onloi_ota_req)</b> butonuna tıklayın."),
-                ("[⏳ İndirme ve Doğrulama]", f"Cihazın {old_fw} sürümünden {new_fw} sürümünü indirip doğruladığını <i>(0x04 DOWNLOAD_VERIFIED)</i> ve yeniden başladığını izleyin."),
-                (f"[🚀 {new_fw} Açılış Kontrolü]", f"Cihaz yeniden başladığında açılış logunda <b>Access Control Terminal Firmware {new_fw}</b> ve <b>OTA succeeded!</b> mesajının görüldüğünü doğrulayın."),
+                ("[☁️ OTA Hedef: Güncel Sürüm (<<FW>>)]", "Şimdi OTA sunucusunda / bulut panelinde hedef sürümü tekrar <b>en son güncel versiyon (<<FW>>)</b> olarak seçip güncellemeyi başlatın <i>(0x53 / 0x60)</i> veya aşağıdaki <b>🔄 OTA Güncelleme İsteği Gönder (onloi_ota_req)</b> butonuna tıklayın."),
+                ("[⏳ İndirme ve Doğrulama]", "Cihazın güncel sürümü indirip doğruladığını <i>(0x04 DOWNLOAD_VERIFIED)</i> ve yeniden başladığını izleyin."),
+                ("[🚀 Güncel Sürüm Açılış Kontrolü]", "Cihaz yeniden başladığında açılış logunda <b>Access Control Terminal Firmware</b> ve <b>OTA succeeded!</b> mesajının görüldüğünü doğrulayın."),
             ],
-            observe=f"Cihaz {old_fw} sürümünden güncel {new_fw} sürümüne yükseltilir ve buluta OTA başarısını bildirir.",
+            observe="Cihaz tekrar güncel sürüme yükseltilir ve buluta OTA başarısını bildirir.",
             send=["onloi_ota_req"],
             expect=[
                 ("OTA güncelleme işlemi başladı", r"Starting Onloi OTA Update|IDLE -> OTA_UPDATING"),
                 ("Yazılım indirildi ve doğrulandı (0x04)", r"HTTP download finished|OTA State -> 0x04 \(DOWNLOAD_VERIFIED\)"),
                 ("OTA tamamlandı, cihaz yeniden başlatılıyor", r"OTA UPDATE SUCCESSFUL! Rebooting"),
-                (f"Yeni güncel versiyon ({new_fw}) ile açıldı", rf"Access Control Terminal Firmware {re.escape(new_fw)}"),
+                ("Yeni güncel versiyon ile açıldı", r"Access Control Terminal Firmware (?P<FW_VER>v\d+\.\d+\.\d+)"),
             ],
             fail_on=[
                 ("OTA güncelleme başarısız oldu!", r"OTA State -> 0x07 \(FAILED\)|OTA Error:"),
@@ -1250,16 +1254,16 @@ def online_steps(model: str, new_fw: str = "v2.0.13", old_fw: str = "v2.0.12") -
             id="E-08", section=sec, title="Test Sonu: Buluttan Ayırma ve Fabrika Ayarlarına Dönüş (0x59 / 0x50)",
             rows=[
                 ("[📱 Cihazı Uygulamadan Sil] veya [⚠️ Fabrika Sıfırlamayı Başlat]", "Mobil uygulamadan cihazı kaldırın <i>(CMD_DISCONNECTED 0x59 / CMD_FACTORY_RESET 0x50)</i> <b>veya</b> aşağıdaki turuncu <b>⚠️ Fabrika Sıfırlamayı Başlat</b> butonuna tıklayın."),
-                (f"[🔄 {new_fw} Temiz Açılış]", f"Test Wi-Fi/MQTT ayarlarının silindiğini ve cihazın <b>{new_fw}</b> sürümüyle temiz <b>Offline Fabrika Modunda</b> <i>(Yavaş yanıp sönen Kırmızı LED)</i> açıldığını doğrulayın."),
+                ("[🔄 Temiz Açılış]", "Test Wi-Fi/MQTT ayarlarının silindiğini ve cihazın güncel sürümle temiz <b>Offline Fabrika Modunda</b> <i>(Yanıp sönen Kırmızı LED)</i> açıldığını doğrulayın."),
             ],
             observe="Tüm bulut ve Wi-Fi ayarları silinir; cihaz paketlemeye hazır fabrika çıkışı Offline moda döner.",
             send=["onloi_fab_reset"],
             expect=[
                 ("Fabrika sıfırlama / buluttan ayırma tetiklendi", r"FACTORY RESET|Server Disconnected|Wiping NVS"),
-                ("Hafıza temizlendi ve yeniden başlıyor", r"Wipe complete! Rebooting|Factory reset complete\. Rebooting"),
-                (f"Güncel {new_fw} sürümüyle temiz açıldı", rf"Access Control Terminal Firmware {re.escape(new_fw)}"),
+                ("Hafıza temizlendi ve yeniden başlıyor", r"Wipe complete! Rebooting|Wipe complete\. Restarting system|Factory reset complete\. Rebooting"),
+                ("Güncel sürümle temiz açıldı", r"Access Control Terminal Firmware (?P<FW_VER>v\d+\.\d+\.\d+)"),
             ],
-            manual="Cihaz fabrika ayarlarına döndü ve bekleme LED'i tekrar YAVAŞ KIRMIZI yanıp sönüyor mu?",
+            manual="Cihaz fabrika ayarlarına döndü ve bekleme LED'i KIRMIZI yanıp sönüyor mu?",
             timeout=60,
         )
     )
@@ -1267,7 +1271,7 @@ def online_steps(model: str, new_fw: str = "v2.0.13", old_fw: str = "v2.0.12") -
     return steps
 
 
-def build_steps(model: str, fw: str) -> List[Step]:
+def build_steps(model: str, fw: str = "v2.0.27") -> List[Step]:
     steps = prep_steps(model, fw)
     if model == "OE0111":
         steps += oe0111_steps()
@@ -1276,5 +1280,5 @@ def build_steps(model: str, fw: str) -> List[Step]:
     elif model == "OE0112":
         steps += oe0112_steps()
     steps += common_hw_steps(model)
-    steps += online_steps(model, new_fw=fw, old_fw="v2.0.12")
+    steps += online_steps(model, new_fw=fw)
     return steps

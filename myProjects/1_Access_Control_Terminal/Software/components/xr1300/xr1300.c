@@ -156,8 +156,8 @@ bool xr1300_init(void) {
 
   uart_flush_input(XR1300_UART_NUM);
 
-  printf("[QR XR1300] Init at 9600 baud (TX=GPIO%d, RX=GPIO%d) - Fast burst mode active\n",
-         XR1300_TXD_PIN, XR1300_RXD_PIN);
+  ESP_LOGI("XR1300", "Init at 9600 baud (TX=GPIO%d, RX=GPIO%d) - Fast burst mode active",
+           XR1300_TXD_PIN, XR1300_RXD_PIN);
 
   xr1300_event_queue = xQueueCreate(1, 64);
 

@@ -44,7 +44,6 @@ void api_client_send_nfc_enroll_ready_event(void);
 void api_client_send_lock_opened_event(void);
 void api_client_send_lock_closed_event(void);
 void api_client_reset_claim_status(void);
-void api_client_send_offline_logs(void);
 void api_client_send_local_factory_reset_event(void);
 
 // OTA Event functions (Onloi Protocol v2.18)

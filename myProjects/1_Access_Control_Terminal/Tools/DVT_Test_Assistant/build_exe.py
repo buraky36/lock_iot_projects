@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Build Script for ONLOI DVT Test Asistanı (v1.0)
+Build Script for ONLOI DVT Test Asistanı (V1.2)
 Generates standalone Release executable without source code.
 """
 import os
@@ -10,14 +10,14 @@ import subprocess
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "..", ".."))
-RELEASE_DIR = os.path.join(PROJECT_ROOT, "Release", "Onloi_DVT_Tester_v1.0")
+RELEASE_DIR = os.path.join(PROJECT_ROOT, "Release", "Onloi_DVT_Tester_V1.2")
 ICON_PATH = os.path.join(SCRIPT_DIR, "app_icon.ico")
 VERSION_FILE = os.path.join(SCRIPT_DIR, "file_version_info.txt")
 MAIN_SCRIPT = os.path.join(SCRIPT_DIR, "onloi_dvt_assistant.py")
 
 def main():
     print("==================================================")
-    print("  ONLOI DVT TEST ASISTANI v1.0 — RELEASE DERLEME")
+    print("  ONLOI DVT TEST ASISTANI V1.2 — RELEASE DERLEME")
     print("==================================================")
 
     os.makedirs(RELEASE_DIR, exist_ok=True)
@@ -26,7 +26,7 @@ def main():
         sys.executable, "-m", "PyInstaller",
         "--noconsole",
         "--onefile",
-        f"--name=Onloi_DVT_Tester_v1.0",
+        f"--name=Onloi_DVT_Tester_V1.2",
         f"--icon={ICON_PATH}",
         f"--version-file={VERSION_FILE}",
         f"--add-data={ICON_PATH};.",
@@ -43,7 +43,7 @@ def main():
 
     if res.returncode == 0:
         print("\n[OK] DERLEME BASARILI!")
-        exe_path = os.path.join(RELEASE_DIR, "Onloi_DVT_Tester_v1.0.exe")
+        exe_path = os.path.join(RELEASE_DIR, "Onloi_DVT_Tester_V1.2.exe")
         if os.path.exists(exe_path):
             size_mb = os.path.getsize(exe_path) / (1024 * 1024)
             print(f"Exe Konumu: {exe_path} ({size_mb:.2f} MB)")
@@ -54,8 +54,8 @@ def main():
 
         readme_path = os.path.join(RELEASE_DIR, "KULLANIM_KILAVUZU.txt")
         readme_content = """========================================================================
-ONLOI GEÇİŞ KONTROL TERMİNALİ — DVT TEST ASİSTANI (v1.0)
-Hedef Cihaz Firmware Sürümü: v2.0.13
+ONLOI GEÇİŞ KONTROL TERMİNALİ — DVT TEST ASİSTANI (V1.2)
+Sürümden Bağımsız / Otomatik Firmware Algılama (v2.0.27+ Uyumlu)
 ========================================================================
 
 Bu yazılım, Onloi Geçiş Kontrol Terminallerinin (OE0111, OE0112, OE0113) 
@@ -63,10 +63,12 @@ saha öncesi tüm donanım ve yazılım fonksiyonlarını adım adım test ve
 doğrulama amacıyla hazırlanmış bağımsız test yürütücüsüdür.
 
 HERHANGİ BİR PYTHON VEYA EK SÜRÜCÜ KURULUMU GEREKTİRMEZ.
+CİHAZIN ÜZERİNDEKİ FIRMWARE SÜRÜMÜNÜ SERİ PORTTAN OTOMATİK ALGILAYARAK
+RAPORLAR; YENİ FIRMWARE SÜRÜMLERİNDE UYGULAMAYI GÜNCELLEMEYE GEREK YOKTUR.
 
 HIZLI BAŞLANGIÇ:
 ------------------------------------------------------------------------
-1. "Onloi_DVT_Tester_v1.0.exe" uygulamasını çift tıklayarak çalıştırın.
+1. "Onloi_DVT_Tester_V1.2.exe" uygulamasını çift tıklayarak çalıştırın.
 2. Üst menüden cihazınızın bağlı olduğu COM Port'u seçin ve "Bağlan"a tıklayın.
 3. Test ettiğiniz modeli seçin:
    - OE0111: Tuş Takımı + RFID + BLE + OSDP + IN1/IN2 + Röle

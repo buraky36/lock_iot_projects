@@ -2,7 +2,7 @@
 chcp 65001 >nul
 title ONLOI DVT Test Asistani
 echo ============================================================
-echo   ONLOI GECIS KONTROL TERMINALI - DVT TEST ASISTANI (v2.0.11)
+echo   ONLOI GECIS KONTROL TERMINALI - DVT TEST ASISTANI
 echo ============================================================
 echo Uygulama baslatiliyor, lutfen bekleyin...
 echo.

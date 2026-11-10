@@ -1,0 +1,37 @@
+========================================================================
+ONLOI GEÇİŞ KONTROL TERMİNALİ — DVT TEST ASİSTANI (V1.2)
+Sürümden Bağımsız / Otomatik Firmware Algılama (v2.0.27+ Uyumlu)
+========================================================================
+
+Bu yazılım, Onloi Geçiş Kontrol Terminallerinin (OE0111, OE0112, OE0113) 
+saha öncesi tüm donanım ve yazılım fonksiyonlarını adım adım test ve 
+doğrulama amacıyla hazırlanmış bağımsız test yürütücüsüdür.
+
+HERHANGİ BİR PYTHON VEYA EK SÜRÜCÜ KURULUMU GEREKTİRMEZ.
+CİHAZIN ÜZERİNDEKİ FIRMWARE SÜRÜMÜNÜ SERİ PORTTAN OTOMATİK ALGILAYARAK
+RAPORLAR; YENİ FIRMWARE SÜRÜMLERİNDE UYGULAMAYI GÜNCELLEMEYE GEREK YOKTUR.
+
+HIZLI BAŞLANGIÇ:
+------------------------------------------------------------------------
+1. "Onloi_DVT_Tester_V1.2.exe" uygulamasını çift tıklayarak çalıştırın.
+2. Üst menüden cihazınızın bağlı olduğu COM Port'u seçin ve "Bağlan"a tıklayın.
+3. Test ettiğiniz modeli seçin:
+   - OE0111: Tuş Takımı + RFID + BLE + OSDP + IN1/IN2 + Röle
+   - OE0112: Sadece RFID + BLE + Röle
+   - OE0113: Tuş Takımı + RFID + BLE + Röle (Wiegand/OSDP Yok)
+4. Personel Adı ve Seri Numarasını girin.
+5. Ortadaki talimat kartındaki yönlendirmeleri sırayla uygulayın:
+   - Cihazdan gelen yanıtlar seri port üzerinden otomatik doğrulanır (PASS).
+   - Kart okutma, tuşlama veya LED/Buzzer gözlemlerinde "DOĞRULANDI" butonuna basın.
+6. Test bittiğinde sol alttaki "Test Raporu Oluştur" butonu ile 
+   HTML ve CSV formatında resmi kalite kontrol raporunuzu alın.
+   Raporlar doğrudan bu klasörün içindeki "Reports" dizinine kaydedilir.
+
+NOTLAR:
+- Test adımlarında süre sınırı / zaman aşımı yoktur; adımları istediğiniz sürede yapabilirsiniz.
+- Uygulamayı kapatsanız dahi kaldığınız adım, girilen bilgiler ve sonuçlar otomatik saklanır.
+- Yeni bir cihaz için testi sıfırlamak isterseniz "🔄 Bu Modelin Testini Sıfırla" butonuna basabilirsiniz.
+
+========================================================================
+ONLOI AR-GE & KALİTE GÜVENCE EKİBİ
+========================================================================
