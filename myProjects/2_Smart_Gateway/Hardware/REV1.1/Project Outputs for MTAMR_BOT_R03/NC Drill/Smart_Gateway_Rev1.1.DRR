@@ -1,0 +1,19 @@
+----------------------------------------------------------------------------------------------------------------------------------
+NCDrill File Report For: Smart_Gateway_Rev1.1.PcbDoc   20.10.2026  18:27:05
+----------------------------------------------------------------------------------------------------------------------------------
+
+Layer Pair : Top Layer to Bottom Layer
+ASCII RoundHoles File : Smart_Gateway_Rev1.1-RoundHoles.TXT
+ASCII SlotHoles File : Smart_Gateway_Rev1.1-SlotHoles.TXT
+
+Tool       Hole Size               Hole Tolerance               Hole Type       Hole Count   Plated         Tool Travel
+----------------------------------------------------------------------------------------------------------------------------------
+T1      0.3mm (12mil)                                             Round             143       PTH        594.98mm (23.42inch)
+T2      0.6mm (24mil)                                             Slot              8         PTH        180.58mm (7.11inch)
+T3      1.1mm (43mil)                                             Round             5         PTH        10.16mm (0.40inch)
+T4      0.6mm (24mil)                                             Round             4         NPTH       36.86mm (1.45inch)
+T5      0.9mm (35mil)                                             Round             2         NPTH       2.30mm (0.09inch)
+----------------------------------------------------------------------------------------------------------------------------------
+Totals                                                                              162
+
+Total Processing Time (hh:mm:ss) : 00:00:00

@@ -1,0 +1,23 @@
+Removed Pin From Net: NetName=GPIO8 Pin=R4-2
+Removed Pin From Net: NetName=GPIO10 Pin=R5-2
+Change component parameters: Designator = "J1" ("J1"); Footprint = "HDRV5W64P0X254_1X5_1270X254X864P"; UniqueID = "\KOHZJPGF" ("\KOHZJPGF")
+Change component parameters (AddParameter): Name = "Arrow Part Number"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Arrow Price/Stock"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet Link"; Value = "https://content.harwin.com/m/0df15f6e0f9f48e2/original/DRG-00479-Technical-Drawing-Datasheet-M20-999-pdf.pdf"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Height"; Value = "8.64mm"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Name"; Value = "Harwin"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer_Part_Number"; Value = "M20-9990546"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Part Number"; Value = "855-M20-9990546"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.co.uk/ProductDetail/Harwin/M20-9990546?qs=ulE8k0yEMYY8EKyDN9ic6A%3D%3D"; VariantName = "[No Variations]"
+Added Component: Designator=R18(RES_0603)
+Add component (AddParameter): Name = "Manufacturer"; Value = "ROYALOHM"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer Part Number"; Value = "0603SAF1002T5E"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "10K"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=GPIO2 Pin=R4-2
+Added Pin To Net: NetName=GPIO3 Pin=R5-2
+Added Pin To Net: NetName=GPIO8 Pin=R18-1
+Added Pin To Net: NetName=3V3 Pin=R18-2
+Added Member To Class: ClassName=TOP Member=Component J2 TYPE-C-31-M-12
+Added Member To Class: ClassName=TOP Member=Component R18 RES
+Added Rule: Name=Schematic Impedance Constraint
+Change Rule Scope 1 : Old Scope=InDifferentialPairClass('USBB') New Scope=InNet('USBB_D_P')

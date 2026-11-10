@@ -1,0 +1,3 @@
+Layer Pairs Export File for PCB: C:\Users\hp\Desktop\BARFAS\lock_iot_projects\myProjects\2_Smart_Gateway\Hardware\REV1.1\Smart_Gateway_Rev1.1.PcbDoc
+LayersSetName=Top_Bot_Thru_Holes|DrillFile=smart_gateway_rev1.1-roundholes.txt|DrillLayers=gtl,gbl
+LayersSetName=Top_Bot_Slot_Holes|DrillFile=smart_gateway_rev1.1-slotholes.txt|DrillLayers=gtl,gbl
