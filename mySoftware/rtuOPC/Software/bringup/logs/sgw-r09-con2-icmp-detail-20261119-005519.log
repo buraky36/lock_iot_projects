@@ -1,0 +1,28 @@
+
+root@mtvrt-soms3:~# printf '\nCON2_PROBE_BEGIN\n'; ip -4 route get 192.168.1.1 frrom 192.168.1.13; ip neigh show dev eth0; ip -s link show dev eth0; for f in /prooc/sys/net/ipv4/icmp_echo_ignore_all /proc/sys/net/ipv4/conf/all/rp_filter /proc//sys/net/ipv4/conf/eth0/rp_filter; do printf '%s=' "$f"; cat "$f"; done; ping -I  192.168.1.13 -c 3 -W 1 192.168.1.6; ip neigh show dev eth0; for tool in arping ttcpdump; do command -v "$tool" || :; done; printf '\n%s%s\n' CON2_PROBE_ END
+
+CON2_PROBE_BEGIN
+192.168.1.1 from 192.168.1.13 dev eth1 uid 0 
+    cache 
+192.168.10.1  INCOMPLETE
+192.168.1.6 lladdr 40:d1:33:35:f6:a1 STALE
+fe80::1 lladdr 38:16:5a:29:69:14 router STALE
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+    link/ether 00:0a:01:01:30:39 brd ff:ff:ff:ff:ff:ff
+    RX: bytes  packets  errors  dropped overrun mcast   
+    5738       63       0       0       0       0       
+    TX: bytes  packets  errors  dropped carrier collsns 
+    11280      248      0       0       0       0       
+/proc/sys/net/ipv4/icmp_echo_ignore_all=0
+/proc/sys/net/ipv4/conf/all/rp_filter=0
+/proc/sys/net/ipv4/conf/eth0/rp_filter=0
+PING 192.168.1.6 (192.168.1.6) from 192.168.1.13: 56 data bytes
+
+--- 192.168.1.6 ping statistics ---
+3 packets transmitted, 0 packets received, 100% packet loss
+192.168.10.1  INCOMPLETE
+192.168.1.6 lladdr 40:d1:33:35:f6:a1 STALE
+fe80::1 lladdr 38:16:5a:29:69:14 router STALE
+
+CON2_PROBE_END
+root@mtvrt-soms3:~# 

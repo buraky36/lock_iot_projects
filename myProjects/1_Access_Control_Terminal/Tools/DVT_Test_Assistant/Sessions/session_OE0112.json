@@ -1,0 +1,189 @@
+{
+  "model": "OE0112",
+  "current_step_idx": 24,
+  "tester": "",
+  "serial": "OE0112_216AD2",
+  "detected_mac6": "216AD2",
+  "detected_fw_version": "v2.1.0",
+  "captured_vars": {
+    "FW": "v2.1.0",
+    "FW_VER": "v2.1.0",
+    "BLE": "OE0112_6AD2",
+    "M1": "16203427",
+    "M2": "15781139",
+    "MQ1": "16203427",
+    "MQ2": "15781139",
+    "K1": "15698691"
+  },
+  "step_results": {
+    "P-00": {
+      "title": "Test masası ve etiketli kartların hazırlanması",
+      "section": "0. Hazırlık",
+      "status": "PASS",
+      "timestamp": "2026-11-14 11:45:56",
+      "note": ""
+    },
+    "P-01": {
+      "title": "Model ve firmware kimlik doğrulaması",
+      "section": "0. Hazırlık",
+      "status": "PASS",
+      "timestamp": "2026-11-14 11:45:59",
+      "note": ""
+    },
+    "P-02": {
+      "title": "Fabrika ayarlarına sıfırlama ve açılış donanım kontrolü",
+      "section": "0. Hazırlık",
+      "status": "PASS",
+      "timestamp": "2026-11-14 11:46:13",
+      "note": ""
+    },
+    "C-01": {
+      "title": "Fabrika reset sonrası ilk 10 sn içinde 2 Master kart tanımlama",
+      "section": "1. İlk Açılış Master Kart Tanımlama (10 sn)",
+      "status": "PASS",
+      "timestamp": "2026-11-14 11:46:45",
+      "note": ""
+    },
+    "C-02": {
+      "title": "Pencere kilitlendikten sonra yeni master tanımlanamaması",
+      "section": "1. İlk Açılış Master Kart Tanımlama (10 sn)",
+      "status": "PASS",
+      "timestamp": "2026-11-14 11:46:56",
+      "note": ""
+    },
+    "C-03": {
+      "title": "Master kartı 1 kez okutma: KART-1 ve KART-2 ekleme",
+      "section": "2. Master Kart ile Kullanıcı Yönetimi",
+      "status": "PASS",
+      "timestamp": "2026-11-14 11:47:36",
+      "note": ""
+    },
+    "C-04": {
+      "title": "KART-1 ile kapı açma (5 sn) ve yabancı kart reddi",
+      "section": "2. Master Kart ile Kullanıcı Yönetimi",
+      "status": "PASS",
+      "timestamp": "2026-11-14 11:47:55",
+      "note": ""
+    },
+    "C-05": {
+      "title": "Master kartı 2 kez okutma: KART-1 silme",
+      "section": "2. Master Kart ile Kullanıcı Yönetimi",
+      "status": "PASS",
+      "timestamp": "2026-11-14 11:48:19",
+      "note": ""
+    },
+    "C-06": {
+      "title": "İkinci Master kart (MASTER-KART-2) ile KART-1'i geri ekleme ve çıkış",
+      "section": "2. Master Kart ile Kullanıcı Yönetimi",
+      "status": "PASS",
+      "timestamp": "2026-11-14 11:49:42",
+      "note": ""
+    },
+    "C-07": {
+      "title": "Master kartı 3 kez okutma: TÜM kullanıcıları silme",
+      "section": "2. Master Kart ile Kullanıcı Yönetimi",
+      "status": "PASS",
+      "timestamp": "2026-11-14 11:49:58",
+      "note": ""
+    },
+    "D-01": {
+      "title": "IN1 (Çıkış Butonu) ile kapı açma",
+      "section": "D. Ortak Donanım ve Protokol",
+      "status": "PASS",
+      "timestamp": "2026-11-14 12:59:31",
+      "note": ""
+    },
+    "D-02": {
+      "title": "Harici Wiegand okuyucu girişi (D0/D1)",
+      "section": "D. Ortak Donanım ve Protokol",
+      "status": "PASS",
+      "timestamp": "2026-11-14 12:59:37",
+      "note": ""
+    },
+    "D-03": {
+      "title": "RS-485 / OSDP durum bilgisi",
+      "section": "D. Ortak Donanım ve Protokol",
+      "status": "PASS",
+      "timestamp": "2026-11-14 12:59:41",
+      "note": ""
+    },
+    "D-04": {
+      "title": "Bluetooth (BLE) yayın kontrolü",
+      "section": "D. Ortak Donanım ve Protokol",
+      "status": "PASS",
+      "timestamp": "2026-11-14 13:00:10",
+      "note": ""
+    },
+    "D-05": {
+      "title": "IN2: İlk 10 sn penceresinden sonra uygulanan +12V'un DİKKATE ALINMAMASI",
+      "section": "D. Ortak Donanım ve Protokol",
+      "status": "PASS",
+      "timestamp": "2026-11-14 13:00:30",
+      "note": "Zaman aşımı koruması / inaktivite testi başarıyla sağlandı."
+    },
+    "D-06": {
+      "title": "IN2: +12V bırakılmazsa resetin İPTAL edilmesi (kısa devre / arıza koruması)",
+      "section": "D. Ortak Donanım ve Protokol",
+      "status": "PASS",
+      "timestamp": "2026-11-14 13:01:11",
+      "note": ""
+    },
+    "D-07": {
+      "title": "IN2: Donanımsal fabrika reseti (5 sn tut → 6 sn içinde bırak → 3 sn bekle)",
+      "section": "D. Ortak Donanım ve Protokol",
+      "status": "PASS",
+      "timestamp": "2026-11-14 13:01:35",
+      "note": ""
+    },
+    "E-01": {
+      "title": "BLE Provisioning, Wi-Fi ve Bulut (MQTT) Bağlantısı (Online Moda Geçiş)",
+      "section": "E. Online Mod ve OTA Güncelleme Testleri",
+      "status": "PASS",
+      "timestamp": "2026-11-14 13:02:01",
+      "note": ""
+    },
+    "E-02": {
+      "title": "Online Modda Yerel Master Ekleme Modunun Devre Dışı Olması",
+      "section": "E. Online Mod ve OTA Güncelleme Testleri",
+      "status": "PASS",
+      "timestamp": "2026-11-14 13:02:10",
+      "note": ""
+    },
+    "E-03": {
+      "title": "Online Geçiş Doğrulama Protokolü (0x12 PIN / 0x13 RFID / 0x14 QR)",
+      "section": "E. Online Mod ve OTA Güncelleme Testleri",
+      "status": "PASS",
+      "timestamp": "2026-11-14 13:02:17",
+      "note": ""
+    },
+    "E-04": {
+      "title": "Mobil Uygulama / Bulut Üzerinden Uzaktan Kapı Açma (0x40)",
+      "section": "E. Online Mod ve OTA Güncelleme Testleri",
+      "status": "PASS",
+      "timestamp": "2026-11-14 13:02:28",
+      "note": ""
+    },
+    "E-05": {
+      "title": "Online Modda Uzaktan NFC Kart Tanıtma (CMD 0x44 → 0x22 → 0x23)",
+      "section": "E. Online Mod ve OTA Güncelleme Testleri",
+      "status": "PASS",
+      "timestamp": "2026-11-14 13:02:45",
+      "note": ""
+    },
+    "E-06": {
+      "title": "OTA ile Eski Versiyona Dönüş Testi (Downgrade)",
+      "section": "E. Online Mod ve OTA Güncelleme Testleri",
+      "status": "PASS",
+      "timestamp": "2026-11-14 13:05:27",
+      "note": ""
+    },
+    "E-07": {
+      "title": "OTA ile Güncel Versiyona Yükseltme Testi (Upgrade)",
+      "section": "E. Online Mod ve OTA Güncelleme Testleri",
+      "status": "PASS",
+      "timestamp": "2026-11-14 13:05:50",
+      "note": ""
+    }
+  },
+  "updated_at": "2026-11-14 13:19:36"
+}

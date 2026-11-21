@@ -5,6 +5,7 @@
 #include "esp_system.h"
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
 #include "freertos/task.h"
 #include "hal_io.h"
 #include "hal_qr.h"
@@ -71,6 +72,7 @@ static void app_normalize_qr_string(const char *in_qr, char *out_qr,
 }
 static app_state_t current_state = STATE_BOOTING;
 static sys_config_t config;
+static SemaphoreHandle_t s_sm_mutex = NULL;
 
 static uint32_t app_normalize_rfid_card_id(uint32_t raw_card_id,
                                            uint8_t wg_bit_len) {
@@ -169,6 +171,9 @@ static bool relay_state = false;
 // Master Mode
 
 void app_set_state(app_state_t new_state) {
+  if (s_sm_mutex)
+    xSemaphoreTakeRecursive(s_sm_mutex, portMAX_DELAY);
+
   if (new_state != current_state) {
     ESP_LOGI(TAG, "State Transition: %s -> %s", state_to_string(current_state),
              state_to_string(new_state));
@@ -251,9 +256,18 @@ void app_set_state(app_state_t new_state) {
   default:
     break;
   }
+
+  if (s_sm_mutex)
+    xSemaphoreGiveRecursive(s_sm_mutex);
 }
 
 void app_state_machine_init(void) {
+  if (s_sm_mutex == NULL) {
+    s_sm_mutex = xSemaphoreCreateRecursiveMutex();
+  }
+  if (s_sm_mutex)
+    xSemaphoreTakeRecursive(s_sm_mutex, portMAX_DELAY);
+
   nv_storage_get_config(&config);
   hal_io_set_sound_enabled(config.sound_enabled);
 
@@ -263,9 +277,15 @@ void app_state_machine_init(void) {
   if (current_state != STATE_HW_ERROR) {
     app_set_state(STATE_IDLE);
   }
+
+  if (s_sm_mutex)
+    xSemaphoreGiveRecursive(s_sm_mutex);
 }
 
 void app_trigger_door_open(void) {
+  if (s_sm_mutex)
+    xSemaphoreTakeRecursive(s_sm_mutex, portMAX_DELAY);
+
   s_failed_auth_count = 0;
   s_lockout_until_ms = 0;
   uint32_t dur = config.relay_time > 0 ? (config.relay_time * 1000) : 3000;
@@ -286,9 +306,15 @@ void app_trigger_door_open(void) {
     if (config.is_online)
       api_client_send_lock_opened_event();
   }
+
+  if (s_sm_mutex)
+    xSemaphoreGiveRecursive(s_sm_mutex);
 }
 
 void app_trigger_door_close(void) {
+  if (s_sm_mutex)
+    xSemaphoreTakeRecursive(s_sm_mutex, portMAX_DELAY);
+
   if (config.relay_time == 0) {
     relay_state = false;
     hal_io_relay_set(false);
@@ -297,6 +323,9 @@ void app_trigger_door_close(void) {
   } else {
     ESP_LOGW(TAG, "Ignored REMOTE_CLOSE because device is not in toggle mode.");
   }
+
+  if (s_sm_mutex)
+    xSemaphoreGiveRecursive(s_sm_mutex);
 }
 
 void app_trigger_alarm(void) { app_set_state(STATE_ALARM); }
@@ -308,6 +337,9 @@ static void app_set_temp_led(led_color_t color, led_mode_t mode,
 }
 
 void app_trigger_access_denied(void) {
+  if (s_sm_mutex)
+    xSemaphoreTakeRecursive(s_sm_mutex, portMAX_DELAY);
+
   if (current_state == STATE_IDLE) {
     s_failed_auth_count++;
     if (s_failed_auth_count >= 5) {
@@ -316,11 +348,16 @@ void app_trigger_access_denied(void) {
       ESP_LOGW(TAG, "Brute-force protection: 5 failed attempts! Locking inputs for 30 seconds.");
       app_set_temp_led(LED_COLOR_RED, LED_MODE_BLINK_FAST, 30000);
       hal_io_buzzer_beep(1000, 1000, 1);
+      if (s_sm_mutex)
+        xSemaphoreGiveRecursive(s_sm_mutex);
       return;
     }
   }
   hal_io_buzzer_beep(1000, 300, 3); // 3 Slow Beeps
   hal_shift_reg_play_anim(ANIM_ERROR_FLASH, 3000);
+
+  if (s_sm_mutex)
+    xSemaphoreGiveRecursive(s_sm_mutex);
 }
 
 static bool app_is_access_granted(const char *prefix) {
@@ -459,6 +496,8 @@ void app_state_machine_tick(void) {
   static char s_raw_qr_buf[128];
   hal_io_tick();
   hal_shift_reg_tick();
+  if (s_sm_mutex)
+    xSemaphoreTakeRecursive(s_sm_mutex, portMAX_DELAY);
   int64_t now_us = esp_timer_get_time();
   int64_t elapsed_ms = (now_us - state_timer_start) / 1000;
 
@@ -498,19 +537,36 @@ void app_state_machine_tick(void) {
   */
 
   static int64_t last_anim_tick = 0;
-  if (current_state == STATE_IDLE && now_us - last_anim_tick > 3000000) {
-    // Only play the idle animation when the 20-second keypad activity window
-    // has expired (i.e., no key has been pressed recently).
-    if (!hal_shift_reg_is_keypad_active()) {
-      if (active_hw_version == HW_VERSION_PIN_QR) {
-        hal_shift_reg_play_anim(ANIM_IDLE_SNAKE, '\0');
-      } else if (active_hw_version == HW_VERSION_RFID_ONLY) {
-        hal_shift_reg_play_anim(ANIM_IDLE_PING_PONG, '\0');
+  static bool s_prev_wifi_lost = false;
+  if (current_state == STATE_IDLE) {
+    bool wifi_lost = (config.is_online && !wifi_manager_is_connected());
+    shift_reg_anim_t desired_anim =
+        wifi_lost ? ANIM_WIFI_DISCONNECTED
+                  : ((active_hw_version == HW_VERSION_PIN_QR)
+                         ? ANIM_IDLE_SNAKE
+                         : ((active_hw_version == HW_VERSION_RFID_ONLY)
+                                ? ANIM_IDLE_PING_PONG
+                                : ANIM_IDLE_WAVE));
+
+    if (wifi_lost != s_prev_wifi_lost) {
+      s_prev_wifi_lost = wifi_lost;
+      last_anim_tick = 0;
+    }
+
+    // Play idle / Wi-Fi lost animation when the 20s keypad window & blocking flashes are inactive
+    if (!hal_shift_reg_is_keypad_active() &&
+        !hal_shift_reg_is_blocking_anim_playing()) {
+      shift_reg_anim_t active_anim = hal_shift_reg_get_anim();
+      if (active_anim != desired_anim) {
+        if (wifi_lost || active_anim == ANIM_WIFI_DISCONNECTED ||
+            (now_us - last_anim_tick > 3000000)) {
+          hal_shift_reg_play_anim(desired_anim, '\0');
+          last_anim_tick = now_us;
+        }
       } else {
-        hal_shift_reg_play_anim(ANIM_IDLE_WAVE, '\0');
+        last_anim_tick = now_us;
       }
     }
-    last_anim_tick = now_us;
   }
 
   // Rule: Auto-switch to Online permanently when connected to Wi-Fi
@@ -722,7 +778,7 @@ void app_state_machine_tick(void) {
   // Dig_In Hardware Handlers
   if (hal_io_read_exit_button()) { // Exit Button
     if (config.is_online) {
-      api_client_send_session_keepalive();
+      api_client_send_session_start(0x01);
     }
     if (current_state == STATE_IDLE) {
       ESP_LOGI(TAG, "Exit Button Pressed - Opening Door");
@@ -829,9 +885,6 @@ void app_state_machine_tick(void) {
 
     char key = '\0';
     if (hal_touch_read_key(&key)) {
-      if (config.is_online) {
-        api_client_send_session_keepalive();
-      }
       state_timer_start = esp_timer_get_time(); // Reset timeout on keypress
       if (hal_shift_reg_is_blocking_anim_playing())
         break;
@@ -2603,4 +2656,7 @@ void app_state_machine_tick(void) {
   default:
     break;
   }
+
+  if (s_sm_mutex)
+    xSemaphoreGiveRecursive(s_sm_mutex);
 }

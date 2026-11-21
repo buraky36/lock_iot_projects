@@ -1,0 +1,19 @@
+Besleme Gerilimi : 24VDC +-%10
+Güç Tüketimi : 2.5W
+Sensör Beslemesi : 22VDC +-%10
+Koruma : 50 mA Kısa Devre Koruması
+Giriş 1 : Pulse
+Giriş 2 : 4-20 mA / 0-10V / PT100 / NTC / PTC / ÖZEL
+Giriş 3 : 4-20 mA / 0-10V / PT100 / NTC / PTC / RS485 /
+ÖZEL
+Örnekleme Sıklığı : 100 Milisaniye
+Çıkış 1 : 4-20 mA / 0-10V / ÖZEL
+Çıkış 2 : 4-20 mA / 0-10V / ÖZEL
+Çıkış 3 : RS485
+Analog Çıkış Çöz. : 16 Bit
+Tepki Süresi : 100 Milisaniye
+Çalışma Sıcaklığı : 0-50C
+Çalışma Nemi : %90 Nem Yoğuşmasız
+Koruma Sınıfı : IP20
+Ücretsiz Yazılım Verilmektedir.
+Garanti : 3 Yıl

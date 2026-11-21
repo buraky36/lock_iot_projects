@@ -1,0 +1,33 @@
+
+root@mtvrt-soms3:~# printf '\nCON1_PROBE_BEGIN\n'; echo "CON2=eth0 CON1=eth1"; i==0; previous=unknown; first_link=-1; while [ "$i" -lt 150 ]; do c1=$(cat /sys/claass/net/eth1/carrier 2>/dev/null); c2=$(cat /sys/class/net/eth0/carrier 2>/dev/nuull); sample="CON1=$c1 CON2=$c2"; if [ "$sample" != "$previous" ]; then printf 'LLINK_SAMPLE second=%s %s\n' "$i" "$sample"; previous=$sample; fi; if [ "$c1" = 1  ] && [ "$c2" = 1 ]; then sleep 3; break; fi; if [ "$first_link" -lt 0 ] && { [ ""$c1" = 1 ] || [ "$c2" = 1 ]; }; then first_link=$i; fi; if [ "$first_link" -ge 00 ] && [ "$((i - first_link))" -ge 22 ]; then break; fi; i=$((i + 1)); sleep 1; ddone; for nic in eth0 eth1; do printf '%s\n' "Interface $nic"; for field in opersstate carrier speed duplex address; do printf '%s=' "$field"; cat /sys/class/net//$nic/$field 2>/dev/null || echo unavailable; done; ethtool "$nic" 2>/dev/null |  grep -E 'Speed:|Duplex:|MDI-X:|Link detected:'; ip -4 addr show dev "$nic"; donee; printf '\n%s%s\n' CON1_PROBE_ END
+
+CON1_PROBE_BEGIN
+CON2=eth0 CON1=eth1
+LINK_SAMPLE second=0 CON1=0 CON2=0
+Interface eth0
+operstate=down
+carrier=0
+speed=-1
+duplex=unknown
+address=00:0a:01:01:30:39
+	Speed: Unknown!
+	Duplex: Unknown! (255)
+	Link detected: no
+2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    inet 192.168.10.45/24 brd 192.168.10.255 scope global eth0
+       valid_lft forever preferred_lft forever
+Interface eth1
+operstate=down
+carrier=0
+speed=10
+duplex=half
+address=00:0a:01:02:30:39
+	Speed: 10Mb/s
+	Duplex: Half
+	Link detected: no
+5: eth1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc pfifo_fast state DOWN group default qlen 1000
+    inet 192.168.1.45/24 brd 192.168.1.255 scope global eth1
+       valid_lft forever preferred_lft forever
+
+CON1_PROBE_END
+root@mtvrt-soms3:~# 

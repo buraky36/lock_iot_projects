@@ -1,0 +1,19 @@
+
+root@mtvrt-soms3:~# printf '\nCON2_PROBE_BEGIN\n'; ip -4 addr show dev eth1; ip --4 route show table main; ip -4 rule show; ip -4 route show table 1075 2>/dev/nulll; ip -4 route get 192.168.1.6 from 192.168.1.13; printf '\n%s%s\n' CON2_PROBE_  END
+
+CON2_PROBE_BEGIN
+6: eth1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc pfifo_fast state DOWN group default qlen 1000
+    inet 192.168.1.45/24 brd 192.168.1.255 scope global eth1
+       valid_lft forever preferred_lft forever
+default via 192.168.10.1 dev eth0 metric 100 
+192.168.1.0/24 dev eth1 proto kernel scope link src 192.168.1.45 linkdown 
+192.168.1.0/24 dev eth0 proto kernel scope link src 192.168.1.13 
+192.168.10.0/24 dev eth0 proto kernel scope link src 192.168.10.45 
+0:	from all lookup local
+32766:	from all lookup main
+32767:	from all lookup default
+192.168.1.6 from 192.168.1.13 dev eth1 uid 0 
+    cache 
+
+CON2_PROBE_END
+roo

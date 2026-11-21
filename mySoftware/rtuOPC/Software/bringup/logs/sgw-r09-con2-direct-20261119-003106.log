@@ -1,0 +1,2 @@
+[ 2754.884280] dwmac-sun8i 1c30000.ethernet eth0: Link is Down
+[ 2760.084402] dwmac-sun8i 1c30000.ethernet eth0: Link is Up - 100Mbps/Full - flow control off

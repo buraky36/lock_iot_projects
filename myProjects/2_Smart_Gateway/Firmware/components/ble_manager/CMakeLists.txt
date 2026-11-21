@@ -1,3 +1,4 @@
 idf_component_register(SRCS "ble_manager.c" "ble_server.c" "ble_frame_parser.c"
                     INCLUDE_DIRS "include"
-                    REQUIRES bt crypto_manager config_manager wifi_manager mbedtls)
+                    REQUIRES bt crypto_manager config_manager wifi_manager mbedtls mqtt_manager
+                    PRIV_REQUIRES ota_manager esp_partition)

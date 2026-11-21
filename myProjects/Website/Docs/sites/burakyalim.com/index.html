@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>burakyalim.com — Yakında Yayında</title>
+  <meta name="description" content="Burak Yalım'ın kişisel blogu ve mühendislik notları hazırlanıyor. Beklerken mini oyunu oynayabilirsiniz.">
+  <meta name="theme-color" content="#F7F5F0">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231A1A18'/%3E%3Cpath d='M18 17h14c6.6 0 11 3.2 11 8.4 0 3.4-2 5.9-5.4 7 4 1.1 6.4 4 6.4 7.9 0 5.6-4.7 9.2-11.8 9.2H18V17zm7.5 12.6h6c2.7 0 4.3-1.2 4.3-3.2s-1.6-3.1-4.3-3.1h-6v6.3zm0 13.6h6.5c3.1 0 4.9-1.3 4.9-3.6 0-2.3-1.8-3.6-4.9-3.6h-6.5v7.2z' fill='%23F7F5F0'/%3E%3Ccircle cx='49' cy='46' r='5' fill='%23C85A32'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F7F5F0;
+      --bg-card: #FCFBF8;
+      --bg-subtle: #EFECE4;
+      --ink: #1A1A18;
+      --ink-muted: #5E5B54;
+      --accent: #C85A32;
+      --accent-soft: rgba(200, 90, 50, 0.12);
+      --border: #E2DDD2;
+      --dot: rgba(26, 26, 24, 0.08);
+      --shadow: 0 18px 42px -24px rgba(26, 26, 24, 0.22);
+      --canvas-bg: #F3F0E8;
+      --canvas-ink: #242320;
+      --canvas-muted: #8C877C;
+      --canvas-accent: #C85A32;
+      --canvas-sky-alt: #242320;
+      --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    html[data-theme="dark"] {
+      --bg: #141413;
+      --bg-card: #1C1B19;
+      --bg-subtle: #252320;
+      --ink: #EAE6DC;
+      --ink-muted: #A49E93;
+      --accent: #E07A52;
+      --accent-soft: rgba(224, 122, 82, 0.14);
+      --border: #2E2C28;
+      --dot: rgba(234, 230, 220, 0.07);
+      --shadow: 0 22px 48px -24px rgba(0, 0, 0, 0.7);
+      --canvas-bg: #181715;
+      --canvas-ink: #EAE6DC;
+      --canvas-muted: #7F7A70;
+      --canvas-accent: #E07A52;
+      --canvas-sky-alt: #F3F0E8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg);
+      background-image: radial-gradient(var(--dot) 1.25px, transparent 1.25px);
+      background-size: 22px 22px;
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .page-shell {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 24px 20px 36px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* Header */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
+    }
+
+    .monogram {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--ink);
+      color: var(--bg);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .monogram::after {
+      content: "";
+      position: absolute;
+      right: 4px;
+      bottom: 4px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .topbar-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.85); }
+    }
+
+    .segmented {
+      display: inline-flex;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 2px;
+    }
+
+    .seg-btn {
+      border: none;
+      background: transparent;
+      color: var(--ink-muted);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .seg-btn[aria-pressed="true"] {
+      background: var(--bg-card);
+      color: var(--ink);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    }
+
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 6px 11px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color 0.2s ease, transform 0.12s ease;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--accent);
+    }
+
+    .icon-btn:active {
+      transform: translateY(1px);
+    }
+
+    /* Main Hero + Game */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .hero {
+      max-width: 680px;
+    }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin: 0 0 10px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(1.75rem, 3.6vw, 2.55rem);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      font-weight: 800;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--ink-muted);
+      font-size: 1.03rem;
+      max-width: 60ch;
+    }
+
+    .topic-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .topic-tag {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--ink-muted);
+    }
+
+    /* Game Card */
+    .game-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .game-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .game-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .game-title {
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .game-hint-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--ink-muted);
+      background: var(--bg-subtle);
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .game-hud {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .hud-score {
+      color: var(--ink);
+      min-width: 62px;
+      text-align: right;
+    }
+
+    .hud-hi {
+      color: var(--ink-muted);
+    }
+
+    .canvas-wrap {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--canvas-bg);
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    canvas#blog-runner {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 800 / 240;
+      cursor: pointer;
+    }
+
+    .game-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .controls-legend {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--ink-muted);
+    }
+
+    .touch-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    .touch-btn {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--ink);
+      cursor: pointer;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .touch-btn.primary {
+      background: var(--accent);
+      color: #FFFFFF;
+      border-color: var(--accent);
+    }
+
+    .touch-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* Footer */
+    .site-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      font-size: 0.88rem;
+      color: var(--ink-muted);
+    }
+
+    .footer-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .footer-link {
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.86rem;
+      padding: 4px 0;
+      border-bottom: 1px solid transparent;
+      transition: color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .footer-link:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .footer-link.cross-link {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--accent);
+    }
+
+    @media (max-width: 600px) {
+      .page-shell {
+        padding: 18px 14px 28px;
+        gap: 20px;
+      }
+      .game-card {
+        padding: 12px;
+        border-radius: 14px;
+      }
+      .touch-controls {
+        width: 100%;
+        justify-content: stretch;
+      }
+      .touch-btn {
+        flex: 1;
+        text-align: center;
+        padding: 10px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="#top" id="top">
+        <span class="monogram" aria-hidden="true">BY</span>
+        <span>burakyalim.com</span>
+      </a>
+
+      <div class="topbar-controls">
+        <span class="status-pill">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span data-i18n="status">Hazırlanıyor</span>
+        </span>
+
+        <div class="segmented" role="group" aria-label="Language switcher">
+          <button type="button" class="seg-btn" data-lang-btn="tr" aria-pressed="true">TR</button>
+          <button type="button" class="seg-btn" data-lang-btn="en" aria-pressed="false">EN</button>
+        </div>
+
+        <button type="button" class="icon-btn" id="theme-toggle" aria-label="Tema değiştir">
+          <span id="theme-icon" aria-hidden="true">☾</span>
+          <span id="theme-label">Koyu</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <section class="hero">
+        <p class="eyebrow" data-i18n="eyebrow">Kişisel Blog &amp; Mühendislik Notları</p>
+        <h1 data-i18n="headline">Yeni yazılar ve projeler çok yakında burada.</h1>
+        <p class="subtitle" data-i18n="subtitle">
+          Gömülü sistemler, IoT mimarileri, donanım deneyleri ve yazılım üzerine notlarımı paylaşacağım yeni blogumu hazırlıyorum. Sayfa yayına girene kadar aşağıdaki mini oyunda rekor kırmayı deneyebilirsiniz.
+        </p>
+        <div class="topic-row">
+          <span class="topic-tag" data-i18n="tag1">#gömülü-sistemler</span>
+          <span class="topic-tag" data-i18n="tag2">#iot-mimarisi</span>
+          <span class="topic-tag" data-i18n="tag3">#üretim-notları</span>
+        </div>
+      </section>
+
+      <section class="game-card" aria-labelledby="game-title">
+        <div class="game-bar">
+          <div class="game-title-wrap">
+            <span class="game-title" id="game-title" data-i18n="gameTitle">BLOG RUNNER · RETRO SÜRÜM</span>
+            <span class="game-hint-badge" data-i18n="gameSubtitle">Engellerden kaç · Kahve &amp; bug atla</span>
+          </div>
+          <div class="game-hud">
+            <span class="hud-hi" id="hud-hi">HI 00000</span>
+            <span class="hud-score" id="hud-score">00000</span>
+            <button type="button" class="icon-btn" id="sound-toggle" aria-pressed="true">🔊</button>
+          </div>
+        </div>
+
+        <div class="canvas-wrap">
+          <canvas id="blog-runner" width="800" height="240" aria-label="Blog Runner Mini Oyunu"></canvas>
+        </div>
+
+        <div class="game-footer">
+          <span class="controls-legend" data-i18n="controls">
+            [Boşluk / ↑] Zıpla · [↓] Eğil / Hızlı İn · Dokunarak oyna
+          </span>
+          <div class="touch-controls">
+            <button type="button" class="touch-btn" id="btn-duck" data-i18n="btnDuck">Eğil (↓)</button>
+            <button type="button" class="touch-btn primary" id="btn-jump" data-i18n="btnJump">Zıpla (↑)</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span id="footer-copy">© <span id="year">2026</span> Burak Yalım</span>
+      <nav class="footer-links" id="footer-links" aria-label="İletişim ve Bağlantılar"></nav>
+    </footer>
+  </div>
+
+  <script>
+    // =========================================================================
+    // KOLAY DÜZENLEME ALANI (SITE_CONFIG)
+    // İletişim ve sosyal medya adreslerinizi aşağıdan güncelleyebilirsiniz.
+    // Göstermek istemediğiniz bir alanı "" (boş metin) bırakmanız yeterlidir.
+    // =========================================================================
+    const SITE_CONFIG = {
+      email: "merhaba@burakyalim.com",
+      github: "https://github.com/burakyalim",
+      linkedin: "https://linkedin.com/in/burakyalim",
+      x: "", // Örn: "https://x.com/kullaniciadiniz" — boş bırakılırsa gizlenir
+      noddat: "https://noddat.com"
+    };
+
+    (function () {
+      "use strict";
+
+      const I18N = {
+        tr: {
+          pageTitle: "burakyalim.com — Yakında Yayında",
+          status: "Hazırlanıyor",
+          eyebrow: "Kişisel Blog & Mühendislik Notları",
+          headline: "Yeni yazılar ve projeler çok yakında burada.",
+          subtitle: "Gömülü sistemler, IoT mimarileri, donanım deneyleri ve yazılım üzerine notlarımı paylaşacağım yeni blogumu hazırlıyorum. Sayfa yayına girene kadar aşağıdaki mini oyunda rekor kırmayı deneyebilirsiniz.",
+          tag1: "#gömülü-sistemler",
+          tag2: "#iot-mimarisi",
+          tag3: "#üretim-notları",
+          gameTitle: "BLOG RUNNER · RETRO SÜRÜM",
+          gameSubtitle: "Engellerden kaç · Kahve & bug atla",
+          controls: "[Boşluk / ↑] Zıpla · [↓] Eğil / Hızlı İn · Dokunarak oyna",
+          btnDuck: "Eğil (↓)",
+          btnJump: "Zıpla (↑)",
+          themeToDark: "Koyu",
+          themeToLight: "Açık",
+          emailLabel: "E-posta",
+          noddatLabel: "Noddat IoT Platformu →",
+          copySuffix: "Burak Yalım · Çok yakında yayında",
+          canvasStart: "BAŞLAMAK İÇİN [BOŞLUK] VEYA DOKUN",
+          canvasGameOver: "OYUN BİTTİ · TEKRAR: [BOŞLUK] / DOKUN",
+          canvasNight: "GECE KODLAMASI",
+          canvasScorePrefix: "SKOR"
+        },
+        en: {
+          pageTitle: "burakyalim.com — Coming Soon",
+          status: "Coming Soon",
+          eyebrow: "Personal Blog & Engineering Notes",
+          headline: "New articles and build logs are on the way.",
+          subtitle: "I am crafting a home for my notes on embedded systems, IoT architecture, hardware experiments, and software craft. While the site is being built, try setting a high score below.",
+          tag1: "#embedded-systems",
+          tag2: "#iot-architecture",
+          tag3: "#build-logs",
+          gameTitle: "BLOG RUNNER · RETRO EDITION",
+          gameSubtitle: "Dodge bugs · Jump coffee stacks",
+          controls: "[Space / ↑] Jump · [↓] Duck / Fast-fall · Tap to play",
+          btnDuck: "Duck (↓)",
+          btnJump: "Jump (↑)",
+          themeToDark: "Dark",
+          themeToLight: "Light",
+          emailLabel: "Email",
+          noddatLabel: "Noddat IoT Platform →",
+          copySuffix: "Burak Yalım · Launching soon",
+          canvasStart: "PRESS [SPACE] OR TAP TO START",
+          canvasGameOver: "GAME OVER · [SPACE] OR TAP TO RETRY",
+          canvasNight: "NIGHT SHIFT",
+          canvasScorePrefix: "SCORE"
+        }
+      };
+
+      function safeGetStorage(key) {
+        try {
+          return window.localStorage.getItem(key);
+        } catch (_) {
+          return null;
+        }
+      }
+
+      function safeSetStorage(key, val) {
+        try {
+          window.localStorage.setItem(key, String(val));
+        } catch (_) {}
+      }
+
+      const yearEl = document.getElementById("year");
+      if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+
+      // Determine initial language (default TR unless saved EN or browser clearly EN)
+      const savedLang = safeGetStorage("burakyalim_lang");
+      const browserLang = (navigator.language || "").toLowerCase();
+      let currentLang = (savedLang === "tr" || savedLang === "en")
+        ? savedLang
+        : (browserLang.startsWith("en") ? "en" : "tr");
+
+      let currentTheme = safeGetStorage("burakyalim_theme") === "dark" ? "dark" : "light";
+      let soundEnabled = safeGetStorage("burakyalim_sound") !== "off";
+
+      const themeToggleBtn = document.getElementById("theme-toggle");
+      const themeIconEl = document.getElementById("theme-icon");
+      const themeLabelEl = document.getElementById("theme-label");
+      const soundToggleBtn = document.getElementById("sound-toggle");
+
+      function applyTheme(theme) {
+        currentTheme = theme === "dark" ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", currentTheme);
+        safeSetStorage("burakyalim_theme", currentTheme);
+        const dict = I18N[currentLang];
+        if (themeIconEl) themeIconEl.textContent = currentTheme === "dark" ? "☀" : "☾";
+        if (themeLabelEl) themeLabelEl.textContent = currentTheme === "dark" ? dict.themeToLight : dict.themeToDark;
+        const metaTheme = document.querySelector('meta[name="theme-color"]');
+        if (metaTheme) metaTheme.setAttribute("content", currentTheme === "dark" ? "#141413" : "#F7F5F0");
+      }
+
+      function renderFooterLinks() {
+        const nav = document.getElementById("footer-links");
+        if (!nav) return;
+        nav.innerHTML = "";
+        const dict = I18N[currentLang];
+        const items = [
+          { key: "email", label: dict.emailLabel, href: SITE_CONFIG.email ? "mailto:" + SITE_CONFIG.email.trim() : "" },
+          { key: "github", label: "GitHub", href: SITE_CONFIG.github },
+          { key: "linkedin", label: "LinkedIn", href: SITE_CONFIG.linkedin },
+          { key: "x", label: "X", href: SITE_CONFIG.x },
+          { key: "noddat", label: dict.noddatLabel, href: SITE_CONFIG.noddat, extraClass: "cross-link" }
+        ];
+
+        items.forEach(function (item) {
+          if (!item.href || !String(item.href).trim()) return;
+          const a = document.createElement("a");
+          a.className = "footer-link" + (item.extraClass ? " " + item.extraClass : "");
+          a.href = item.href.trim();
+          a.textContent = item.label;
+          if (!a.href.startsWith("mailto:")) {
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+          }
+          nav.appendChild(a);
+        });
+      }
+
+      function applyLang(lang) {
+        currentLang = lang === "en" ? "en" : "tr";
+        safeSetStorage("burakyalim_lang", currentLang);
+        document.documentElement.lang = currentLang;
+        const dict = I18N[currentLang];
+        document.title = dict.pageTitle;
+
+        document.querySelectorAll("[data-i18n]").forEach(function (el) {
+          const key = el.getAttribute("data-i18n");
+          if (dict[key]) el.textContent = dict[key];
+        });
+
+        const copyEl = document.getElementById("footer-copy");
+        if (copyEl) {
+          copyEl.textContent = "© " + new Date().getFullYear() + " " + dict.copySuffix;
+        }
+
+        document.querySelectorAll("[data-lang-btn]").forEach(function (btn) {
+          btn.setAttribute("aria-pressed", btn.getAttribute("data-lang-btn") === currentLang ? "true" : "false");
+        });
+
+        if (themeLabelEl) {
+          themeLabelEl.textContent = currentTheme === "dark" ? dict.themeToLight : dict.themeToDark;
+        }
+        renderFooterLinks();
+      }
+
+      function updateSoundButton() {
+        if (!soundToggleBtn) return;
+        soundToggleBtn.textContent = soundEnabled ? "🔊" : "🔇";
+        soundToggleBtn.setAttribute("aria-pressed", soundEnabled ? "true" : "false");
+      }
+
+      document.querySelectorAll("[data-lang-btn]").forEach(function (btn) {
+        btn.addEventListener("click", function (e) {
+          applyLang(btn.getAttribute("data-lang-btn"));
+          if (e.detail > 0) btn.blur();
+        });
+      });
+
+      if (themeToggleBtn) {
+        themeToggleBtn.addEventListener("click", function (e) {
+          applyTheme(currentTheme === "dark" ? "light" : "dark");
+          if (e.detail > 0) themeToggleBtn.blur();
+        });
+      }
+
+      if (soundToggleBtn) {
+        soundToggleBtn.addEventListener("click", function (e) {
+          soundEnabled = !soundEnabled;
+          safeSetStorage("burakyalim_sound", soundEnabled ? "on" : "off");
+          updateSoundButton();
+          if (e.detail > 0) soundToggleBtn.blur();
+        });
+      }
+
+      applyLang(currentLang);
+      applyTheme(currentTheme);
+      updateSoundButton();
+
+      // =========================================================================
+      // WEB AUDIO 8-BIT SYNTH
+      // =========================================================================
+      let audioCtx = null;
+      function playTone(type) {
+        if (!soundEnabled) return;
+        try {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) return;
+          if (!audioCtx) audioCtx = new AudioCtx();
+          if (audioCtx.state === "suspended") audioCtx.resume();
+
+          const now = audioCtx.currentTime;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          if (type === "jump") {
+            osc.type = "square";
+            osc.frequency.setValueAtTime(320, now);
+            osc.frequency.exponentialRampToValueAtTime(620, now + 0.08);
+            gain.gain.setValueAtTime(0.06, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+            osc.start(now);
+            osc.stop(now + 0.095);
+          } else if (type === "milestone") {
+            osc.type = "square";
+            osc.frequency.setValueAtTime(587.3, now);
+            osc.frequency.setValueAtTime(880, now + 0.07);
+            gain.gain.setValueAtTime(0.06, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+            osc.start(now);
+            osc.stop(now + 0.21);
+          } else if (type === "crash") {
+            osc.type = "sawtooth";
+            osc.frequency.setValueAtTime(210, now);
+            osc.frequency.exponentialRampToValueAtTime(65, now + 0.2);
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+            osc.start(now);
+            osc.stop(now + 0.23);
+          }
+        } catch (_) {}
+      }
+
+      // =========================================================================
+      // BLOG RUNNER MINI-GAME (800 x 240 logical space)
+      // =========================================================================
+      const canvas = document.getElementById("blog-runner");
+      const ctx = canvas.getContext("2d");
+      const hudScoreEl = document.getElementById("hud-score");
+      const hudHiEl = document.getElementById("hud-hi");
+      const btnJump = document.getElementById("btn-jump");
+      const btnDuck = document.getElementById("btn-duck");
+
+      const W = 800;
+      const H = 240;
+      const GROUND_Y = 202;
+      const BASE_SPEED = 320;
+      const MAX_SPEED = 680;
+      const GRAVITY = 2150;
+      const FAST_FALL_GRAVITY = 4400;
+      const JUMP_VEL = -650;
+
+      function syncCanvasDPR() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        if (canvas.width !== W * dpr || canvas.height !== H * dpr) {
+          canvas.width = W * dpr;
+          canvas.height = H * dpr;
+        }
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      syncCanvasDPR();
+      window.addEventListener("resize", syncCanvasDPR);
+
+      let hiScore = parseInt(safeGetStorage("burakyalim_hi_score") || "0", 10);
+      if (!Number.isFinite(hiScore) || hiScore < 0) hiScore = 0;
+
+      const game = {
+        state: "idle", // "idle" | "running" | "gameover"
+        score: 0,
+        lastMilestone: 0,
+        milestoneFlash: 0,
+        speed: BASE_SPEED,
+        distance: 0,
+        spawnTimer: 0.9,
+        gameOverTimestamp: 0,
+        duckPressed: false,
+        blinkTimer: 2.2,
+        player: {
+          x: 68,
+          y: GROUND_Y - 44,
+          vy: 0,
+          w: 34,
+          h: 44,
+          grounded: true,
+          ducking: false,
+          legPhase: 0
+        },
+        obstacles: [],
+        clouds: [
+          { x: 140, y: 48, w: 46, speed: 18 },
+          { x: 390, y: 34, w: 60, speed: 14 },
+          { x: 640, y: 58, w: 38, speed: 22 }
+        ],
+        pebbles: []
+      };
+
+      for (let i = 0; i < 24; i++) {
+        game.pebbles.push({
+          x: Math.random() * W,
+          y: GROUND_Y + 6 + Math.floor(Math.random() * 14),
+          w: 2 + Math.floor(Math.random() * 5)
+        });
+      }
+
+      function formatScore(n) {
+        return String(Math.floor(n)).padStart(5, "0");
+      }
+
+      function updateHUD() {
+        if (hudScoreEl) hudScoreEl.textContent = formatScore(game.score);
+        if (hudHiEl) hudHiEl.textContent = "HI " + formatScore(hiScore);
+      }
+      updateHUD();
+
+      function resetGame() {
+        game.state = "running";
+        game.score = 0;
+        game.lastMilestone = 0;
+        game.milestoneFlash = 0;
+        game.speed = BASE_SPEED;
+        game.distance = 0;
+        game.spawnTimer = 0.85;
+        game.obstacles = [];
+        game.player.ducking = false;
+        game.player.w = 34;
+        game.player.h = 44;
+        game.player.y = GROUND_Y - 44;
+        game.player.vy = 0;
+        game.player.grounded = true;
+        updateHUD();
+      }
+
+      function triggerJump() {
+        const now = performance.now();
+        if (game.state === "idle") {
+          resetGame();
+          game.player.vy = JUMP_VEL;
+          game.player.grounded = false;
+          playTone("jump");
+          return;
+        }
+        if (game.state === "gameover") {
+          if (now - game.gameOverTimestamp >= 300) {
+            resetGame();
+            game.player.vy = JUMP_VEL;
+            game.player.grounded = false;
+            playTone("jump");
+          }
+          return;
+        }
+        if (game.state === "running" && game.player.grounded) {
+          game.player.ducking = false;
+          game.player.w = 34;
+          game.player.h = 44;
+          game.player.y = GROUND_Y - 44;
+          game.player.vy = JUMP_VEL;
+          game.player.grounded = false;
+          playTone("jump");
+        }
+      }
+
+      function setDuck(active) {
+        game.duckPressed = active;
+      }
+
+      function spawnObstacle() {
+        const allowAerial = game.score >= 200;
+        const roll = Math.random();
+
+        if (allowAerial && roll < 0.28) {
+          // Aerial flying 404 / paper plane at 2 fair heights
+          const isHigh = Math.random() < 0.55;
+          const yPos = isHigh ? GROUND_Y - 48 : GROUND_Y - 30;
+          game.obstacles.push({
+            kind: "plane",
+            x: W + 24,
+            y: yPos,
+            w: 38,
+            h: 22,
+            wingPhase: 0
+          });
+        } else {
+          const groundKindRoll = Math.random();
+          if (groundKindRoll < 0.36) {
+            const double = Math.random() < 0.35 && game.score > 80;
+            game.obstacles.push({
+              kind: "cactus",
+              x: W + 24,
+              y: GROUND_Y - (double ? 46 : 40),
+              w: double ? 42 : 24,
+              h: double ? 46 : 40,
+              double: double
+            });
+          } else if (groundKindRoll < 0.68) {
+            const tall = Math.random() < 0.45;
+            const h = tall ? 44 : 30;
+            game.obstacles.push({
+              kind: "coffee",
+              x: W + 24,
+              y: GROUND_Y - h,
+              w: 28,
+              h: h,
+              cups: tall ? 2 : 1
+            });
+          } else {
+            game.obstacles.push({
+              kind: "bug",
+              x: W + 24,
+              y: GROUND_Y - 34,
+              w: 34,
+              h: 34
+            });
+          }
+        }
+
+        const speedFactor = (game.speed - BASE_SPEED) / (MAX_SPEED - BASE_SPEED);
+        const minWait = 0.72 - speedFactor * 0.24;
+        const maxWait = 1.38 - speedFactor * 0.38;
+        game.spawnTimer = minWait + Math.random() * (maxWait - minWait);
+      }
+
+      function getInsetBox(rect, insetRatio) {
+        const ix = rect.w * insetRatio;
+        const iy = rect.h * insetRatio;
+        return {
+          x: rect.x + ix,
+          y: rect.y + iy,
+          w: Math.max(4, rect.w - ix * 2),
+          h: Math.max(4, rect.h - iy * 2)
+        };
+      }
+
+      function boxesOverlap(a, b) {
+        return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+      }
+
+      function updateGame(dt) {
+        game.blinkTimer -= dt;
+        if (game.blinkTimer < -0.14) game.blinkTimer = 1.8 + Math.random() * 2.4;
+
+        if (game.state !== "running") return;
+
+        // Speed ramps up steadily
+        game.speed = Math.min(MAX_SPEED, BASE_SPEED + game.score * 0.36);
+        game.distance += game.speed * dt;
+        game.score += dt * 15;
+
+        const currentHundred = Math.floor(game.score / 100);
+        if (currentHundred > game.lastMilestone && currentHundred > 0) {
+          game.lastMilestone = currentHundred;
+          game.milestoneFlash = 0.75;
+          playTone("milestone");
+        }
+        if (game.milestoneFlash > 0) game.milestoneFlash = Math.max(0, game.milestoneFlash - dt);
+
+        // Player crouch / physics
+        const p = game.player;
+        if (p.grounded) {
+          if (game.duckPressed && !p.ducking) {
+            p.ducking = true;
+            p.w = 46;
+            p.h = 24;
+            p.y = GROUND_Y - 24;
+          } else if (!game.duckPressed && p.ducking) {
+            p.ducking = false;
+            p.w = 34;
+            p.h = 44;
+            p.y = GROUND_Y - 44;
+          }
+          p.legPhase += dt * (game.speed / 28);
+        } else {
+          const g = game.duckPressed ? FAST_FALL_GRAVITY : GRAVITY;
+          p.vy += g * dt;
+          p.y += p.vy * dt;
+          if (p.y >= GROUND_Y - p.h) {
+            p.y = GROUND_Y - p.h;
+            p.vy = 0;
+            p.grounded = true;
+          }
+        }
+
+        // Parallax clouds & pebbles
+        game.clouds.forEach(function (c) {
+          c.x -= (c.speed + game.speed * 0.06) * dt;
+          if (c.x + c.w < -20) {
+            c.x = W + 20 + Math.random() * 80;
+            c.y = 26 + Math.random() * 52;
+          }
+        });
+        game.pebbles.forEach(function (pb) {
+          pb.x -= game.speed * dt;
+          if (pb.x + pb.w < 0) {
+            pb.x = W + Math.random() * 40;
+            pb.y = GROUND_Y + 6 + Math.floor(Math.random() * 14);
+          }
+        });
+
+        // Obstacles
+        game.spawnTimer -= dt;
+        if (game.spawnTimer <= 0) spawnObstacle();
+
+        const pBox = getInsetBox(p, 0.2);
+
+        for (let i = game.obstacles.length - 1; i >= 0; i--) {
+          const ob = game.obstacles[i];
+          ob.x -= game.speed * (ob.kind === "plane" ? 1.12 : 1.0) * dt;
+          if (ob.kind === "plane") ob.wingPhase += dt * 10;
+
+          const obBox = getInsetBox(ob, 0.18);
+          if (boxesOverlap(pBox, obBox)) {
+            game.state = "gameover";
+            game.gameOverTimestamp = performance.now();
+            playTone("crash");
+            if (Math.floor(game.score) > hiScore) {
+              hiScore = Math.floor(game.score);
+              safeSetStorage("burakyalim_hi_score", hiScore);
+            }
+            updateHUD();
+            return;
+          }
+
+          if (ob.x + ob.w < -40) {
+            game.obstacles.splice(i, 1);
+          }
+        }
+
+        updateHUD();
+      }
+
+      function getCanvasColors() {
+        const cs = getComputedStyle(document.documentElement);
+        const nightPhase = Math.floor(game.score / 500) % 2 === 1 && game.score >= 500;
+        const baseBg = cs.getPropertyValue("--canvas-bg").trim() || "#F3F0E8";
+        const baseInk = cs.getPropertyValue("--canvas-ink").trim() || "#242320";
+        const baseMuted = cs.getPropertyValue("--canvas-muted").trim() || "#8C877C";
+        const accent = cs.getPropertyValue("--canvas-accent").trim() || "#C85A32";
+
+        if (!nightPhase) {
+          return { bg: baseBg, ink: baseInk, muted: baseMuted, accent: accent, night: false };
+        }
+        // Subtle Chrome-Dino day/night inversion shift inside canvas every 500 pts
+        return currentTheme === "dark"
+          ? { bg: "#ECE8DE", ink: "#1F1E1B", muted: "#757066", accent: "#C85A32", night: true }
+          : { bg: "#1E1D1A", ink: "#EFECE4", muted: "#8E887E", accent: "#E07A52", night: true };
+      }
+
+      function drawPlayer(colors) {
+        const p = game.player;
+        const x = Math.round(p.x);
+        const y = Math.round(p.y);
+        const isStunned = game.state === "gameover";
+        const blink = game.blinkTimer < 0 && game.state === "idle";
+
+        ctx.fillStyle = colors.ink;
+        if (p.ducking) {
+          // Ducking pixel dino silhouette
+          ctx.fillRect(x, y + 6, 10, 8);        // tail
+          ctx.fillRect(x + 8, y + 2, 24, 14);   // body
+          ctx.fillRect(x + 30, y, 16, 12);      // extended head
+          ctx.fillRect(x + 36, y + 12, 8, 2);   // jaw
+          // Eye
+          ctx.fillStyle = colors.bg;
+          ctx.fillRect(x + 36, y + 3, 4, 4);
+          // Legs
+          ctx.fillStyle = colors.ink;
+          const step = Math.floor(p.legPhase) % 2 === 0;
+          ctx.fillRect(x + 12, y + 16, 5, step ? 8 : 5);
+          ctx.fillRect(x + 23, y + 16, 5, step ? 5 : 8);
+          return;
+        }
+
+        // Standing / running pixel dino
+        ctx.fillRect(x + 14, y, 18, 14);        // head
+        ctx.fillRect(x + 22, y + 14, 8, 3);     // jaw
+        ctx.fillRect(x + 8, y + 12, 16, 18);    // torso
+        ctx.fillRect(x, y + 18, 8, 9);          // tail
+        ctx.fillRect(x + 2, y + 14, 6, 6);      // tail tip
+        // Little arm
+        ctx.fillRect(x + 24, y + 20, 6, 3);
+        ctx.fillRect(x + 28, y + 22, 2, 3);
+
+        // Eye
+        ctx.fillStyle = isStunned ? colors.accent : colors.bg;
+        if (blink) {
+          ctx.fillRect(x + 19, y + 5, 5, 2);
+        } else {
+          ctx.fillRect(x + 19, y + 3, 5, 5);
+        }
+
+        // Animated legs
+        ctx.fillStyle = colors.ink;
+        if (!p.grounded || game.state !== "running") {
+          ctx.fillRect(x + 10, y + 30, 5, 14);
+          ctx.fillRect(x + 19, y + 30, 5, 14);
+        } else {
+          const step = Math.floor(p.legPhase) % 2 === 0;
+          ctx.fillRect(x + 10, y + 30, 5, step ? 14 : 9);
+          ctx.fillRect(x + 19, y + 30, 5, step ? 9 : 14);
+        }
+      }
+
+      function drawObstacle(ob, colors) {
+        const x = Math.round(ob.x);
+        const y = Math.round(ob.y);
+        if (ob.kind === "cactus") {
+          ctx.fillStyle = colors.ink;
+          // Main trunk
+          ctx.fillRect(x + 8, y, 8, ob.h);
+          ctx.fillRect(x + 2, y + 10, 6, 5);
+          ctx.fillRect(x + 2, y + 4, 4, 9);
+          ctx.fillRect(x + 16, y + 14, 6, 5);
+          ctx.fillRect(x + 18, y + 7, 4, 10);
+          if (ob.double) {
+            ctx.fillRect(x + 28, y + 8, 7, ob.h - 8);
+            ctx.fillRect(x + 23, y + 16, 5, 4);
+            ctx.fillRect(x + 35, y + 18, 5, 4);
+          }
+        } else if (ob.kind === "coffee") {
+          const count = ob.cups || 1;
+          for (let c = 0; c < count; c++) {
+            const cy = y + (count - 1 - c) * 16 + (count === 2 ? 12 : 10);
+            ctx.fillStyle = colors.accent;
+            ctx.fillRect(x + 4, cy, 18, 16);
+            ctx.fillStyle = colors.ink;
+            ctx.fillRect(x + 2, cy - 2, 22, 3);
+            ctx.fillRect(x + 22, cy + 3, 5, 8);
+            ctx.fillStyle = colors.bg;
+            ctx.fillRect(x + 22, cy + 5, 3, 4);
+          }
+          // Steam pixels
+          ctx.fillStyle = colors.muted;
+          ctx.fillRect(x + 8, y, 2, 5);
+          ctx.fillRect(x + 15, y + 2, 2, 4);
+        } else if (ob.kind === "bug") {
+          ctx.fillStyle = colors.ink;
+          ctx.fillRect(x + 5, y + 4, 24, 26);
+          ctx.fillStyle = colors.accent;
+          ctx.fillRect(x + 9, y + 9, 5, 5);
+          ctx.fillRect(x + 20, y + 9, 5, 5);
+          ctx.fillStyle = colors.bg;
+          ctx.fillRect(x + 11, y + 20, 12, 3);
+          // Legs / antennae
+          ctx.fillStyle = colors.ink;
+          ctx.fillRect(x, y + 10, 5, 3);
+          ctx.fillRect(x + 29, y + 10, 5, 3);
+          ctx.fillRect(x, y + 22, 5, 3);
+          ctx.fillRect(x + 29, y + 22, 5, 3);
+        } else if (ob.kind === "plane") {
+          ctx.fillStyle = colors.accent;
+          const flap = Math.sin(ob.wingPhase) > 0 ? -3 : 3;
+          ctx.beginPath();
+          ctx.moveTo(x, y + 11);
+          ctx.lineTo(x + ob.w, y + 4);
+          ctx.lineTo(x + ob.w - 6, y + 18 + flap);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.fillStyle = colors.ink;
+          ctx.font = "700 9px monospace";
+          ctx.fillText("404", x + 10, y + 12);
+        }
+      }
+
+      function drawScene() {
+        const colors = getCanvasColors();
+        const dict = I18N[currentLang];
+
+        ctx.fillStyle = colors.bg;
+        ctx.fillRect(0, 0, W, H);
+
+        // Night indicator tag inside canvas if night phase active
+        if (colors.night) {
+          ctx.fillStyle = colors.muted;
+          ctx.font = "700 10px monospace";
+          ctx.textAlign = "left";
+          ctx.fillText("☾ " + dict.canvasNight, 16, 22);
+        }
+
+        // Milestone flash
+        if (game.milestoneFlash > 0 && Math.floor(game.milestoneFlash * 10) % 2 === 0) {
+          ctx.fillStyle = colors.accent;
+          ctx.font = "700 12px monospace";
+          ctx.textAlign = "right";
+          ctx.fillText("★ " + formatScore(game.lastMilestone * 100), W - 18, 24);
+        }
+
+        // Clouds
+        ctx.fillStyle = colors.muted;
+        ctx.globalAlpha = 0.28;
+        game.clouds.forEach(function (c) {
+          ctx.fillRect(Math.round(c.x), Math.round(c.y), c.w, 8);
+          ctx.fillRect(Math.round(c.x + 8), Math.round(c.y - 5), c.w - 16, 6);
+        });
+        ctx.globalAlpha = 1;
+
+        // Ground line & pebbles
+        ctx.fillStyle = colors.ink;
+        ctx.fillRect(0, GROUND_Y, W, 2);
+
+        ctx.fillStyle = colors.muted;
+        game.pebbles.forEach(function (pb) {
+          ctx.fillRect(Math.round(pb.x), pb.y, pb.w, 2);
+        });
+
+        // Obstacles
+        game.obstacles.forEach(function (ob) {
+          drawObstacle(ob, colors);
+        });
+
+        // Player
+        drawPlayer(colors);
+
+        // Overlay messages
+        if (game.state === "idle") {
+          ctx.fillStyle = colors.ink;
+          ctx.font = "700 13px monospace";
+          ctx.textAlign = "center";
+          ctx.fillText(dict.canvasStart, W / 2, 92);
+        } else if (game.state === "gameover") {
+          ctx.fillStyle = colors.bg;
+          ctx.globalAlpha = 0.78;
+          ctx.fillRect(W / 2 - 210, 62, 420, 56);
+          ctx.globalAlpha = 1;
+
+          ctx.strokeStyle = colors.accent;
+          ctx.lineWidth = 2;
+          ctx.strokeRect(W / 2 - 210, 62, 420, 56);
+
+          ctx.fillStyle = colors.ink;
+          ctx.font = "700 13px monospace";
+          ctx.textAlign = "center";
+          ctx.fillText(dict.canvasGameOver, W / 2, 95);
+        }
+      }
+
+      let lastTime = performance.now();
+      function loop(now) {
+        const dt = Math.min((now - lastTime) / 1000, 0.05);
+        lastTime = now;
+        updateGame(dt);
+        drawScene();
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+
+      // Keyboard controls
+      window.addEventListener("keydown", function (e) {
+        if (e.code === "Space" || e.code === "ArrowUp" || e.code === "KeyW") {
+          const activeTag = document.activeElement ? document.activeElement.tagName : "";
+          if (e.code === "Space" && (activeTag === "A" || activeTag === "INPUT" || activeTag === "TEXTAREA")) {
+            return;
+          }
+          e.preventDefault();
+          triggerJump();
+        } else if (e.code === "ArrowDown" || e.code === "KeyS") {
+          e.preventDefault();
+          setDuck(true);
+        }
+      });
+
+      window.addEventListener("keyup", function (e) {
+        if (e.code === "ArrowDown" || e.code === "KeyS") {
+          setDuck(false);
+        }
+      });
+
+      window.addEventListener("blur", function () {
+        setDuck(false);
+      });
+
+      // Canvas pointer / touch
+      canvas.addEventListener("pointerdown", function (e) {
+        e.preventDefault();
+        triggerJump();
+      });
+
+      if (btnJump) {
+        btnJump.addEventListener("pointerdown", function (e) {
+          e.preventDefault();
+          triggerJump();
+        });
+      }
+
+      if (btnDuck) {
+        btnDuck.addEventListener("pointerdown", function (e) {
+          e.preventDefault();
+          if (game.state !== "running") {
+            triggerJump();
+            return;
+          }
+          setDuck(true);
+        });
+        ["pointerup", "pointercancel", "pointerleave"].forEach(function (evt) {
+          btnDuck.addEventListener(evt, function () {
+            setDuck(false);
+          });
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -28,10 +28,10 @@
 // Firmware Version
 // ============================================================
 #define FW_VERSION_MAJOR   2
-#define FW_VERSION_MINOR   0
-#define FW_VERSION_PATCH   28
-#define FW_VERSION_STR     "v2.0.28"
-#define PRODUCTION_RELEASE 0
+#define FW_VERSION_MINOR   1
+#define FW_VERSION_PATCH   1
+#define FW_VERSION_STR     "v2.1.1"
+#define PRODUCTION_RELEASE 1
 #define FW_BUILD_DATE      __DATE__
 #define FW_BUILD_TIME      __TIME__
 #define HW_BOARD_REVISION  1

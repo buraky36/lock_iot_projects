@@ -1,0 +1,9 @@
+LS30 Kontrolör Cihazları, MLG30 ve LS30 Seviye Kontrol
+Cihazlarından alınan seviye bilgisini kullanarak, kullanıcı
+ve otomasyon sistemlerine bilgi aktaran cihazlardır. Seviye
+miktarları ile ilgili sensör bilgisi, LS30 Kontrolöre aktarılarak seviye değişimleri display ekrandan izlenebilir. Bu bilgi ile cihaza
+entegre edilmiş 3 adet NO (Normalde Açık) + NC (Normalde
+Kapalı) kontaklı röleler ile motor, pompa, on-off vana, selenoid
+vana, sesli ve/veya ışıklı alarm gibi 3 farklı cihaz kumanda edilebilir. Ayrıca 4-20 mA, 0-10 V analog sinyal çıkışları veya RS 485
+Modbus iletişim protokolü sayesinde otomasyon sistemleri ile
+bağlantı kurulabilir.

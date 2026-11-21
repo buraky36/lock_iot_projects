@@ -1,0 +1,33 @@
+GNT 604 Debi ölçüm ve kontrol cihazı mikro denetleyici tabanlı olup her türlü pulse çıkışlı debimetreler için anlık değer batch toplam değer ve global toplam değer sayma ve kontrol amaçlı tasarlanmıştır.
+
+2 Adet debimetrenin cihaza aynı anda bağlanabilmesi, tüm değerlerin haberleşme çıkışı ile bilgisayara aktarılabilmesi ve aynı zamanda röleler ile çıkışların kontrol edilmesi sayesinde gelişmiş fonksiyonel bir cihazdır. Tuşlara ve terminallere fonksiyonlar atanabilmesi ile pek çok sistemde esnek çalışması sağlanmıştır. 
+
+ 
+
+* 2 Adet 6 digit 7 segment led display
+
+* Her display için bağımsız parametre gösterim atama
+
+* Display kapatma seçeneği
+
+* 2 Adet debimetre bağlama imkanı
+
+* Her debimetre girişi için farklı parametre girişi
+
+* Geniş frekans aralığı (Input A ve B için) 0,1Hz.. 15kHz* Rs485 Mbus RTU ile bilgisayara aktarım ve uzaktan erişim ile parametre değiştirebilme
+
+* Butonlar için 13 adet fonksiyon atama
+
+* Logic1 ve Logic2 girişleri için 18 adet fonksiyon atam
+
+* Programdan veya Logic girişlerden tuşları kilitleme
+
+* Kolay programlama özellikli menü
+
+* 2 Adet rölenin her biri için 17 adet fonksiyon
+
+* Röle çıkışlarını Buton ve Terminal girişlerinden manuel çalıştırabilme seçeneği.
+
+* Röle çıkışları için ayarlanabilir açma kapama gecikmesi
+
+* Röle çıkışlarını input A ve B için bağımsız atayabilme.

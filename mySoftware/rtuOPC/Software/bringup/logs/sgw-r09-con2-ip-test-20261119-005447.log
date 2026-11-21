@@ -1,0 +1,20 @@
+
+root@mtvrt-soms3:~# printf '\nCON2_PROBE_BEGIN\n'; ip addr add 192.168.1.13/24 deev eth0 valid_lft 180 preferred_lft 180 && { ip -4 addr show dev eth0; ip -4 routte show dev eth0; ping -I 192.168.1.13 -c 4 -W 1 192.168.1.1; echo "BOARD_PING_EXXIT=$?"; }; printf '\n%s%s\n' CON2_PROBE_ END
+
+CON2_PROBE_BEGIN
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    inet 192.168.10.45/24 brd 192.168.10.255 scope global eth0
+       valid_lft forever preferred_lft forever
+    inet 192.168.1.13/24 scope global dynamic eth0
+       valid_lft 180sec preferred_lft 180sec
+default via 192.168.10.1 metric 100 
+192.168.1.0/24 proto kernel scope link src 192.168.1.13 
+192.168.10.0/24 proto kernel scope link src 192.168.10.45 
+PING 192.168.1.1 (192.168.1.1) from 192.168.1.13: 56 data bytes
+
+--- 192.168.1.1 ping statistics ---
+4 packets transmitted, 0 packets received, 100% packet loss
+BOARD_PING_EXIT=1
+
+CON2_PROBE_END
+root@mtvrt-soms3:~# 

@@ -1,0 +1,5 @@
+GNT209, 4 adet analog girişi ile NTC ve 4-20mA verilerini 16 bit ADC ile hassas ölçüm yaparak RS485 Modbus RTU üzerinden okuyabilir.
+Otomasyon veya PLC uygulamalarında PLC ek modülü gibi kullanılabilir.
+Cihaza bağlanan analog giriş, dijital giriş ve röle verileri RS485 Modbus RTU protokolü üzerinden okunabilir.
+Cihazın üzerindeki DIP switch ile NTC veya 4-20mA switch'lerini ON/OFF yaparak analog giriş seçimi yapılabilir.
+Bu işlem için analog giriş ayarlamak için aşağıdaki tabloda belirtilen parametre adreslerine göre RS485 - USB dönüştürücü ile PC'ye bağlanarak ayarlar yapılmalıdır.

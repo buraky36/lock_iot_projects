@@ -1,14 +1,37 @@
 {
   "model": "OE0111",
-  "current_step_idx": 0,
+  "current_step_idx": 1,
   "tester": "",
-  "serial": "",
-  "detected_mac6": "",
-  "detected_fw_version": "v2.0.27",
+  "serial": "OE0111_6CF98E",
+  "detected_mac6": "6CF98E",
+  "detected_fw_version": "v2.1.0",
   "captured_vars": {
-    "FW": "v2.0.27",
-    "FW_VER": "v2.0.27"
+    "FW": "v2.1.0",
+    "FW_VER": "v2.1.0",
+    "BLE": "OE0112_F98E"
   },
-  "step_results": {},
-  "updated_at": "2026-11-07 18:15:30"
+  "step_results": {
+    "D-06": {
+      "title": "IN2: +12V bırakılmazsa resetin İPTAL edilmesi (kısa devre / arıza koruması)",
+      "section": "D. Ortak Donanım ve Protokol",
+      "status": "PASS",
+      "timestamp": "2026-11-14 11:34:16",
+      "note": ""
+    },
+    "D-07": {
+      "title": "IN2: Donanımsal fabrika reseti (5 sn tut → 6 sn içinde bırak → 3 sn bekle)",
+      "section": "D. Ortak Donanım ve Protokol",
+      "status": "PASS",
+      "timestamp": "2026-11-14 11:35:02",
+      "note": ""
+    },
+    "P-00": {
+      "title": "Test masası ve etiketli kartların hazırlanması",
+      "section": "0. Hazırlık",
+      "status": "PASS",
+      "timestamp": "2026-11-14 11:45:42",
+      "note": ""
+    }
+  },
+  "updated_at": "2026-11-14 11:45:52"
 }

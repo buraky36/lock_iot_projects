@@ -1,0 +1,5 @@
+DRC Rules Export File for PCB: \\SULEYMANKOCATUR\Gentek RDHW\Gentek_Projects\21_GNT604\2_Hardware\1_Arþiv\REV5\GNT604\Burak_PANEL\1x3_PANEL.PcbDoc
+RuleKind=SolderMaskExpansion|RuleName=SolderMaskExpansion|Scope=Board|Minimum=4.00
+RuleKind=Width|RuleName=Width|Scope=Board|Minimum=10.00
+RuleKind=Clearance|RuleName=Clearance|Scope=Board|Minimum=10.00
+RuleKind=ShortCircuit|RuleName=ShortCircuit|Scope=Board|Allowed=0

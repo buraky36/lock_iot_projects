@@ -1,0 +1,43 @@
+
+root@mtvrt-soms3:~# printf '\nCON1_PROBE_BEGIN\n'; for nic in eth0 eth1; do printtf '%s ' "$nic"; ethtool -r "$nic" 2>&1; echo "RENEGOTIATION_EXIT=$?"; done; i=0;; while [ "$i" -lt 12 ]; do c1=$(cat /sys/class/net/eth1/carrier 2>/dev/null); c22=$(cat /sys/class/net/eth0/carrier 2>/dev/null); printf 'LINK_SAMPLE second=%s CCON1=%s CON2=%s\n' "$i" "$c1" "$c2"; if [ "$c1" = 1 ] && [ "$c2" = 1 ]; then breaak; fi; i=$((i + 1)); sleep 1; done; for nic in eth0 eth1; do printf '%s\n' "Inteerface $nic"; ethtool "$nic" 2>/dev/null | grep -E 'Speed:|Duplex:|Auto-negotiatiion:|MDI-X:|Link detected:'; ip -s link show dev "$nic"; done; printf '\n%s%s\n'  CON1_PROBE_ END
+
+CON1_PROBE_BEGIN
+eth0 RENEGOTIATION_EXIT=0
+eth1 RENEGOTIATION_EXIT=0
+LINK_SAMPLE second=0 CON1=0 CON2=0
+LINK_SAMPLE second=1 CON1=0 CON2=0
+LINK_SAMPLE second=2 CON1=0 CON2=0
+LINK_SAMPLE second=3 CON1=0 CON2=0
+LINK_SAMPLE second=4 CON1=0 CON2=0
+LINK_SAMPLE second=5 CON1=0 CON2=0
+LINK_SAMPLE second=6 CON1=0 CON2=0
+LINK_SAMPLE second=7 CON1=0 CON2=0
+LINK_SAMPLE second=8 CON1=0 CON2=0
+LINK_SAMPLE second=9 CON1=0 CON2=0
+LINK_SAMPLE second=10 CON1=0 CON2=0
+LINK_SAMPLE second=11 CON1=0 CON2=0
+Interface eth0
+	Speed: Unknown!
+	Duplex: Unknown! (255)
+	Auto-negotiation: on
+	Link detected: no
+2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
+    link/ether 00:0a:01:01:30:39 brd ff:ff:ff:ff:ff:ff
+    RX: bytes  packets  errors  dropped overrun mcast   
+    0          0        0       0       0       0       
+    TX: bytes  packets  errors  dropped carrier collsns 
+    0          0        0       0       0       0       
+Interface eth1
+	Speed: 10Mb/s
+	Duplex: Half
+	Auto-negotiation: on
+	Link detected: no
+5: eth1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc pfifo_fast state DOWN mode DEFAULT group default qlen 1000
+    link/ether 00:0a:01:02:30:39 brd ff:ff:ff:ff:ff:ff
+    RX: bytes  packets  errors  dropped overrun mcast   
+    0          0        0       0       0       0       
+    TX: bytes  packets  errors  dropped carrier collsns 
+    0          0        0       0       0       0       
+
+CON1_PROBE_END
+root@mtvrt-soms3:~# 

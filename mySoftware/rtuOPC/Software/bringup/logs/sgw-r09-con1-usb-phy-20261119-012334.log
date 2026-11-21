@@ -1,0 +1,26 @@
+
+root@mtvrt-soms3:~# printf '\nCON1_PROBE_BEGIN\n'; for nic in eth0 eth1; do printtf '%s mac=' "$nic"; cat /sys/class/net/$nic/address; printf '%s carrier=' "$nic""; cat /sys/class/net/$nic/carrier; done; if command -v mii-tool >/dev/null; thenn mii-tool -vv eth1; else echo 'MII_TOOL_UNAVAILABLE'; fi; if command -v lsusb >//dev/null; then lsusb -t; fi; p=/sys/class/net/eth1/device/../power; for f in conntrol runtime_status; do printf 'USB_%s=' "$f"; cat "$p/$f" 2>/dev/null || echo uunavailable; done; ip -s link show dev eth1; printf '\n%s%s\n' CON1_PROBE_ END
+
+CON1_PROBE_BEGIN
+eth0 mac=00:0a:01:01:30:39
+eth0 carrier=0
+eth1 mac=00:0a:01:02:30:39
+eth1 carrier=0
+MII_TOOL_UNAVAILABLE
+/:  Bus 01.Port 1: Dev 1, Class=root_hub, Driver=ehci-platform/1p, 480M
+    |__ Port 1: Dev 6, If 0, Class=, Driver=hub/4p, 480M
+        |__ Port 3: Dev 7, If 0, Class=, Driver=hub/3p, 480M
+            |__ Port 1: Dev 8, If 0, Class=, Driver=smsc95xx, 480M
+            |__ Port 2: Dev 9, If 2, Class=, Driver=rtl8723du, 480M
+            |__ Port 2: Dev 9, If 0, Class=, Driver=btusb, 480M
+            |__ Port 2: Dev 9, If 1, Class=, Driver=btusb, 480M
+USB_control=on
+USB_runtime_status=active
+5: eth1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc pfifo_fast state DOWN mode DEFAULT group default qlen 1000
+    link/ether 00:0a:01:02:30:39 brd ff:ff:ff:ff:ff:ff
+    RX: bytes  packets  errors  dropped overrun mcast   
+    0          0        0       0       0       0       
+    TX: bytes  packets  errors  dropped carrier collsns 
+    0          0        0       0       0       0       
+
+CON1_PROBE_END

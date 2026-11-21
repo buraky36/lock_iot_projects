@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>noddat.com — Next-Gen IoT Platform · Coming Soon</title>
+  <meta name="description" content="Noddat: Akıllı cihazlar için gerçek zamanlı IoT telemetri, MQTT ve otomasyon platformu. Çok yakında.">
+  <meta name="theme-color" content="#070B12">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23070B12'/%3E%3Cpolygon points='32,10 51,21 51,43 32,54 13,43 13,21' fill='none' stroke='%2322D3EE' stroke-width='3.5'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%2310B981'/%3E%3Cline x1='32' y1='10' x2='32' y2='26' stroke='%2322D3EE' stroke-width='2.5'/%3E%3Cline x1='51' y1='43' x2='37' y2='35' stroke='%2322D3EE' stroke-width='2.5'/%3E%3Cline x1='13' y1='43' x2='27' y2='35' stroke='%2322D3EE' stroke-width='2.5'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #070B12;
+      --bg-card: rgba(13, 20, 34, 0.86);
+      --bg-subtle: rgba(20, 31, 51, 0.9);
+      --ink: #E6F1FF;
+      --ink-muted: #8FA3BF;
+      --cyan: #22D3EE;
+      --emerald: #10B981;
+      --amber: #F59E0B;
+      --rose: #F43F5E;
+      --border: rgba(56, 189, 248, 0.18);
+      --grid-line: rgba(34, 211, 238, 0.055);
+      --glow: 0 24px 60px -24px rgba(34, 211, 238, 0.25);
+      --font-sans: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(ellipse 70% 45% at 50% -10%, rgba(34, 211, 238, 0.16), transparent),
+        radial-gradient(ellipse 45% 35% at 88% 15%, rgba(16, 185, 129, 0.10), transparent),
+        linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page-shell {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 24px 20px 36px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+    }
+
+    /* Header */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      text-decoration: none;
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 1.15rem;
+      letter-spacing: 0.04em;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+      filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.35));
+    }
+
+    .brand-sub {
+      color: var(--cyan);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      margin-left: 2px;
+    }
+
+    .topbar-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      background: rgba(16, 185, 129, 0.10);
+      color: var(--emerald);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 8px var(--emerald);
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.82); }
+    }
+
+    .segmented {
+      display: inline-flex;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 2px;
+    }
+
+    .seg-btn {
+      border: none;
+      background: transparent;
+      color: var(--ink-muted);
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 5px 11px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .seg-btn[aria-pressed="true"] {
+      background: rgba(34, 211, 238, 0.16);
+      color: var(--cyan);
+    }
+
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 6px 11px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--cyan);
+    }
+
+    /* Main */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .hero {
+      max-width: 740px;
+    }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--cyan);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin: 0 0 10px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(1.85rem, 3.8vw, 2.75rem);
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+      font-weight: 700;
+      background: linear-gradient(120deg, #FFFFFF 0%, #CFFAFE 55%, #6EE7B7 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--ink-muted);
+      font-size: 1.02rem;
+      max-width: 62ch;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .cap-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--ink);
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 500;
+    }
+
+    .cap-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+    }
+
+    .cap-dot.emerald {
+      background: var(--emerald);
+      box-shadow: 0 0 8px var(--emerald);
+    }
+
+    .cap-dot.amber {
+      background: var(--amber);
+      box-shadow: 0 0 8px var(--amber);
+    }
+
+    /* Telemetry Game Console */
+    .game-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: var(--glow);
+      backdrop-filter: blur(10px);
+    }
+
+    .game-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .game-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .game-title {
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 0.03em;
+    }
+
+    .phase-badge {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--emerald);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      background: rgba(16, 185, 129, 0.12);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .speed-badge {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--ink-muted);
+      background: var(--bg-subtle);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .game-hud {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .hud-hi {
+      color: var(--ink-muted);
+    }
+
+    .hud-score {
+      color: var(--cyan);
+      min-width: 64px;
+      text-align: right;
+    }
+
+    .canvas-wrap {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(34, 211, 238, 0.25);
+      background: #060A11;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    canvas#packet-runner {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 800 / 240;
+      cursor: pointer;
+    }
+
+    .game-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .controls-legend {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      color: var(--ink-muted);
+    }
+
+    .touch-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    .touch-btn {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--ink);
+      cursor: pointer;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .touch-btn.primary {
+      background: linear-gradient(135deg, #06B6D4, #10B981);
+      color: #041019;
+      border-color: transparent;
+    }
+
+    .touch-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* Footer */
+    .site-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      font-size: 0.86rem;
+      color: var(--ink-muted);
+    }
+
+    .footer-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .footer-link {
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.84rem;
+      padding: 4px 0;
+      border-bottom: 1px solid transparent;
+      transition: color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .footer-link:hover {
+      color: var(--cyan);
+      border-bottom-color: var(--cyan);
+    }
+
+    .footer-link.cross-link {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--emerald);
+    }
+
+    @media (max-width: 600px) {
+      .page-shell {
+        padding: 18px 14px 28px;
+        gap: 20px;
+      }
+      .game-card {
+        padding: 12px;
+        border-radius: 14px;
+      }
+      .touch-controls {
+        width: 100%;
+      }
+      .touch-btn {
+        flex: 1;
+        text-align: center;
+        padding: 10px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="#top" id="top">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <polygon points="32,6 54,19 54,45 32,58 10,45 10,19" fill="rgba(34,211,238,0.08)" stroke="#22D3EE" stroke-width="3"/>
+          <line x1="32" y1="6" x2="32" y2="25" stroke="#22D3EE" stroke-width="2.5"/>
+          <line x1="54" y1="45" x2="38" y2="36" stroke="#22D3EE" stroke-width="2.5"/>
+          <line x1="10" y1="45" x2="26" y2="36" stroke="#22D3EE" stroke-width="2.5"/>
+          <circle cx="32" cy="32" r="6.5" fill="#10B981"/>
+          <circle cx="32" cy="6" r="3" fill="#22D3EE"/>
+          <circle cx="54" cy="45" r="3" fill="#22D3EE"/>
+          <circle cx="10" cy="45" r="3" fill="#22D3EE"/>
+        </svg>
+        <span>NODDAT<span class="brand-sub">.IO(T)</span></span>
+      </a>
+
+      <div class="topbar-controls">
+        <span class="status-pill">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span data-i18n="status">SİSTEM İNŞA EDİLİYOR</span>
+        </span>
+
+        <div class="segmented" role="group" aria-label="Language switcher">
+          <button type="button" class="seg-btn" data-lang-btn="tr" aria-pressed="true">TR</button>
+          <button type="button" class="seg-btn" data-lang-btn="en" aria-pressed="false">EN</button>
+        </div>
+
+        <button type="button" class="icon-btn" id="sound-toggle" aria-pressed="true">🔊</button>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <section class="hero">
+        <p class="eyebrow" data-i18n="eyebrow">// CONNECTED DEVICE ARCHITECTURE</p>
+        <h1 data-i18n="headline">Yeni nesil IoT platformu geliştiriliyor.</h1>
+        <p class="subtitle" data-i18n="subtitle">
+          Noddat; saha cihazlarını güvenli MQTT kanallarıyla buluşturan, gerçek zamanlı telemetri akışı ve akıllı otomasyon kuralları sunan ölçeklenebilir bir IoT platformu olarak tasarlanıyor. Platform devreye alınana kadar sinyal paketini ağ engellerinden geçirin.
+        </p>
+
+        <div class="chip-row">
+          <span class="cap-chip"><span class="cap-dot" aria-hidden="true"></span><span data-i18n="chip1">MQTT &amp; Edge Hazır</span></span>
+          <span class="cap-chip"><span class="cap-dot emerald" aria-hidden="true"></span><span data-i18n="chip2">Gerçek Zamanlı Telemetri</span></span>
+          <span class="cap-chip"><span class="cap-dot amber" aria-hidden="true"></span><span data-i18n="chip3">Akıllı Otomasyon</span></span>
+        </div>
+      </section>
+
+      <section class="game-card" aria-labelledby="game-title">
+        <div class="game-bar">
+          <div class="game-title-wrap">
+            <span class="game-title" id="game-title" data-i18n="gameTitle">PACKET RUNNER · IOT SİNYAL SÜRÜMÜ</span>
+            <span class="phase-badge" id="phase-badge">LAYER: EDGE</span>
+            <span class="speed-badge" id="speed-badge">1.0x</span>
+          </div>
+          <div class="game-hud">
+            <span class="hud-hi" id="hud-hi">HI 00000</span>
+            <span class="hud-score" id="hud-score">00000</span>
+          </div>
+        </div>
+
+        <div class="canvas-wrap">
+          <canvas id="packet-runner" width="800" height="240" aria-label="Noddat Packet Runner Mini Oyunu"></canvas>
+        </div>
+
+        <div class="game-footer">
+          <span class="controls-legend" data-i18n="controls">
+            [Boşluk / ↑] Zıpla · [↓] Kalkan Kayışı (Eğil) · Yeşil veri bitlerini (+25) topla
+          </span>
+          <div class="touch-controls">
+            <button type="button" class="touch-btn" id="btn-duck" data-i18n="btnDuck">Eğil (↓)</button>
+            <button type="button" class="touch-btn primary" id="btn-jump" data-i18n="btnJump">Zıpla (↑)</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span id="footer-copy">© <span id="year">2026</span> Noddat IoT Platform</span>
+      <nav class="footer-links" id="footer-links" aria-label="İletişim ve Bağlantılar"></nav>
+    </footer>
+  </div>
+
+  <script>
+    // =========================================================================
+    // KOLAY DÜZENLEME ALANI (SITE_CONFIG)
+    // İletişim ve sosyal medya adreslerinizi aşağıdan güncelleyebilirsiniz.
+    // Göstermek istemediğiniz bir alanı "" (boş metin) bırakmanız yeterlidir.
+    // =========================================================================
+    const SITE_CONFIG = {
+      email: "hello@noddat.com",
+      github: "https://github.com/burakyalim",
+      linkedin: "https://linkedin.com/in/burakyalim",
+      x: "", // Örn: "https://x.com/noddat_iot" — boş bırakılırsa gizlenir
+      founderBlog: "https://burakyalim.com"
+    };
+
+    (function () {
+      "use strict";
+
+      const I18N = {
+        tr: {
+          pageTitle: "noddat.com — Yeni Nesil IoT Platformu · Yakında",
+          status: "SİSTEM İNŞA EDİLİYOR",
+          eyebrow: "// BAĞLI CİHAZ MİMARİSİ",
+          headline: "Yeni nesil IoT platformu geliştiriliyor.",
+          subtitle: "Noddat; saha cihazlarını güvenli MQTT kanallarıyla buluşturan, gerçek zamanlı telemetri akışı ve akıllı otomasyon kuralları sunan ölçeklenebilir bir IoT platformu olarak tasarlanıyor. Platform devreye alınana kadar sinyal paketini ağ engellerinden geçirin.",
+          chip1: "MQTT & Edge Hazır",
+          chip2: "Gerçek Zamanlı Telemetri",
+          chip3: "Akıllı Otomasyon",
+          gameTitle: "PACKET RUNNER · IOT SİNYAL SÜRÜMÜ",
+          controls: "[Boşluk / ↑] Zıpla · [↓] Kalkan Kayışı (Eğil) · Yeşil veri bitlerini (+25) topla",
+          btnDuck: "Eğil (↓)",
+          btnJump: "Zıpla (↑)",
+          emailLabel: "İletişim",
+          blogLabel: "Kurucu Blogu (burakyalim.com) →",
+          copySuffix: "Noddat IoT Platformu · Yakında Yayında",
+          canvasStart: "PAKETİ BAŞLATMAK İÇİN [BOŞLUK] VEYA DOKUN",
+          canvasGameOver: "BAĞLANTI KOPTU · YENİDEN BAĞLAN: [BOŞLUK] / DOKUN",
+          obsNoise: "PARAZİT",
+          obsFirewall: "GÜVENLİK DUVARI",
+          obsNode: "ARIZALI DÜĞÜM",
+          obsDrone: "EMP"
+        },
+        en: {
+          pageTitle: "noddat.com — Next-Gen IoT Platform · Coming Soon",
+          status: "PLATFORM_BUILD: IN_PROGRESS",
+          eyebrow: "// CONNECTED DEVICE ARCHITECTURE",
+          headline: "Next-generation IoT platform in the making.",
+          subtitle: "Noddat is being engineered for resilient MQTT ingestion, real-time telemetry streams, and intelligent device automation at scale. While we bring the core online, route your data packet past network hazards below.",
+          chip1: "MQTT & Edge Ready",
+          chip2: "Real-Time Telemetry",
+          chip3: "Smart Automation",
+          gameTitle: "PACKET RUNNER · IOT SIGNAL EDITION",
+          controls: "[Space / ↑] Jump · [↓] Shield Slide (Duck) · Collect emerald data bits (+25)",
+          btnDuck: "Duck (↓)",
+          btnJump: "Jump (↑)",
+          emailLabel: "Contact",
+          blogLabel: "Founder's Blog (burakyalim.com) →",
+          copySuffix: "Noddat IoT Platform · Launching Soon",
+          canvasStart: "PRESS [SPACE] OR TAP TO TRANSMIT PACKET",
+          canvasGameOver: "SIGNAL LOST · RECONNECT: [SPACE] OR TAP",
+          obsNoise: "NOISE",
+          obsFirewall: "FIREWALL",
+          obsNode: "DEAD NODE",
+          obsDrone: "EMP"
+        }
+      };
+
+      const NETWORK_PHASES = [
+        { minScore: 0, name: "EDGE", accent: "#22D3EE", wave: "rgba(34, 211, 238, 0.16)" },
+        { minScore: 400, name: "GATEWAY", accent: "#10B981", wave: "rgba(16, 185, 129, 0.16)" },
+        { minScore: 800, name: "CLOUD", accent: "#38BDF8", wave: "rgba(56, 189, 248, 0.18)" },
+        { minScore: 1200, name: "HYPERMESH", accent: "#A78BFA", wave: "rgba(167, 139, 250, 0.18)" }
+      ];
+
+      function safeGetStorage(key) {
+        try {
+          return window.localStorage.getItem(key);
+        } catch (_) {
+          return null;
+        }
+      }
+
+      function safeSetStorage(key, val) {
+        try {
+          window.localStorage.setItem(key, String(val));
+        } catch (_) {}
+      }
+
+      const yearEl = document.getElementById("year");
+      if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+
+      const savedLang = safeGetStorage("noddat_lang");
+      const browserLang = (navigator.language || "").toLowerCase();
+      let currentLang = (savedLang === "tr" || savedLang === "en")
+        ? savedLang
+        : (browserLang.startsWith("tr") ? "tr" : "en");
+
+      let soundEnabled = safeGetStorage("noddat_sound") !== "off";
+      const soundToggleBtn = document.getElementById("sound-toggle");
+
+      function renderFooterLinks() {
+        const nav = document.getElementById("footer-links");
+        if (!nav) return;
+        nav.innerHTML = "";
+        const dict = I18N[currentLang];
+        const items = [
+          { label: dict.emailLabel, href: SITE_CONFIG.email ? "mailto:" + SITE_CONFIG.email.trim() : "" },
+          { label: "GitHub", href: SITE_CONFIG.github },
+          { label: "LinkedIn", href: SITE_CONFIG.linkedin },
+          { label: "X", href: SITE_CONFIG.x },
+          { label: dict.blogLabel, href: SITE_CONFIG.founderBlog, extraClass: "cross-link" }
+        ];
+
+        items.forEach(function (item) {
+          if (!item.href || !String(item.href).trim()) return;
+          const a = document.createElement("a");
+          a.className = "footer-link" + (item.extraClass ? " " + item.extraClass : "");
+          a.href = item.href.trim();
+          a.textContent = item.label;
+          if (!a.href.startsWith("mailto:")) {
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+          }
+          nav.appendChild(a);
+        });
+      }
+
+      function applyLang(lang) {
+        currentLang = lang === "en" ? "en" : "tr";
+        safeSetStorage("noddat_lang", currentLang);
+        document.documentElement.lang = currentLang;
+        const dict = I18N[currentLang];
+        document.title = dict.pageTitle;
+
+        document.querySelectorAll("[data-i18n]").forEach(function (el) {
+          const key = el.getAttribute("data-i18n");
+          if (dict[key]) el.textContent = dict[key];
+        });
+
+        const copyEl = document.getElementById("footer-copy");
+        if (copyEl) {
+          copyEl.textContent = "© " + new Date().getFullYear() + " " + dict.copySuffix;
+        }
+
+        document.querySelectorAll("[data-lang-btn]").forEach(function (btn) {
+          btn.setAttribute("aria-pressed", btn.getAttribute("data-lang-btn") === currentLang ? "true" : "false");
+        });
+
+        renderFooterLinks();
+      }
+
+      function updateSoundButton() {
+        if (!soundToggleBtn) return;
+        soundToggleBtn.textContent = soundEnabled ? "🔊" : "🔇";
+        soundToggleBtn.setAttribute("aria-pressed", soundEnabled ? "true" : "false");
+      }
+
+      document.querySelectorAll("[data-lang-btn]").forEach(function (btn) {
+        btn.addEventListener("click", function (e) {
+          applyLang(btn.getAttribute("data-lang-btn"));
+          if (e.detail > 0) btn.blur();
+        });
+      });
+
+      if (soundToggleBtn) {
+        soundToggleBtn.addEventListener("click", function (e) {
+          soundEnabled = !soundEnabled;
+          safeSetStorage("noddat_sound", soundEnabled ? "on" : "off");
+          updateSoundButton();
+          if (e.detail > 0) soundToggleBtn.blur();
+        });
+      }
+
+      applyLang(currentLang);
+      updateSoundButton();
+
+      // =========================================================================
+      // WEB AUDIO SYNTH
+      // =========================================================================
+      let audioCtx = null;
+      function playTone(type) {
+        if (!soundEnabled) return;
+        try {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) return;
+          if (!audioCtx) audioCtx = new AudioCtx();
+          if (audioCtx.state === "suspended") audioCtx.resume();
+
+          const now = audioCtx.currentTime;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          if (type === "jump") {
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(360, now);
+            osc.frequency.exponentialRampToValueAtTime(760, now + 0.085);
+            gain.gain.setValueAtTime(0.07, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.095);
+            osc.start(now);
+            osc.stop(now + 0.1);
+          } else if (type === "pickup") {
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(660, now);
+            osc.frequency.setValueAtTime(990, now + 0.05);
+            gain.gain.setValueAtTime(0.07, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+            osc.start(now);
+            osc.stop(now + 0.15);
+          } else if (type === "phase") {
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(523.25, now);
+            osc.frequency.setValueAtTime(659.25, now + 0.06);
+            osc.frequency.setValueAtTime(1046.5, now + 0.12);
+            gain.gain.setValueAtTime(0.06, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+            osc.start(now);
+            osc.stop(now + 0.26);
+          } else if (type === "crash") {
+            osc.type = "sawtooth";
+            osc.frequency.setValueAtTime(190, now);
+            osc.frequency.exponentialRampToValueAtTime(52, now + 0.22);
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+            osc.start(now);
+            osc.stop(now + 0.25);
+          }
+        } catch (_) {}
+      }
+
+      // =========================================================================
+      // PACKET RUNNER — IOT SIGNAL EDITION (800 x 240 logical space)
+      // =========================================================================
+      const canvas = document.getElementById("packet-runner");
+      const ctx = canvas.getContext("2d");
+      const hudScoreEl = document.getElementById("hud-score");
+      const hudHiEl = document.getElementById("hud-hi");
+      const phaseBadgeEl = document.getElementById("phase-badge");
+      const speedBadgeEl = document.getElementById("speed-badge");
+      const btnJump = document.getElementById("btn-jump");
+      const btnDuck = document.getElementById("btn-duck");
+
+      const W = 800;
+      const H = 240;
+      const GROUND_Y = 202;
+      const BASE_SPEED = 330;
+      const MAX_SPEED = 780;
+      const GRAVITY = 2200;
+      const FAST_FALL_GRAVITY = 4500;
+      const JUMP_VEL = -660;
+
+      function syncCanvasDPR() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        if (canvas.width !== W * dpr || canvas.height !== H * dpr) {
+          canvas.width = W * dpr;
+          canvas.height = H * dpr;
+        }
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      syncCanvasDPR();
+      window.addEventListener("resize", syncCanvasDPR);
+
+      let hiScore = parseInt(safeGetStorage("noddat_hi_score") || "0", 10);
+      if (!Number.isFinite(hiScore) || hiScore < 0) hiScore = 0;
+
+      const game = {
+        state: "idle", // "idle" | "running" | "gameover"
+        score: 0,
+        phaseIndex: 0,
+        phaseBannerTimer: 0,
+        speed: BASE_SPEED,
+        waveOffset: 0,
+        spawnTimer: 0.9,
+        bitCooldown: 1.8,
+        gameOverTimestamp: 0,
+        duckPressed: false,
+        pulseTime: 0,
+        player: {
+          x: 72,
+          y: GROUND_Y - 40,
+          vy: 0,
+          w: 36,
+          h: 40,
+          grounded: true,
+          ducking: false,
+          wheelPhase: 0
+        },
+        obstacles: [],
+        bits: [],
+        particles: [],
+        bgNodes: []
+      };
+
+      for (let i = 0; i < 14; i++) {
+        game.bgNodes.push({
+          x: (i * 75 + Math.random() * 30) % W,
+          y: 28 + Math.random() * 110,
+          r: 2 + Math.random() * 2,
+          speed: 22 + Math.random() * 18
+        });
+      }
+
+      function getCurrentPhase() {
+        let idx = 0;
+        for (let i = 0; i < NETWORK_PHASES.length; i++) {
+          if (game.score >= NETWORK_PHASES[i].minScore) idx = i;
+        }
+        return { idx: idx, data: NETWORK_PHASES[idx] };
+      }
+
+      function formatScore(n) {
+        return String(Math.floor(n)).padStart(5, "0");
+      }
+
+      function updateHUD() {
+        if (hudScoreEl) hudScoreEl.textContent = formatScore(game.score);
+        if (hudHiEl) hudHiEl.textContent = "HI " + formatScore(hiScore);
+        const phase = getCurrentPhase().data;
+        if (phaseBadgeEl) {
+          phaseBadgeEl.textContent = "LAYER: " + phase.name;
+          phaseBadgeEl.style.color = phase.accent;
+          phaseBadgeEl.style.borderColor = phase.accent + "55";
+        }
+        if (speedBadgeEl) {
+          const mult = (game.speed / BASE_SPEED).toFixed(1);
+          speedBadgeEl.textContent = mult + "x";
+        }
+      }
+      updateHUD();
+
+      function resetGame() {
+        game.state = "running";
+        game.score = 0;
+        game.phaseIndex = 0;
+        game.phaseBannerTimer = 0;
+        game.speed = BASE_SPEED;
+        game.spawnTimer = 0.85;
+        game.bitCooldown = 1.6;
+        game.obstacles = [];
+        game.bits = [];
+        game.particles = [];
+        game.player.ducking = false;
+        game.player.w = 36;
+        game.player.h = 40;
+        game.player.y = GROUND_Y - 40;
+        game.player.vy = 0;
+        game.player.grounded = true;
+        updateHUD();
+      }
+
+      function triggerJump() {
+        const now = performance.now();
+        if (game.state === "idle") {
+          resetGame();
+          game.player.vy = JUMP_VEL;
+          game.player.grounded = false;
+          playTone("jump");
+          return;
+        }
+        if (game.state === "gameover") {
+          if (now - game.gameOverTimestamp >= 300) {
+            resetGame();
+            game.player.vy = JUMP_VEL;
+            game.player.grounded = false;
+            playTone("jump");
+          }
+          return;
+        }
+        if (game.state === "running" && game.player.grounded) {
+          game.player.ducking = false;
+          game.player.w = 36;
+          game.player.h = 40;
+          game.player.y = GROUND_Y - 40;
+          game.player.vy = JUMP_VEL;
+          game.player.grounded = false;
+          playTone("jump");
+        }
+      }
+
+      function setDuck(active) {
+        game.duckPressed = active;
+      }
+
+      function spawnParticleBurst(x, y, color, count) {
+        for (let i = 0; i < count; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const spd = 40 + Math.random() * 140;
+          game.particles.push({
+            x: x,
+            y: y,
+            vx: Math.cos(angle) * spd,
+            vy: Math.sin(angle) * spd - 30,
+            life: 0.45,
+            maxLife: 0.45,
+            color: color,
+            size: 2 + Math.random() * 2.5
+          });
+        }
+      }
+
+      function spawnObstacle() {
+        const allowAerial = game.score >= 180;
+        const roll = Math.random();
+
+        if (allowAerial && roll < 0.28) {
+          const isHigh = Math.random() < 0.56;
+          game.obstacles.push({
+            kind: "drone",
+            x: W + 26,
+            y: isHigh ? GROUND_Y - 48 : GROUND_Y - 30,
+            w: 40,
+            h: 22,
+            phase: 0
+          });
+        } else {
+          const r = Math.random();
+          if (r < 0.36) {
+            game.obstacles.push({
+              kind: "noise",
+              x: W + 26,
+              y: GROUND_Y - 38,
+              w: 32,
+              h: 38
+            });
+          } else if (r < 0.70) {
+            const tall = Math.random() < 0.5;
+            const h = tall ? 48 : 34;
+            game.obstacles.push({
+              kind: "firewall",
+              x: W + 26,
+              y: GROUND_Y - h,
+              w: 22,
+              h: h
+            });
+          } else {
+            const double = Math.random() < 0.4 && game.score > 100;
+            game.obstacles.push({
+              kind: "deadnode",
+              x: W + 26,
+              y: GROUND_Y - 34,
+              w: double ? 46 : 28,
+              h: 34,
+              double: double
+            });
+          }
+        }
+
+        const speedFactor = (game.speed - BASE_SPEED) / (MAX_SPEED - BASE_SPEED);
+        const minWait = 0.72 - speedFactor * 0.24;
+        const maxWait = 1.35 - speedFactor * 0.36;
+        game.spawnTimer = minWait + Math.random() * (maxWait - minWait);
+      }
+
+      function spawnDataBit() {
+        // Place data bit in safe open window (avoid overlapping near obstacles)
+        const tooClose = game.obstacles.some(function (ob) {
+          return ob.x > W - 120;
+        });
+        if (tooClose) {
+          game.bitCooldown = 0.4;
+          return;
+        }
+        const highArc = Math.random() < 0.65;
+        game.bits.push({
+          x: W + 30,
+          y: highArc ? GROUND_Y - 84 : GROUND_Y - 32,
+          r: 9,
+          bob: Math.random() * Math.PI * 2
+        });
+        game.bitCooldown = 2.4 + Math.random() * 2.2;
+      }
+
+      function getInsetBox(rect, ratio) {
+        const ix = rect.w * ratio;
+        const iy = rect.h * ratio;
+        return {
+          x: rect.x + ix,
+          y: rect.y + iy,
+          w: Math.max(4, rect.w - ix * 2),
+          h: Math.max(4, rect.h - iy * 2)
+        };
+      }
+
+      function boxesOverlap(a, b) {
+        return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+      }
+
+      function updateGame(dt) {
+        game.pulseTime += dt;
+
+        if (game.state !== "running") {
+          for (let i = game.particles.length - 1; i >= 0; i--) {
+            const pt = game.particles[i];
+            pt.x += pt.vx * dt;
+            pt.y += pt.vy * dt;
+            pt.life -= dt;
+            if (pt.life <= 0) game.particles.splice(i, 1);
+          }
+          return;
+        }
+
+        game.speed = Math.min(MAX_SPEED, BASE_SPEED + game.score * 0.32);
+        game.waveOffset = (game.waveOffset + game.speed * dt) % 64;
+        game.score += dt * 15;
+
+        const phaseInfo = getCurrentPhase();
+        if (phaseInfo.idx > game.phaseIndex) {
+          game.phaseIndex = phaseInfo.idx;
+          game.phaseBannerTimer = 1.4;
+          playTone("phase");
+        }
+        if (game.phaseBannerTimer > 0) game.phaseBannerTimer = Math.max(0, game.phaseBannerTimer - dt);
+
+        // Player crouch / jump physics
+        const p = game.player;
+        if (p.grounded) {
+          if (game.duckPressed && !p.ducking) {
+            p.ducking = true;
+            p.w = 46;
+            p.h = 22;
+            p.y = GROUND_Y - 22;
+          } else if (!game.duckPressed && p.ducking) {
+            p.ducking = false;
+            p.w = 36;
+            p.h = 40;
+            p.y = GROUND_Y - 40;
+          }
+          p.wheelPhase += dt * (game.speed / 24);
+        } else {
+          const g = game.duckPressed ? FAST_FALL_GRAVITY : GRAVITY;
+          p.vy += g * dt;
+          p.y += p.vy * dt;
+          if (p.y >= GROUND_Y - p.h) {
+            p.y = GROUND_Y - p.h;
+            p.vy = 0;
+            p.grounded = true;
+          }
+        }
+
+        // Background circuit nodes
+        game.bgNodes.forEach(function (nd) {
+          nd.x -= (nd.speed + game.speed * 0.08) * dt;
+          if (nd.x < -16) {
+            nd.x = W + 16;
+            nd.y = 26 + Math.random() * 115;
+          }
+        });
+
+        // Particles
+        for (let i = game.particles.length - 1; i >= 0; i--) {
+          const pt = game.particles[i];
+          pt.x += pt.vx * dt;
+          pt.y += pt.vy * dt;
+          pt.life -= dt;
+          if (pt.life <= 0) game.particles.splice(i, 1);
+        }
+
+        // Spawn obstacles & bonus data bits
+        game.spawnTimer -= dt;
+        if (game.spawnTimer <= 0) spawnObstacle();
+
+        game.bitCooldown -= dt;
+        if (game.bitCooldown <= 0) spawnDataBit();
+
+        const pBox = getInsetBox(p, 0.2);
+
+        // Collectibles
+        for (let i = game.bits.length - 1; i >= 0; i--) {
+          const b = game.bits[i];
+          b.x -= game.speed * dt;
+          b.bob += dt * 5;
+          const bitBox = { x: b.x - b.r, y: b.y - b.r, w: b.r * 2, h: b.r * 2 };
+          if (boxesOverlap(p, bitBox)) {
+            game.score += 25;
+            playTone("pickup");
+            spawnParticleBurst(b.x, b.y, "#10B981", 10);
+            game.bits.splice(i, 1);
+            continue;
+          }
+          if (b.x < -30) game.bits.splice(i, 1);
+        }
+
+        // Obstacles
+        for (let i = game.obstacles.length - 1; i >= 0; i--) {
+          const ob = game.obstacles[i];
+          ob.x -= game.speed * (ob.kind === "drone" ? 1.12 : 1.0) * dt;
+          if (ob.kind === "drone") ob.phase += dt * 9;
+
+          const obBox = getInsetBox(ob, 0.18);
+          if (boxesOverlap(pBox, obBox)) {
+            game.state = "gameover";
+            game.gameOverTimestamp = performance.now();
+            playTone("crash");
+            spawnParticleBurst(p.x + p.w / 2, p.y + p.h / 2, "#F43F5E", 16);
+            if (Math.floor(game.score) > hiScore) {
+              hiScore = Math.floor(game.score);
+              safeSetStorage("noddat_hi_score", hiScore);
+            }
+            updateHUD();
+            return;
+          }
+
+          if (ob.x + ob.w < -40) game.obstacles.splice(i, 1);
+        }
+
+        updateHUD();
+      }
+
+      function drawPlayer(accent) {
+        const p = game.player;
+        const x = Math.round(p.x);
+        const y = Math.round(p.y);
+
+        // Signal trail
+        if (game.state === "running") {
+          ctx.fillStyle = accent;
+          ctx.globalAlpha = 0.18;
+          ctx.fillRect(x - 16, y + p.h * 0.35, 14, 3);
+          ctx.fillRect(x - 24, y + p.h * 0.62, 20, 2);
+          ctx.globalAlpha = 1;
+        }
+
+        if (p.ducking) {
+          // Shield-Slide low profile packet
+          ctx.fillStyle = "#0F1B2D";
+          ctx.strokeStyle = accent;
+          ctx.lineWidth = 2;
+          ctx.fillRect(x, y + 3, p.w, p.h - 4);
+          ctx.strokeRect(x, y + 3, p.w, p.h - 4);
+
+          // Visor & core
+          ctx.fillStyle = "#10B981";
+          ctx.fillRect(x + 28, y + 7, 12, 5);
+          ctx.fillStyle = accent;
+          ctx.fillRect(x + 6, y + 9, 14, 3);
+          return;
+        }
+
+        // Antenna & blinking status beacon
+        ctx.strokeStyle = accent;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(x + 18, y + 8);
+        ctx.lineTo(x + 18, y);
+        ctx.stroke();
+
+        const blinkOn = Math.sin(game.pulseTime * 7) > -0.2;
+        ctx.fillStyle = game.state === "gameover" ? "#F43F5E" : (blinkOn ? "#10B981" : accent);
+        ctx.beginPath();
+        ctx.arc(x + 18, y, 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Main IoT Packet Bot Chassis
+        ctx.fillStyle = "#0F1B2D";
+        ctx.strokeStyle = accent;
+        ctx.lineWidth = 2;
+        ctx.fillRect(x + 3, y + 8, 30, 24);
+        ctx.strokeRect(x + 3, y + 8, 30, 24);
+
+        // Core LED eye bar
+        ctx.fillStyle = game.state === "gameover" ? "#F43F5E" : accent;
+        ctx.fillRect(x + 15, y + 14, 13, 6);
+        ctx.fillStyle = "#E6F1FF";
+        ctx.fillRect(x + 22, y + 15, 4, 4);
+
+        // Sensor legs / thrusters
+        ctx.fillStyle = "#10B981";
+        if (!p.grounded || game.state !== "running") {
+          ctx.fillRect(x + 8, y + 32, 6, 8);
+          ctx.fillRect(x + 22, y + 32, 6, 8);
+        } else {
+          const step = Math.floor(p.wheelPhase) % 2 === 0;
+          ctx.fillRect(x + 8, y + 32, 6, step ? 8 : 4);
+          ctx.fillRect(x + 22, y + 32, 6, step ? 4 : 8);
+        }
+      }
+
+      function drawObstacle(ob) {
+        const x = Math.round(ob.x);
+        const y = Math.round(ob.y);
+
+        if (ob.kind === "noise") {
+          // Jagged interference waveform spike
+          ctx.strokeStyle = "#F59E0B";
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.moveTo(x, GROUND_Y);
+          ctx.lineTo(x + 8, y + 14);
+          ctx.lineTo(x + 14, y + 26);
+          ctx.lineTo(x + 20, y);
+          ctx.lineTo(x + 27, y + 22);
+          ctx.lineTo(x + ob.w, GROUND_Y);
+          ctx.stroke();
+
+          ctx.fillStyle = "rgba(245, 158, 11, 0.2)";
+          ctx.fill();
+        } else if (ob.kind === "firewall") {
+          // Tall rose laser barrier
+          ctx.fillStyle = "rgba(244, 63, 94, 0.22)";
+          ctx.fillRect(x + 2, y, ob.w - 4, ob.h);
+          ctx.strokeStyle = "#F43F5E";
+          ctx.lineWidth = 2;
+          ctx.strokeRect(x + 2, y, ob.w - 4, ob.h);
+          // Laser bars
+          ctx.fillStyle = "#FDA4AF";
+          for (let ly = y + 6; ly < y + ob.h - 4; ly += 9) {
+            ctx.fillRect(x + 5, ly, ob.w - 10, 2);
+          }
+        } else if (ob.kind === "deadnode") {
+          const count = ob.double ? 2 : 1;
+          for (let n = 0; n < count; n++) {
+            const nx = x + n * 21;
+            ctx.fillStyle = "#1E293B";
+            ctx.strokeStyle = "#F43F5E";
+            ctx.lineWidth = 2;
+            ctx.fillRect(nx, y + 4, 20, ob.h - 4);
+            ctx.strokeRect(nx, y + 4, 20, ob.h - 4);
+            // X mark
+            ctx.beginPath();
+            ctx.moveTo(nx + 5, y + 12);
+            ctx.lineTo(nx + 15, y + 22);
+            ctx.moveTo(nx + 15, y + 12);
+            ctx.lineTo(nx + 5, y + 22);
+            ctx.stroke();
+          }
+        } else if (ob.kind === "drone") {
+          // Flying corrupt EMP drone
+          const bob = Math.sin(ob.phase) * 2;
+          ctx.fillStyle = "#2A121E";
+          ctx.strokeStyle = "#F43F5E";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(x, y + 11 + bob);
+          ctx.lineTo(x + 12, y + 2 + bob);
+          ctx.lineTo(x + ob.w - 6, y + 2 + bob);
+          ctx.lineTo(x + ob.w, y + 11 + bob);
+          ctx.lineTo(x + ob.w - 6, y + 20 + bob);
+          ctx.lineTo(x + 12, y + 20 + bob);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = "#F59E0B";
+          ctx.fillRect(x + 12, y + 9 + bob, 12, 4);
+        }
+      }
+
+      function drawScene() {
+        const phase = getCurrentPhase().data;
+        const dict = I18N[currentLang];
+
+        ctx.fillStyle = "#060A11";
+        ctx.fillRect(0, 0, W, H);
+
+        // Subtle oscilloscope grid
+        ctx.strokeStyle = phase.wave;
+        ctx.lineWidth = 1;
+        for (let gx = -game.waveOffset; gx < W; gx += 64) {
+          ctx.beginPath();
+          ctx.moveTo(gx, 0);
+          ctx.lineTo(gx, GROUND_Y);
+          ctx.stroke();
+        }
+        for (let gy = 48; gy < GROUND_Y; gy += 48) {
+          ctx.beginPath();
+          ctx.moveTo(0, gy);
+          ctx.lineTo(W, gy);
+          ctx.stroke();
+        }
+
+        // Background floating circuit nodes
+        ctx.fillStyle = phase.accent;
+        ctx.globalAlpha = 0.28;
+        game.bgNodes.forEach(function (nd, idx) {
+          ctx.beginPath();
+          ctx.arc(nd.x, nd.y, nd.r, 0, Math.PI * 2);
+          ctx.fill();
+          if (idx > 0 && idx % 3 === 0) {
+            const prev = game.bgNodes[idx - 1];
+            if (Math.abs(prev.x - nd.x) < 120) {
+              ctx.strokeStyle = phase.accent;
+              ctx.beginPath();
+              ctx.moveTo(prev.x, prev.y);
+              ctx.lineTo(nd.x, nd.y);
+              ctx.stroke();
+            }
+          }
+        });
+        ctx.globalAlpha = 1;
+
+        // Ground oscilloscope horizon
+        ctx.strokeStyle = phase.accent;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, GROUND_Y);
+        ctx.lineTo(W, GROUND_Y);
+        ctx.stroke();
+
+        // Ground tick pulses
+        ctx.fillStyle = phase.accent;
+        ctx.globalAlpha = 0.35;
+        for (let tx = -game.waveOffset; tx < W; tx += 32) {
+          ctx.fillRect(Math.round(tx), GROUND_Y + 6, 8, 2);
+        }
+        ctx.globalAlpha = 1;
+
+        // Phase up banner
+        if (game.phaseBannerTimer > 0) {
+          ctx.fillStyle = phase.accent;
+          ctx.font = "700 11px monospace";
+          ctx.textAlign = "right";
+          ctx.fillText("▲ " + phase.name + " LAYER ACTIVE", W - 16, 24);
+        }
+
+        // Collectible data bits
+        game.bits.forEach(function (b) {
+          const by = b.y + Math.sin(b.bob) * 3;
+          ctx.fillStyle = "rgba(16, 185, 129, 0.25)";
+          ctx.beginPath();
+          ctx.arc(b.x, by, b.r + 4, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = "#10B981";
+          ctx.beginPath();
+          ctx.moveTo(b.x, by - b.r);
+          ctx.lineTo(b.x + b.r, by);
+          ctx.lineTo(b.x, by + b.r);
+          ctx.lineTo(b.x - b.r, by);
+          ctx.closePath();
+          ctx.fill();
+        });
+
+        // Obstacles
+        game.obstacles.forEach(drawObstacle);
+
+        // Player
+        drawPlayer(phase.accent);
+
+        // Particles
+        game.particles.forEach(function (pt) {
+          ctx.fillStyle = pt.color;
+          ctx.globalAlpha = Math.max(0, pt.life / pt.maxLife);
+          ctx.fillRect(pt.x, pt.y, pt.size, pt.size);
+        });
+        ctx.globalAlpha = 1;
+
+        // Overlays
+        if (game.state === "idle") {
+          ctx.fillStyle = "#E6F1FF";
+          ctx.font = "700 13px monospace";
+          ctx.textAlign = "center";
+          ctx.fillText(dict.canvasStart, W / 2, 92);
+        } else if (game.state === "gameover") {
+          ctx.fillStyle = "rgba(7, 11, 18, 0.85)";
+          ctx.fillRect(W / 2 - 220, 62, 440, 56);
+          ctx.strokeStyle = "#F43F5E";
+          ctx.lineWidth = 2;
+          ctx.strokeRect(W / 2 - 220, 62, 440, 56);
+
+          ctx.fillStyle = "#FDA4AF";
+          ctx.font = "700 13px monospace";
+          ctx.textAlign = "center";
+          ctx.fillText(dict.canvasGameOver, W / 2, 95);
+        }
+      }
+
+      let lastTime = performance.now();
+      function loop(now) {
+        const dt = Math.min((now - lastTime) / 1000, 0.05);
+        lastTime = now;
+        updateGame(dt);
+        drawScene();
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+
+      // Keyboard
+      window.addEventListener("keydown", function (e) {
+        if (e.code === "Space" || e.code === "ArrowUp" || e.code === "KeyW") {
+          const activeTag = document.activeElement ? document.activeElement.tagName : "";
+          if (e.code === "Space" && (activeTag === "A" || activeTag === "INPUT" || activeTag === "TEXTAREA")) {
+            return;
+          }
+          e.preventDefault();
+          triggerJump();
+        } else if (e.code === "ArrowDown" || e.code === "KeyS") {
+          e.preventDefault();
+          setDuck(true);
+        }
+      });
+
+      window.addEventListener("keyup", function (e) {
+        if (e.code === "ArrowDown" || e.code === "KeyS") {
+          setDuck(false);
+        }
+      });
+
+      window.addEventListener("blur", function () {
+        setDuck(false);
+      });
+
+      // Touch / Pointer
+      canvas.addEventListener("pointerdown", function (e) {
+        e.preventDefault();
+        triggerJump();
+      });
+
+      if (btnJump) {
+        btnJump.addEventListener("pointerdown", function (e) {
+          e.preventDefault();
+          triggerJump();
+        });
+      }
+
+      if (btnDuck) {
+        btnDuck.addEventListener("pointerdown", function (e) {
+          e.preventDefault();
+          if (game.state !== "running") {
+            triggerJump();
+            return;
+          }
+          setDuck(true);
+        });
+        ["pointerup", "pointercancel", "pointerleave"].forEach(function (evt) {
+          btnDuck.addEventListener(evt, function () {
+            setDuck(false);
+          });
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

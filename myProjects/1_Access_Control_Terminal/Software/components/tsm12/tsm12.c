@@ -190,7 +190,9 @@ static const uint8_t TSM12_KEY_MAP[12] = {
 void tsm12_task(void *arg) {
   uint16_t last_mask = 0;
   while (1) {
-    ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+    TickType_t wait_ticks =
+        (last_mask != 0) ? pdMS_TO_TICKS(50) : portMAX_DELAY;
+    ulTaskNotifyTake(pdTRUE, wait_ticks);
 
     // Wait a tiny bit just in case
     esp_rom_delay_us(1000);
@@ -241,9 +243,8 @@ void tsm12_task(void *arg) {
                TSM12_I2C_ADDR);
     }
 
-    // Rate limit and debounce
+    // Rate limit and debounce (preserve interrupts arriving during delay)
     vTaskDelay(pdMS_TO_TICKS(20));
-    xTaskNotifyStateClear(NULL);
   }
 }
 

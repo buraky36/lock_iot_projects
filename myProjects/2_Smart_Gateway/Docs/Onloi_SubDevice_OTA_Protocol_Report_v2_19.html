@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Onloi BLE Alt Cihaz — Tüm Protokol Akışları (v2.19) ve Çift Hedefli (ESP32 &amp; STM32) OTA Mimari Raporu</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+    color: #111827;
+    font-size: 9.2pt;
+    line-height: 1.42;
+  }
+  h1 {
+    font-size: 15.5pt;
+    color: #1e3a5f;
+    margin-top: 0;
+    margin-bottom: 4pt;
+    text-align: center;
+  }
+  .subtitle {
+    font-size: 10.2pt;
+    color: #2d5282;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 3pt;
+  }
+  .version {
+    font-size: 8.5pt;
+    color: #6b7280;
+    text-align: center;
+    margin-bottom: 10pt;
+  }
+  h2 {
+    font-size: 11.8pt;
+    color: #1e3a5f;
+    margin-top: 13pt;
+    margin-bottom: 6pt;
+    border-bottom: 1px solid #cbd5e1;
+    padding-bottom: 3pt;
+  }
+  h3 {
+    font-size: 10.2pt;
+    color: #2d5282;
+    margin-top: 9pt;
+    margin-bottom: 4pt;
+  }
+  p {
+    margin-top: 3pt;
+    margin-bottom: 5pt;
+  }
+  ul, ol {
+    margin-top: 3pt;
+    margin-bottom: 5pt;
+    margin-left: 16pt;
+  }
+  li {
+    margin-bottom: 2.5pt;
+  }
+  code {
+    font-family: 'Consolas', 'Courier New', monospace;
+    background-color: #f1f5f9;
+    color: #1e3a5f;
+    font-size: 8.4pt;
+  }
+  pre {
+    font-family: 'Consolas', 'Courier New', monospace;
+    background-color: #0f172a;
+    color: #f8fafc;
+    font-size: 7.8pt;
+    padding: 7pt;
+    margin-top: 5pt;
+    margin-bottom: 7pt;
+    white-space: pre;
+  }
+  table.data {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 4pt;
+    margin-bottom: 7pt;
+    font-size: 8.3pt;
+  }
+  table.data th {
+    background-color: #1e3a5f;
+    color: #ffffff;
+    font-weight: bold;
+    text-align: left;
+    padding: 4.5pt 6pt;
+    border: 1px solid #1e3a5f;
+  }
+  table.data td {
+    padding: 4pt 6pt;
+    border: 1px solid #cbd5e1;
+    vertical-align: top;
+  }
+  table.card {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 7pt;
+    margin-bottom: 9pt;
+  }
+  table.card th.card-hdr {
+    background-color: #1e3a5f;
+    color: #ffffff;
+    font-size: 9.3pt;
+    font-weight: bold;
+    text-align: left;
+    padding: 5pt 8pt;
+    border: 1px solid #1e3a5f;
+  }
+  table.card th.card-hdr-warn {
+    background-color: #991b1b;
+    color: #ffffff;
+    font-size: 9.3pt;
+    font-weight: bold;
+    text-align: left;
+    padding: 5pt 8pt;
+    border: 1px solid #991b1b;
+  }
+  table.card th.card-hdr-teal {
+    background-color: #0f766e;
+    color: #ffffff;
+    font-size: 9.3pt;
+    font-weight: bold;
+    text-align: left;
+    padding: 5pt 8pt;
+    border: 1px solid #0f766e;
+  }
+  table.card td.card-body {
+    padding: 6pt 8pt;
+    border: 1px solid #cbd5e1;
+    background-color: #ffffff;
+  }
+  table.note {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 5pt;
+    margin-bottom: 7pt;
+  }
+  table.note td.note-green {
+    background-color: #f0fdf4;
+    border-left: 4px solid #16a34a;
+    border-top: 1px solid #bbf7d0;
+    border-right: 1px solid #bbf7d0;
+    border-bottom: 1px solid #bbf7d0;
+    padding: 5.5pt 8pt;
+    color: #14532d;
+    font-size: 8.6pt;
+  }
+  table.note td.note-blue {
+    background-color: #eff6ff;
+    border-left: 4px solid #2563eb;
+    border-top: 1px solid #bfdbfe;
+    border-right: 1px solid #bfdbfe;
+    border-bottom: 1px solid #bfdbfe;
+    padding: 5.5pt 8pt;
+    color: #1e3a8a;
+    font-size: 8.6pt;
+  }
+  table.note td.note-amber {
+    background-color: #fffbeb;
+    border-left: 4px solid #d97706;
+    border-top: 1px solid #fde68a;
+    border-right: 1px solid #fde68a;
+    border-bottom: 1px solid #fde68a;
+    padding: 5.5pt 8pt;
+    color: #78350f;
+    font-size: 8.6pt;
+  }
+</style>
+</head>
+<body>
+
+<h1>Onloi BLE Alt Cihaz — Tüm Protokol Akışları (v2.19) ve OTA Mimarisi</h1>
+<div class="subtitle">Sunucu, Mobil App ve Alt Cihaz (ESP32 &amp; ESP32+STM32) Ekipleri İçin Protokol Revizyon Raporu</div>
+<div class="version">Referans: Onloi Smart Lock Protocol v2.19 &amp; Onloi BLE Gateway Protocol v1.3 &nbsp;&middot;&nbsp; Tarih: 14.11.2026</div>
+<hr style="border: 1px solid #1e3a5f; margin-bottom: 8pt;">
+
+<h2>1. Yönetici Özeti ve Temel Mimari Prensip</h2>
+<p>Onloi ürün ailesinde sadece <b>BLE</b> ile haberleşen (Wi-Fi bağlantısı olmayan) alt cihazlar; donanım modeline göre yalnızca <b>ESP32</b> veya <b>ESP32 + STM32</b> (ESP32'nin seri port/UART üzerinden STM32 ile haberleştiği ve güncellediği yapı) barındırabilmektedir.</p>
+<p>Bu alt cihazlar sahada bir <b>Gateway üzerinden</b> kullanılabildiği gibi, müşteride Gateway bulunmadığı veya çevrimdışı olduğu durumlarda <b>doğrudan Mobil App (BLE)</b> ile de kullanılabilmektedir. Bu nedenle hem rutin protokol komutları (Erişim, Parmak İzi/NFC Kaydı, Telemetri, Saat Senkronu, Loglar) hem de OTA güncellemeleri <b>"Tek BLE Protokolü, İki Taşıyıcı (Gateway veya Mobil App)"</b> prensibi üzerine kurulmuştur:</p>
+
+<pre>YOL A — Gateway Üzerinden Uzaktan İletişim &amp; OTA (Gateway Online):
+[Sunucu] ◄──(MQTT / HTTPS)──► [Gateway] ◄──(BLE: SESSION_INIT 0x70 + AES-GCM)──► [Alt Cihaz: ESP32 (◄─UART─► STM32)]
+
+YOL B — Mobil App Üzerinden Doğrudan İletişim &amp; OTA (Gateway Yok veya Offline):
+[Sunucu] ◄──(HTTPS REST)────► [Mobil App] ◄─(BLE: SESSION_INIT 0x70 + AES-GCM)──► [Alt Cihaz: ESP32 (◄─UART─► STM32)]</pre>
+
+<table class="note">
+  <tr>
+    <td class="note-green">
+      <b>Kritik Mimari Avantaj:</b> Alt cihaz (Sub-device) gömülü yazılımı, karşısındaki cihazın Gateway mi yoksa Mobil App mi olduğunu bilmek zorunda değildir. Her iki yolda da <code>SESSION_INIT (0x70)</code> ile doğrulanmış şifreli BLE oturumu üzerinden birebir aynı v2.19 komut kataloğu (<code>0x01 – 0x61</code>) ve BLE OTA komutları (<code>0x78 – 0x7B</code>) çalışır.
+    </td>
+  </tr>
+</table>
+
+<h2>2. Mevcut Protokolde (v2.19 &amp; GW v1.3) Tespit Edilen Eksikler</h2>
+
+<table class="card">
+  <tr>
+    <th class="card-hdr-warn">Eksik 1 — Komut ve Telemetri Akışında SEQ / Nonce Senkronizasyonu ve Kriptografi Sorumluluğu</th>
+  </tr>
+  <tr>
+    <td class="card-body">
+      <p>GW Protokolü v1.3 Bölüm 7 ve 8'de, alt cihaza gidecek komutları <b>sunucunun <code>sessionKey</code> ile şifreleyeceği</b> ve GW'nin sadece kör relay yapacağı varsayılmıştır. Ancak bu model pratikte çalışmaz:</p>
+      <ul>
+        <li>Alt cihazda AES-256-GCM nonce değeri o anki BLE bağlantısının <code>connNonce</code> ve <code>SEQ</code> sayacından türetilir (<code>nonce = connNonce XOR BE64(SEQ)</code>) ve alt cihaz <code>SEQ &le; last_seq</code> olan paketleri <code>REPLAY_DETECTED (0x02)</code> ile reddeder.</li>
+        <li>Oysa BLE bağlantısını ve <code>SESSION_INIT (0x70)</code> el sıkışmasını yöneten <b>Gateway</b>'dir. Komut sunucudan çıktığı sırada GW alt cihaza henüz bağlı değilse <code>sessionKey</code> ve <code>connNonce</code> henüz oluşmamıştır.</li>
+        <li><b>Çözüm:</b> Sunucu &harr; GW arasındaki MQTT kanalı zaten TLS ve <code>AUTH_TAG</code> ile güvenlidir. BLE oturum kriptografisini (<code>SESSION_INIT</code>, <code>SEQ</code> takibi ve AES-256-GCM encrypt/decrypt) bizzat <b>BLE bağlantısının sahibi olan Gateway</b> (Yol B'de ise <b>Mobil App</b>) yürütmelidir.</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+<table class="card">
+  <tr>
+    <th class="card-hdr-warn">Eksik 2 — Çok Adımlı (Multi-Step) Komutlar ve Anlık Event'ler İçin Bağlantı Sürekliliği</th>
+  </tr>
+  <tr>
+    <td class="card-body">
+      <p>Protokol v2.19'da tek seferlik <code>REMOTE_OPEN (0x40)</code> dışında çok adımlı etkileşimli akışlar vardır:</p>
+      <ul>
+        <li><b>Parmak İzi / NFC Kaydı:</b> <code>FP_ENROLL_START (0x46)</code> &rarr; <code>FP_ENROLL_READY (0x24)</code> &rarr; 3x <code>FP_SCAN_STEP (0x25)</code> &rarr; <code>FP_ENROLLED (0x26)</code> (~30–45 saniye boyunca ardışık notify paketleri gelir).</li>
+        <li><b>Spontane Cihaz Event'leri ve Sorguları:</b> <code>PIN_ENTERED (0x12)</code>, <code>NFC_SCANNED (0x13)</code>, <code>BUTTON_UNLOCK_REQ (0x16)</code>, <code>DOOR_POSITION (0x18)</code>, <code>BOLT_STATE (0x19)</code>, <code>HANDLE_EVENT (0x1A)</code>, <code>TIME_SYNC (0x33)</code>, <code>OFFLINE_LOG_BATCH (0x35)</code>.</li>
+        <li><b>Çözüm:</b> Gateway, alt cihazla <code>SESSION_INIT (0x70)</code> yaptıktan sonra bağlantıyı hemen kapatmamalı; çok adımlı işlemler ve spontane event'ler için <code>AUTHENTICATED</code> bağlantıyı açık tutmalıdır.</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+<table class="card">
+  <tr>
+    <th class="card-hdr-warn">Eksik 3 — Alt Cihaz OTA Güncellemesinde Çip Seçimi (ESP32 vs. STM32) ve BLE Chunk Protokolü</th>
+  </tr>
+  <tr>
+    <td class="card-body">
+      <ul>
+        <li><b>Çip Seçimi Eksikliği:</b> Protokol v2.19'da <code>firmwareTarget = 0x03 (UNIT3_BLE_SUB)</code> tek bir değerdir. Alt cihazda <b>hem ESP32 hem STM32</b> olduğunda imajın hangisine yazılacağı (ve <code>FIRMWARE_INFO 0x3A</code> içinde iki sürümün nasıl raporlanacağı) ayırt edilememektedir.</li>
+        <li><b>BLE Chunk Komutları Tanımsız:</b> İmajı HTTPS'ten indiren Gateway veya Mobil App'in, <code>.bin</code> dosyasını BLE üzerinden alt cihaza parça parça aktaracağı standart CMD kodları (<code>0x78–0x7B</code>) protokolde tanımlanmamıştır.</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+<h2>3. Tüm v2.19 Protokol Komutlarının Gateway Üzerinden Çalışma Mimarisi</h2>
+
+<h3>3.1. Şifreleme ve Mesaj Taşıma Kuralı (Downlink &amp; Uplink)</h3>
+<p>Alt cihaz firmware'i hiçbir değişiklik yapmadan standart şifreli BLE oturumuyla çalışır. Gateway ve Sunucu arasındaki iş bölümü şu şekildedir:</p>
+
+<table class="data">
+  <thead>
+    <tr>
+      <th width="18%">Yön</th>
+      <th width="36%">Sunucu &harr; Gateway (MQTT over TLS)</th>
+      <th width="46%">Gateway &harr; Alt Cihaz (BLE GATT - AES-256-GCM)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><b>Downlink</b><br>(Sunucu &rarr; Alt Cihaz)</td>
+      <td>Sunucu, v2.19 komutunu (örn. <code>0x40</code>, <code>0x46</code>, <code>0x33</code> yanıtı) standart Onloi frame formatında (veya JSON içinde) <code>/gateway/{gwId}/command</code> topic'ine gönderir. Sunucunun BLE <code>sessionKey</code> veya <code>SEQ</code> bilmesine gerek yoktur.</td>
+      <td>GW, alt cihazla aktif <code>SESSION_INIT (0x70)</code> oturumu yoksa kurar. Sunucudan gelen frame'e o bağlantının sıradaki <code>SEQ</code> numarasını verir, payload'u aktif <code>sessionKey</code> ve <code>nonce = connNonce XOR BE64(SEQ)</code> ile <b>AES-256-GCM şifreler</b> ve BLE RX karakteristiğine yazar.</td>
+    </tr>
+    <tr>
+      <td><b>Uplink / Notify</b><br>(Alt Cihaz &rarr; Sunucu)</td>
+      <td>GW, çözdüğü temiz v2.19 frame'ini <code>/gateway/{gwId}/notify</code> topic'inden sunucuya yayınlar (JSON içinde hem ham <code>data</code> hem çözülmüş <code>decrypted_data</code> ve <code>targetDeviceId</code> yer alır).</td>
+      <td>Alt cihaz tüm <code>RESPONSE (0x02)</code>, <code>REQUEST (0x01)</code> ve <code>EVENT (0x03)</code> frame'lerini aktif <code>sessionKey</code> ile AES-256-GCM şifreli olarak TX karakteristiğinden notify eder. GW bunu kendi <code>sessionKey</code>'i ile <b>decrypt eder</b> ve replay (<code>SEQ</code>) kontrolünden geçirir.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>3.2. Gateway Üzerinden Taşınan Tam v2.19 Komut ve Event Kataloğu</h3>
+<p>Aşağıdaki tüm v2.19 komut grupları hem Gateway üzerinden (Yol A) hem de Mobil App doğrudan BLE bağlantısı üzerinden (Yol B) eksiksiz desteklenir:</p>
+
+<table class="data">
+  <thead>
+    <tr>
+      <th width="22%">Kategori</th>
+      <th width="34%">Komut / Event (CMD Hex)</th>
+      <th width="14%">Yön</th>
+      <th width="30%">Gateway &amp; Sunucu Davranışı</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><b>Uzaktan Kontrol</b></td>
+      <td><code>REMOTE_OPEN (0x40)</code><br><code>REMOTE_CLOSE (0x4C)</code></td>
+      <td>Sunucu &rarr; Cihaz<br>Cihaz &rarr; Sunucu</td>
+      <td>Sunucu komutu gönderir &rarr; GW BLE'de şifreleyip yazar &rarr; Cihazın <code>RESPONSE (0x02)</code> cevabı <code>/notify</code> ile sunucuya döner.</td>
+    </tr>
+    <tr>
+      <td><b>Kilit ve Kapı Durum Event'leri (v2.19)</b></td>
+      <td><code>LOCK_OPENED (0x10)</code>, <code>LOCK_CLOSED (0x17)</code><br><code>DOOR_POSITION (0x18)</code> <i>(v2.19 OK0313)</i><br><code>BOLT_STATE (0x19)</code> <i>(v2.19 OK0313)</i><br><code>HANDLE_EVENT (0x1A)</code> <i>(v2.19 OK0313)</i></td>
+      <td>Cihaz &rarr; Sunucu<br>(<code>EVENT 0x03</code>)</td>
+      <td>Alt cihaz durum değişimini anında BLE'den notify eder &rarr; GW decrypt edip <code>/notify</code> ile sunucuya basar &rarr; Sunucu veritabanını günceller / bildirim atar.</td>
+    </tr>
+    <tr>
+      <td><b>Erişim Doğrulama İstekleri</b></td>
+      <td><code>PIN_ENTERED (0x12)</code><br><code>NFC_SCANNED (0x13)</code><br><code>BUTTON_UNLOCK_REQ (0x16)</code></td>
+      <td>Cihaz &harr; Sunucu</td>
+      <td>Alt cihaz girilen PIN/NFC verisini gönderir &rarr; GW anında <code>/notify</code>'a basar &rarr; Sunucu yetkiyi kontrol edip yanıt frame'ini <code>/command</code> ile GW üzerinden alt cihaza döner.</td>
+    </tr>
+    <tr>
+      <td><b>Parmak İzi &amp; NFC Kart Kaydı (Çok Adımlı)</b></td>
+      <td><code>NFC_ENROLL_START (0x44)</code> &rarr; <code>0x22</code>, <code>0x23</code><br><code>FP_ENROLL_START (0x46)</code> &rarr; <code>0x24</code>, <code>0x25</code> (x3), <code>0x26</code></td>
+      <td>Sunucu &rarr; Cihaz<br>Cihaz &rarr; Sunucu</td>
+      <td>GW komutu ilettikten sonra <b>BLE bağlantısını kapatmaz</b>; kayıt bitene kadar gelen tüm ara adım event'lerini (<code>FP_SCAN_STEP 0x25</code> vb.) canlı olarak sunucuya aktarır.</td>
+    </tr>
+    <tr>
+      <td><b>Saat, Pil ve Offline Log Senkronu</b></td>
+      <td><code>BATTERY_REPORT (0x32)</code><br><code>TIME_SYNC (0x33)</code><br><code>OFFLINE_LOG_BATCH (0x35)</code></td>
+      <td>Cihaz &harr; Sunucu</td>
+      <td>Alt cihaz <code>TIME_SYNC (0x33)</code> istediğinde sunucu yerel unix ms yanıtını döner. <code>OFFLINE_LOG_BATCH (0x35)</code> geldiğinde sunucu kayıtları işleyip ACK döner, cihaz logları siler.</td>
+    </tr>
+    <tr>
+      <td><b>Sıfırlama &amp; Anahtar Yönetimi</b></td>
+      <td><code>FACTORY_RESET (0x50)</code>, <code>LOCAL_FACTORY_RESET (0x61)</code><br><code>KEY_DELIVER (0x72)</code>, <code>UNCLAIM (0x73)</code></td>
+      <td>Sunucu/GW &harr; Cihaz</td>
+      <td>Uzaktan sıfırlama, unclaim veya key rotasyonu sonrası hem cihaz hem GW hem de sunucu localKey durumunu senkronize eder.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>4. Alt Cihaz (ESP32 &amp; ESP32+STM32) OTA Spesifikasyonu</h2>
+
+<h3>4.1. Genişletilmiş firmwareTarget Tablosu (v2.19 Bölüm 42–47 Güncellemesi)</h3>
+<p>Mevcut <code>FIRMWARE_UPDATE (0x53)</code>, <code>GET_FIRMWARE_INFO (0x5C)</code>, <code>FIRMWARE_INFO (0x3A)</code> ve <code>FIRMWARE_STATUS (0x39)</code> frame'lerinin byte dizilimini hiç bozmadan, <code>firmwareTarget</code> değerleri aşağıdaki şekilde netleştirilmiştir:</p>
+
+<table class="data">
+  <thead>
+    <tr>
+      <th width="8%">Hex</th>
+      <th width="24%">Ad</th>
+      <th width="22%">Hedef Birim</th>
+      <th width="46%">Kullanım ve Akış</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>0x01</code></td>
+      <td><code>UNIT1_ESP</code></td>
+      <td>Cihazın kendi ESP32'si</td>
+      <td>Wi-Fi'li cihaz kendi ESP32 OTA partition'ına yazar. (Mobil App doğrudan BLE ile alt cihazı güncellerken de <code>unitTarget=0x01</code> gönderir).</td>
+    </tr>
+    <tr>
+      <td><code>0x02</code></td>
+      <td><code>UNIT2_STM</code></td>
+      <td>Cihazın kendi STM32'si</td>
+      <td>Cihazın ESP32'si imajı staging flash'a alır, doğrulayıp <b>UART (Seri Port)</b> üzerinden STM32'ye yazar.</td>
+    </tr>
+    <tr>
+      <td><code>0x03</code></td>
+      <td><code>UNIT3_BLE_SUB_ESP</code></td>
+      <td><b>Alt Cihazın ESP32'si</b></td>
+      <td>Sunucu &rarr; GW komutlarında: GW imajı HTTPS ile indirir, BLE üzerinden <code>unitTarget=0x01 (ESP32)</code> olarak alt cihaza aktarır.</td>
+    </tr>
+    <tr>
+      <td><code>0x04</code></td>
+      <td><code>UNIT4_BLE_SUB_STM</code></td>
+      <td><b>Alt Cihazın STM32'si</b></td>
+      <td>Sunucu &rarr; GW komutlarında: GW imajı HTTPS ile indirir, BLE üzerinden <code>unitTarget=0x02 (STM32)</code> olarak alt cihaza aktarır; alt cihazın ESP32'si imajı UART ile STM32'ye yazar.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>4.2. BLE OTA Aktarım Komutları (0x78 – 0x7B)</h3>
+<p>İmajı HTTPS'ten indirip SHA-256 + CRC32 doğrulamasını tamamlayan <b>Mobil App</b> veya <b>Gateway</b>, alt cihaza BLE üzerinden bağlanıp <code>SESSION_INIT (0x70)</code> ile oturum açtıktan sonra aşağıdaki komutlarla imajı aktarır. Tüm komutların PAYLOAD alanı aktif <code>sessionKey</code> ile <b>AES-256-GCM şifrelidir</b>.</p>
+
+<table class="card">
+  <tr>
+    <th class="card-hdr">1. BLE_OTA_START (0x78) — Güncelleme Başlatma ve Hedef Çip Seçimi &nbsp;|&nbsp; MSG_TYPE: REQUEST (0x01)</th>
+  </tr>
+  <tr>
+    <td class="card-body">
+      <p><b>Yön:</b> Mobil App / Gateway &rarr; Alt Cihaz (RX Write) &nbsp;|&nbsp; <b>Plaintext Boyutu:</b> 54 byte (+16B GCM Tag = 70 byte şifreli payload)</p>
+      <table class="data">
+        <thead>
+          <tr>
+            <th width="10%">Offset</th>
+            <th width="22%">Alan</th>
+            <th width="14%">Tip</th>
+            <th width="10%">Boyut</th>
+            <th width="44%">Açıklama</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>0</code></td><td><code>requestId</code></td><td>uint32 BE</td><td>4</td><td>OTA iş/istek numarası (log ve durum takibi için)</td></tr>
+          <tr><td><code>4</code></td><td><code>unitTarget</code></td><td>uint8</td><td>1</td><td><b><code>0x01</code> = Alt Cihazın ESP32'si</b>, <b><code>0x02</code> = Alt Cihazın STM32'si (UART)</b></td></tr>
+          <tr><td><code>5</code></td><td><code>productId</code></td><td>uint16 BE</td><td>2</td><td>Hedef alt cihaz Product ID (örn. <code>0x0310</code>, <code>0x0313</code>)</td></tr>
+          <tr><td><code>7</code></td><td><code>hardwareRevision</code></td><td>uint8</td><td>1</td><td>Hedef alt cihaz donanım revizyonu</td></tr>
+          <tr><td><code>8</code></td><td><code>firmwareVersion</code></td><td>uint32 BE</td><td>4</td><td>Yüklenecek yeni firmware sürümü</td></tr>
+          <tr><td><code>12</code></td><td><code>totalLength</code></td><td>uint32 BE</td><td>4</td><td>Firmware (<code>.bin</code>) dosyasının toplam byte uzunluğu</td></tr>
+          <tr><td><code>16</code></td><td><code>plainFwCrc32</code></td><td>uint32 BE</td><td>4</td><td>Dosyanın beklenen CRC32 değeri</td></tr>
+          <tr><td><code>20</code></td><td><code>plainFwSha256</code></td><td>bytes</td><td>32</td><td>Dosyanın beklenen SHA-256 özeti</td></tr>
+          <tr><td><code>52</code></td><td><code>chunkSize</code></td><td>uint16 BE</td><td>2</td><td>Gönderilecek parça boyutu (MTU'ya göre örn. <code>240</code> veya <code>480</code> byte)</td></tr>
+        </tbody>
+      </table>
+      <p><b>Alt Cihaz Cevabı (<code>RESPONSE 0x02</code>, CMD <code>0x78</code>):</b></p>
+      <ul>
+        <li><code>STATUS = 0x00 (OK)</code>: Alt cihaz Product ID/HW revizyonunu doğruladı, hedef flash alanını (<code>0x01</code> ise ESP Next OTA Partition, <code>0x02</code> ise STM32 Staging Flash) hazırladı. Payload: <code>maxChunkSize (uint16 BE, 2B)</code>.</li>
+        <li><code>STATUS != 0x00</code>: <code>TARGET_INVALID (0x04)</code> (cihazda STM32 yoksa ve <code>0x02</code> istendiyse), <code>PRODUCT_MISMATCH (0x08)</code>, <code>INSUFFICIENT_STORAGE (0x09)</code> veya <code>LOW_BATTERY (0x0A)</code>.</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+<table class="card">
+  <tr>
+    <th class="card-hdr">2. BLE_OTA_CHUNK (0x79) — Veri Parçası Aktarımı (Windowed ACK) &nbsp;|&nbsp; MSG_TYPE: COMMAND (0x04) / REQUEST (0x01)</th>
+  </tr>
+  <tr>
+    <td class="card-body">
+      <p><b>Yön:</b> Mobil App / Gateway &rarr; Alt Cihaz &nbsp;|&nbsp; <b>Plaintext Boyutu:</b> <code>6 + N</code> byte</p>
+      <table class="data">
+        <thead>
+          <tr>
+            <th width="10%">Offset</th>
+            <th width="22%">Alan</th>
+            <th width="14%">Tip</th>
+            <th width="10%">Boyut</th>
+            <th width="44%">Açıklama</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>0</code></td><td><code>offset</code></td><td>uint32 BE</td><td>4</td><td>Dosya başından itibaren byte konumu (<code>0, chunkSize, 2*chunkSize...</code>)</td></tr>
+          <tr><td><code>4</code></td><td><code>dataLen</code></td><td>uint16 BE</td><td>2</td><td>Bu paketteki firmware verisi uzunluğu (<code>N</code>)</td></tr>
+          <tr><td><code>6</code></td><td><code>data</code></td><td>bytes</td><td>N</td><td>Ham firmware binary parçası</td></tr>
+        </tbody>
+      </table>
+      <table class="note">
+        <tr>
+          <td class="note-blue">
+            <b>Performans ve Akış Kontrolü (Windowed ACK):</b> BLE üzerinden her pakette tek tek yanıt beklemek aktarımı yavaşlatacağından; gönderici (Mobil App veya GW) ara paketleri <code>MSG_TYPE = COMMAND (0x04)</code> olarak arka arkaya gönderir, <b>her 16 pakette bir</b> (veya son pakette) <code>MSG_TYPE = REQUEST (0x01)</code> göndererek alt cihazdan <code>RESPONSE (0x02)</code> bekler. Alt cihaz <code>RESPONSE</code> payload'ında <b><code>nextExpectedOffset (uint32 BE, 4 byte)</code></b> döner. Eksik paket varsa gönderici o offset'ten devam eder.
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<table class="card">
+  <tr>
+    <th class="card-hdr">3. BLE_OTA_FINISH (0x7A) &amp; 4. BLE_OTA_ABORT (0x7B)</th>
+  </tr>
+  <tr>
+    <td class="card-body">
+      <ul>
+        <li><b><code>BLE_OTA_FINISH (0x7A)</code> (REQUEST <code>0x01</code>, Payload: 0 byte):</b> Tüm byte'lar gönderildiğinde iletilir. Alt cihaz yazılan flash alanı üzerinden SHA-256 ve CRC32 doğrular. Başarılıysa <code>STATUS = 0x00</code> döner:
+          <ul>
+            <li><b><code>unitTarget == 0x01 (ESP32)</code> ise:</b> Boot partition'ı değiştirir, <code>FIRMWARE_STATUS (COMPLETED 0x06)</code> gönderir ve 1 sn içinde reboot eder.</li>
+            <li><b><code>unitTarget == 0x02 (STM32)</code> ise:</b> Alt cihazdaki ESP32, staging flash'taki imajı <b>seri port (UART) üzerinden STM32'ye</b> yazar ve aşamaları (<code>STM32_TRANSFERRING 0x24</code> &rarr; <code>STM32_VERIFYING 0x25</code> &rarr; <code>COMPLETED 0x06</code>) BLE üzerinden notify eder.</li>
+          </ul>
+        </li>
+        <li><b><code>BLE_OTA_ABORT (0x7B)</code> (REQUEST <code>0x01</code>, Payload: <code>reason 1B</code>):</b> Devam eden aktarımı iptal eder ve staging/OTA alanını temizler.</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+<h2>5. Ekiplere Göre İş Paketleri ve Sorumluluklar</h2>
+
+<table class="card">
+  <tr>
+    <th class="card-hdr">A. Sunucu (Backend) ve Mobil App Ekibi İş Paketleri</th>
+  </tr>
+  <tr>
+    <td class="card-body">
+      <ol>
+        <li><b>Gateway Üzerinden Tüm v2.19 Komut ve Event Trafiği:</b>
+          <ul>
+            <li>Sunucu, Gateway altındaki bir alt cihaza göndereceği tüm v2.19 komutlarını (<code>REMOTE_OPEN 0x40</code>, <code>REMOTE_CLOSE 0x4C</code>, <code>NFC_ENROLL_START 0x44</code>, <code>FP_ENROLL_START 0x46</code>, <code>TIME_SYNC 0x33</code> cevabı, <code>PIN_ENTERED 0x12</code> / <code>NFC_SCANNED 0x13</code> yanıtları vb.) standart v2.19 frame'i olarak <code>/gateway/{gwId}/command</code> topic'ine gönderecektir (BLE oturum şifrelemesini GW yapar).</li>
+            <li>Alt cihazdan gelen tüm event ve yanıtlar (<code>0x10–0x3A</code>, yeni v2.19 <code>0x18 DOOR_POSITION</code>, <code>0x19 BOLT_STATE</code>, <code>0x1A HANDLE_EVENT</code> dahil) GW tarafından doğrulanıp çözülerek <code>/gateway/{gwId}/notify</code> topic'inden sunucuya iletilecektir.</li>
+          </ul>
+        </li>
+        <li><b>Telefon ile Eklenen Alt Cihazların LocalKey Senkronizasyonu:</b>
+          <ul>
+            <li>Kullanıcı bir alt cihazı doğrudan telefonla (BLE) ekleyip daha sonra ortama bir Gateway kurduğunda, Gateway'in bu alt cihaza bağlanabilmesi için sunucu, alt cihazın <code>localKey</code> bilgisini Gateway'e (<code>/gateway/{gwId}/subkey_sync</code> topic'i veya <code>/command</code> meta alanı ile) iletmelidir.</li>
+          </ul>
+        </li>
+        <li><b>Çift Hedefli (ESP32 + STM32) OTA Yönetimi (GW ve Mobil App):</b>
+          <ul>
+            <li>Ürün kataloğunda ESP32+STM32 barındıran modeller için iki ayrı firmware sürümü tutulacak; <code>FIRMWARE_INFO (0x3A)</code> içindeki çoklu <code>entry</code> (<code>count=2</code>) işlenecektir.</li>
+            <li><b>GW üzerinden OTA'da:</b> Alt cihazın ESP32'si için <code>firmwareTarget = 0x03</code>, STM32'si için <code>firmwareTarget = 0x04</code> ile <code>FIRMWARE_UPDATE (0x53)</code> gönderilecek; HTTPS URL token'ı GW <code>deviceId</code>'sine yetki verecektir.</li>
+            <li><b>Mobil App üzerinden doğrudan OTA'da (GW yoksa/offline ise):</b> Mobil App imajı HTTPS'ten indirip doğrulayacak, alt cihaza BLE ile bağlanıp (<code>SESSION_INIT 0x70</code>) Bölüm 4.2'deki <code>0x78 &rarr; 0x79 &rarr; 0x7A</code> akışını çalıştıracaktır.</li>
+          </ul>
+        </li>
+      </ol>
+    </td>
+  </tr>
+</table>
+
+<table class="card">
+  <tr>
+    <th class="card-hdr-teal">B. Alt Cihaz (Sub-Device: ESP32 / ESP32+STM32) Gömülü Yazılım Ekibi İş Paketleri</th>
+  </tr>
+  <tr>
+    <td class="card-body">
+      <ol>
+        <li><b>Standart BLE Oturumu Üzerinden Tüm v2.19 Komut ve Event Desteği:</b>
+          <ul>
+            <li>Alt cihaz, <code>SESSION_INIT (0x70)</code> ile doğrulanmış (<code>AUTHENTICATED</code>) BLE bağlantısı üzerinden gelen tüm v2.19 komutlarını (<code>0x40</code>, <code>0x4C</code>, <code>0x44</code>, <code>0x46</code>, <code>0x50</code>, <code>0x5C</code> vb.) işleyecek ve kendi ürettiği tüm event/istekleri (<code>0x10–0x35</code>, <code>0x33 TIME_SYNC</code> dahil) aktif BLE bağlantısına notify edecektir.</li>
+            <li>Çoklu bağlantı veya hızlı geçiş için: GW bağlıyken telefon da bağlanmak isterse Politika A (çoklu <code>peer_ctx_t</code>, en az 2 eşzamanlı bağlantı: 1 GW + 1 Mobil App) desteklenmelidir.</li>
+          </ul>
+        </li>
+        <li><b>BLE OTA Komut İşleyicisi (<code>0x78 – 0x7B</code>) ve <code>unitTarget</code> Ayrımı:</b>
+          <ul>
+            <li><code>AUTHENTICATED</code> BLE oturumu üzerinden gelen <code>BLE_OTA_START (0x78)</code>, <code>BLE_OTA_CHUNK (0x79)</code>, <code>BLE_OTA_FINISH (0x7A)</code> ve <code>BLE_OTA_ABORT (0x7B)</code> komutları eklenecektir.</li>
+            <li><b><code>unitTarget == 0x01 (ESP32)</code>:</b> Gelen paketler <code>esp_ota_write()</code> ile Next OTA Partition'a yazılacak; <code>0x7A</code> sonrası doğrulanıp cihaz reboot edilecektir.</li>
+            <li><b><code>unitTarget == 0x02 (STM32)</code>:</b> Gelen paketler staging flash alanına yazılacak; <code>0x7A</code> ile SHA-256/CRC32 doğrulandıktan sonra mevcut <b>UART (Seri Port) STM32 Güncelleme</b> mekanizması tetiklenecek ve durum geçişleri (<code>0x24</code>, <code>0x25</code>, <code>0x06</code>) <code>FIRMWARE_STATUS (0x39)</code> olarak BLE'den bildirilecektir.</li>
+          </ul>
+        </li>
+        <li><b>Çift Versiyon Raporlama (<code>GET_FIRMWARE_INFO 0x5C</code> &rarr; <code>FIRMWARE_INFO 0x3A</code>):</b>
+          <ul>
+            <li>BLE üzerinden <code>0x5C</code> geldiğinde; sadece ESP32 barındıran modeller <code>count=1</code> (<code>target=0x01</code>), ESP32+STM32 barındıran modeller ise <code>count=2</code> (<code>target=0x01</code> ESP32 sürümü ve <code>target=0x02</code> STM32 sürümü) olarak yanıt dönecektir.</li>
+          </ul>
+        </li>
+      </ol>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

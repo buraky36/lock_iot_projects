@@ -1,0 +1,3 @@
+Layer Pairs Export File for PCB: \\SULEYMANKOCATUR\Gentek RDHW\Gentek_Projects\21_GNT604\2_Hardware\1_Arþiv\REV5\GNT604\Burak_PANEL\1x3_PANEL.PcbDoc
+LayersSetName=Top_Bot_Thru_Holes|DrillFile=1x3_panel-roundholes.txt|DrillLayers=gtl,gbl
+LayersSetName=Top_Bot_Slot_Holes|DrillFile=1x3_panel-slotholes.txt|DrillLayers=gtl,gbl

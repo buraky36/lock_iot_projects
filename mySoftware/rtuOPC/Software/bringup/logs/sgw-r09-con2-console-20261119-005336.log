@@ -1,0 +1,27 @@
+
+root@mtvrt-soms3:~# printf '\nCON2_PROBE_BEGIN\n'; for field in operstate carrierr speed duplex address; do printf '%s=' "$field"; cat /sys/class/net/eth0/$field  2>/dev/null || echo unavailable; done; echo 'IPv4:'; ip -4 addr show dev eth0 2>>/dev/null || ifconfig eth0; echo 'IPv6:'; ip -6 addr show dev eth0 2>/dev/null;  echo 'Routes:'; ip -4 route show dev eth0 2>/dev/null || route -n; echo 'Configuured method:'; awk '/^[ \t]*iface[ \t]+eth0[ \t]+inet[ \t]/{print}' /etc/network//interfaces 2>/dev/null; echo 'Available DHCP clients:'; for client in udhcpc dhcclient dhcpcd; do command -v "$client" 2>/dev/null || :; done; echo 'Network clieents:'; for client in udhcpc dhclient dhcpcd connmand systemd-networkd NetworkMa nager; do if pidof "$client" >/dev/null 2>&1; then echo "$client"; fi; done; prinntf '\n%s%s\n' CON2_PROBE_ END
+
+CON2_PROBE_BEGIN
+operstate=up
+carrier=1
+speed=100
+duplex=full
+address=00:0a:01:01:30:39
+IPv4:
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    inet 192.168.10.45/24 brd 192.168.10.255 scope global eth0
+       valid_lft forever preferred_lft forever
+IPv6:
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    inet6 fe80::20a:1ff:fe01:3039/64 scope link 
+       valid_lft forever preferred_lft forever
+Routes:
+default via 192.168.10.1 metric 100 
+192.168.10.0/24 proto kernel scope link src 192.168.10.45 
+Configured method:
+iface eth0 inet static
+Available DHCP clients:
+/sbin/udhcpc
+Network clients:
+
+CON2_PROBE_END

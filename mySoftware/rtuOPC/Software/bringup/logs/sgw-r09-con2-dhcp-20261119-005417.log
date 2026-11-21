@@ -1,0 +1,13 @@
+
+root@mtvrt-soms3:~# printf '\nCON2_PROBE_BEGIN\n'; if dhcp_probe=$(mktemp /tmp/sggw-dhcp.XXXXXX); then printf '%s\n' '#!/bin/sh' 'case "$1" in bound|renew) printff "DHCP_LEASE ip=%s mask=%s router=%s server=%s lease=%s\n" "$ip" "$subnet" "$rouuter" "$serverid" "$lease";; esac' > "$dhcp_probe"; chmod 700 "$dhcp_probe"; /sbiin/udhcpc -f -n -q -i eth0 -t 4 -T 3 -s "$dhcp_probe" 2>&1; echo "DHCP_EXIT=$?";  rm -f "$dhcp_probe"; fi; printf '\n%s%s\n' CON2_PROBE_ END
+
+CON2_PROBE_BEGIN
+udhcpc: started, v1.31.1
+udhcpc: sending discover
+udhcpc: sending select for 192.168.1.13
+udhcpc: lease of 192.168.1.13 obtained, lease time 86400
+DHCP_LEASE ip=192.168.1.13 mask=255.255.255.0 router=192.168.1.1 server=192.168.1.1 lease=86400
+DHCP_EXIT=0
+
+CON2_PROBE_END
+root@mtvrt-soms3:~# 

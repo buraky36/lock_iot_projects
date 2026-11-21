@@ -6,6 +6,10 @@
 #include "esp_mac.h"
 #include "esp_crt_bundle.h"
 #include "esp_timer.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/queue.h"
+#include "freertos/semphr.h"
 #include "wifi_manager.h"
 #include "hw_config.h"
 #include "hal_io.h"
@@ -66,6 +70,69 @@ static char topic_event[128];
 static char topic_ack[128];
 static char topic_telemetry[128];
 static int64_t s_last_session_keepalive = 0;
+static int64_t s_last_session_start_ms = 0;
+
+#define MQTT_TX_QUEUE_LEN 16
+#define SESSION_START_COOLDOWN_MS 10000
+
+typedef struct {
+    char topic[128];
+    uint8_t frame[256];
+    uint16_t len;
+    bool retain;
+    uint8_t cmd;
+    uint16_t seq;
+} mqtt_tx_msg_t;
+
+static QueueHandle_t s_mqtt_tx_queue = NULL;
+static SemaphoreHandle_t s_mqtt_client_mutex = NULL;
+static portMUX_TYPE s_mqtt_state_mux = portMUX_INITIALIZER_UNLOCKED;
+static TaskHandle_t s_mqtt_task_handle = NULL;
+
+static void mqtt_tx_task(void *arg) {
+    (void)arg;
+    mqtt_tx_msg_t msg;
+    while (1) {
+        if (xQueueReceive(s_mqtt_tx_queue, &msg, portMAX_DELAY) == pdTRUE) {
+            if (!mqtt_connected) {
+                continue;
+            }
+            esp_mqtt_client_handle_t client = NULL;
+            int msg_id = -1;
+            if (s_mqtt_client_mutex) {
+                xSemaphoreTake(s_mqtt_client_mutex, portMAX_DELAY);
+            }
+            client = mqtt_client;
+            bool skip_non_critical = false;
+            if (client != NULL && mqtt_connected) {
+                bool is_keepalive_cmd = (msg.cmd == CMD_REGISTRATION ||
+                                         msg.cmd == CMD_SESSION_START ||
+                                         msg.cmd == CMD_TIME_SYNC ||
+                                         msg.cmd == CMD_TELEMETRY);
+                if (is_keepalive_cmd && esp_mqtt_client_get_outbox_size(client) > 2048) {
+                    skip_non_critical = true;
+                } else {
+                    // Use esp_mqtt_client_publish() so real-time pass queries (PIN/QR/RFID)
+                    // flush immediately instead of waiting for esp_mqtt_task's 1s poll_read timeout.
+                    msg_id = esp_mqtt_client_publish(
+                        client, msg.topic, (const char *)msg.frame, msg.len, 1, msg.retain);
+                }
+            }
+            if (s_mqtt_client_mutex) {
+                xSemaphoreGive(s_mqtt_client_mutex);
+            }
+            if (skip_non_critical) {
+                ESP_LOGW(TAG, "MQTT outbox busy, skipped keepalive CMD: 0x%02X", msg.cmd);
+            } else if (msg_id >= 0) {
+                ESP_LOGI(TAG, "MQTT TX CMD: 0x%02X, Seq: %u, Len: %u, Topic: %s",
+                         msg.cmd, msg.seq, msg.len, msg.topic);
+            } else if (client != NULL && mqtt_connected) {
+                ESP_LOGW(TAG, "MQTT TX publish failed (CMD: 0x%02X, Seq: %u, ret=%d)",
+                         msg.cmd, msg.seq, msg_id);
+            }
+        }
+    }
+}
 
 static void generate_device_id(void) {
     if (strlen(device_id_str) == 0) {
@@ -106,43 +173,80 @@ static void publish_mqtt_frame_with_seq(uint8_t msg_type, uint8_t cmd, uint16_t 
     if (!mqtt_connected || mqtt_client == NULL || topic == NULL || strlen(topic) == 0) return;
 
     size_t total_len = 19 + payload_len;
-    uint8_t frame[256];
-    if (total_len > sizeof(frame)) {
-        ESP_LOGE(TAG, "MQTT frame too large (%zu bytes, max %zu)", total_len, sizeof(frame));
+    if (total_len > 256) {
+        ESP_LOGE(TAG, "MQTT frame too large (%zu bytes, max 256)", total_len);
         return;
     }
 
-    frame[0] = SOF_BYTE;
-    frame[1] = VER_BYTE;
-    frame[2] = msg_type;
-    frame[3] = cmd;
+    // Reserve the final 4 slots for critical pass/event/ACK frames during socket stalls
+    bool direct_ack = (s_mqtt_task_handle != NULL &&
+                       xTaskGetCurrentTaskHandle() == s_mqtt_task_handle &&
+                       msg_type == MSG_TYPE_ACK);
+    if (!direct_ack && s_mqtt_tx_queue != NULL) {
+        bool non_critical = (msg_type != MSG_TYPE_ACK) &&
+                            (cmd == CMD_REGISTRATION || cmd == CMD_SESSION_START ||
+                             cmd == CMD_TIME_SYNC || cmd == CMD_TELEMETRY);
+        if (non_critical && uxQueueSpacesAvailable(s_mqtt_tx_queue) <= 4) {
+            ESP_LOGW(TAG, "MQTT TX queue busy, skipping non-critical CMD=0x%02X", cmd);
+            return;
+        }
+    }
 
-    uint16_t seq = (forced_seq != 0xFFFF) ? forced_seq : mqtt_seq++;
-    frame[4] = (seq >> 8) & 0xFF;
-    frame[5] = seq & 0xFF;
-    frame[6] = (payload_len >> 8) & 0xFF;
-    frame[7] = payload_len & 0xFF;
-    frame[8] = 0x00; // STATUS
+    mqtt_tx_msg_t msg;
+    msg.len = (uint16_t)total_len;
+    msg.retain = retain;
+    msg.cmd = cmd;
+    snprintf(msg.topic, sizeof(msg.topic), "%s", topic);
+
+    msg.frame[0] = SOF_BYTE;
+    msg.frame[1] = VER_BYTE;
+    msg.frame[2] = msg_type;
+    msg.frame[3] = cmd;
+
+    uint16_t seq;
+    uint64_t offset_ms;
+    portENTER_CRITICAL(&s_mqtt_state_mux);
+    seq = (forced_seq != 0xFFFF) ? forced_seq : mqtt_seq++;
+    offset_ms = time_offset_ms;
+    portEXIT_CRITICAL(&s_mqtt_state_mux);
+    msg.seq = seq;
+
+    msg.frame[4] = (seq >> 8) & 0xFF;
+    msg.frame[5] = seq & 0xFF;
+    msg.frame[6] = (payload_len >> 8) & 0xFF;
+    msg.frame[7] = payload_len & 0xFF;
+    msg.frame[8] = 0x00; // STATUS
 
     uint64_t ts = 0;
-    if (time_offset_ms != 0) {
+    if (offset_ms != 0) {
         // Backend expects Local Time (UTC+3) instead of standard UTC 0
-        ts = (uint64_t)(esp_timer_get_time() / 1000ULL) + time_offset_ms + 10800000ULL;
+        ts = (uint64_t)(esp_timer_get_time() / 1000ULL) + offset_ms + 10800000ULL;
     }
     for (int i = 0; i < 8; i++) {
-        frame[9 + i] = (ts >> (56 - i * 8)) & 0xFF;
+        msg.frame[9 + i] = (ts >> (56 - i * 8)) & 0xFF;
     }
 
     if (payload_len > 0 && payload != NULL) {
-        memcpy(frame + 17, payload, payload_len);
+        memcpy(msg.frame + 17, payload, payload_len);
     }
 
-    uint16_t crc = calculate_crc16(frame, 17 + payload_len);
-    frame[17 + payload_len] = (crc >> 8) & 0xFF;
-    frame[17 + payload_len + 1] = crc & 0xFF;
+    uint16_t crc = calculate_crc16(msg.frame, 17 + payload_len);
+    msg.frame[17 + payload_len] = (crc >> 8) & 0xFF;
+    msg.frame[17 + payload_len + 1] = crc & 0xFF;
 
-    esp_mqtt_client_publish(mqtt_client, topic, (const char*)frame, total_len, 1, retain);
-    ESP_LOGI(TAG, "MQTT TX CMD: 0x%02X, Seq: %u, Len: %zu, Topic: %s", cmd, seq, total_len, topic);
+    if (direct_ack || s_mqtt_tx_queue == NULL) {
+        // Pre-reboot / MQTT-task ACKs flush synchronously before esp_restart()
+        if (mqtt_client != NULL) {
+            esp_mqtt_client_publish(mqtt_client, msg.topic, (const char *)msg.frame, msg.len, 1, msg.retain);
+            ESP_LOGI(TAG, "MQTT TX CMD: 0x%02X, Seq: %u, Len: %u, Topic: %s",
+                     cmd, seq, msg.len, msg.topic);
+        }
+        return;
+    }
+
+    if (xQueueSend(s_mqtt_tx_queue, &msg, 0) != pdTRUE) {
+        ESP_LOGW(TAG, "MQTT TX queue full, dropping CMD=0x%02X, Seq=%u", cmd, seq);
+    }
 }
 
 static void publish_mqtt_frame(uint8_t msg_type, uint8_t cmd, const uint8_t *payload, uint16_t payload_len, const char *topic, bool retain) {
@@ -742,6 +846,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     esp_mqtt_event_handle_t event = event_data;
     switch ((esp_mqtt_event_id_t)event_id) {
         case MQTT_EVENT_CONNECTED: {
+            s_mqtt_task_handle = xTaskGetCurrentTaskHandle();
             const char *active_id = get_cloud_device_id();
             ESP_LOGI(TAG, "MQTT Connected! Active Cloud DeviceId: %s", active_id);
             mqtt_connected = true;
@@ -799,7 +904,13 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
             // 2. SESSION_START (0x30) -> onloi/v1/d/{deviceId}/lifecycle (wakeReason=0x01 [Button], battery=100%, flags=0x00)
             uint8_t sess_payload[3] = { 0x01, 100, 0x00 };
             publish_lifecycle_event(CMD_SESSION_START, sess_payload, 3, false);
-            s_last_session_keepalive = esp_timer_get_time() / 1000;
+            {
+                int64_t now_ms = esp_timer_get_time() / 1000;
+                portENTER_CRITICAL(&s_mqtt_state_mux);
+                s_last_session_keepalive = now_ms;
+                s_last_session_start_ms = now_ms;
+                portEXIT_CRITICAL(&s_mqtt_state_mux);
+            }
             
             // 3. TIME_SYNC (0x33) -> onloi/v1/d/{deviceId}/cmd (MSG_TYPE_REQUEST, payload len=0)
             api_client_send_get_time();
@@ -858,9 +969,16 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         case MQTT_EVENT_DISCONNECTED:
             ESP_LOGI(TAG, "MQTT Disconnected.");
             mqtt_connected = false;
+            portENTER_CRITICAL(&s_mqtt_state_mux);
             s_last_session_keepalive = 0;
+            s_last_session_start_ms = 0;
+            portEXIT_CRITICAL(&s_mqtt_state_mux);
+            if (s_mqtt_tx_queue != NULL) {
+                xQueueReset(s_mqtt_tx_queue);
+            }
             break;
         case MQTT_EVENT_DATA:
+            s_mqtt_task_handle = xTaskGetCurrentTaskHandle();
             process_mqtt_message(event->topic, event->topic_len, event->data, event->data_len);
             break;
         default:
@@ -911,22 +1029,44 @@ static void start_mqtt(void) {
         .credentials.username = s_mqtt_cfg.username,
         .credentials.authentication.password = s_mqtt_cfg.password,
         .session.disable_clean_session = 0, // Clean Session = 1 to discard stale subscriptions
-        .session.keepalive = 60,
+        .session.keepalive = 20,
         .session.last_will.topic = topic_lifecycle,
         .session.last_will.msg = "",
         .session.last_will.msg_len = 0,
         .session.last_will.qos = 1,
         .session.last_will.retain = 1,
+        .network.reconnect_timeout_ms = 2000,
+        .network.timeout_ms = 5000,
+        .outbox.limit = 8192,
         .task.stack_size = 8192
     };
 
-    mqtt_client = esp_mqtt_client_init(&mqtt_cfg);
-    esp_mqtt_client_register_event(mqtt_client, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
-    esp_mqtt_client_start(mqtt_client);
+    if (s_mqtt_client_mutex) {
+        xSemaphoreTake(s_mqtt_client_mutex, portMAX_DELAY);
+    }
+    if (mqtt_client == NULL) {
+        mqtt_client = esp_mqtt_client_init(&mqtt_cfg);
+        esp_mqtt_client_register_event(mqtt_client, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
+        esp_mqtt_client_start(mqtt_client);
+    }
+    if (s_mqtt_client_mutex) {
+        xSemaphoreGive(s_mqtt_client_mutex);
+    }
 }
 
 void api_client_init(void) {
     generate_device_id();
+    if (s_mqtt_client_mutex == NULL) {
+        s_mqtt_client_mutex = xSemaphoreCreateMutex();
+    }
+    if (s_mqtt_tx_queue == NULL) {
+        s_mqtt_tx_queue = xQueueCreate(MQTT_TX_QUEUE_LEN, sizeof(mqtt_tx_msg_t));
+        if (s_mqtt_tx_queue != NULL) {
+            xTaskCreate(mqtt_tx_task, "mqtt_tx_task", 4096, NULL, 4, NULL);
+        } else {
+            ESP_LOGE(TAG, "Failed to create MQTT TX queue");
+        }
+    }
     ota_manager_set_status_cb(api_client_on_ota_status);
     nv_storage_get_onloi_mqtt_config(&s_mqtt_cfg);
 }
@@ -935,12 +1075,26 @@ void api_client_reload_config(void) {
     if (nv_storage_get_onloi_mqtt_config(&s_mqtt_cfg) && s_mqtt_cfg.is_claimed) {
         ESP_LOGI(TAG, "Cloud config reloaded: Host=%s, Port=%d, TLS=%d",
                  s_mqtt_cfg.host, s_mqtt_cfg.port, (s_mqtt_cfg.flags & 0x01));
+        mqtt_connected = false;
+        portENTER_CRITICAL(&s_mqtt_state_mux);
+        s_last_session_keepalive = 0;
+        s_last_session_start_ms = 0;
+        portEXIT_CRITICAL(&s_mqtt_state_mux);
+        if (s_mqtt_tx_queue != NULL) {
+            xQueueReset(s_mqtt_tx_queue);
+        }
+        if (s_mqtt_client_mutex) {
+            xSemaphoreTake(s_mqtt_client_mutex, portMAX_DELAY);
+        }
         if (mqtt_client != NULL) {
             ESP_LOGI(TAG, "Stopping previous MQTT client to apply reloaded config...");
             esp_mqtt_client_stop(mqtt_client);
             esp_mqtt_client_destroy(mqtt_client);
             mqtt_client = NULL;
-            mqtt_connected = false;
+            s_mqtt_task_handle = NULL;
+        }
+        if (s_mqtt_client_mutex) {
+            xSemaphoreGive(s_mqtt_client_mutex);
         }
         if (wifi_manager_is_connected()) {
             start_mqtt();
@@ -949,14 +1103,28 @@ void api_client_reload_config(void) {
 }
 
 void api_client_reset_claim_status(void) {
+    mqtt_connected = false;
+    portENTER_CRITICAL(&s_mqtt_state_mux);
+    s_last_session_keepalive = 0;
+    s_last_session_start_ms = 0;
+    portEXIT_CRITICAL(&s_mqtt_state_mux);
+    if (s_mqtt_tx_queue != NULL) {
+        xQueueReset(s_mqtt_tx_queue);
+    }
+    if (s_mqtt_client_mutex) {
+        xSemaphoreTake(s_mqtt_client_mutex, portMAX_DELAY);
+    }
     if (mqtt_client) {
         esp_mqtt_client_stop(mqtt_client);
         esp_mqtt_client_destroy(mqtt_client);
         mqtt_client = NULL;
+        s_mqtt_task_handle = NULL;
+    }
+    if (s_mqtt_client_mutex) {
+        xSemaphoreGive(s_mqtt_client_mutex);
     }
     s_mqtt_cfg.is_claimed = false;
     memset(&s_mqtt_cfg, 0, sizeof(s_mqtt_cfg));
-    mqtt_connected = false;
     nv_storage_clear_onloi_mqtt_config();
     nv_storage_clear_active_ota_job();
     ESP_LOGI(TAG, "Cloud config reset. Ready for new provision.");
@@ -984,9 +1152,14 @@ void api_client_tick(void) {
     // Every 15 seconds, simulate button wake-up so Onloi Cloud immediately flushes queued management commands
     // (such as SERVER_DISCONNECT 0x59, WIFI_RESET 0x58, FACTORY_RESET 0x50, REMOTE_OPEN 0x40, or GET_FIRMWARE_INFO 0x5C).
     if (mqtt_connected && mqtt_client != NULL && !ota_manager_is_running()) {
-        if (s_last_session_keepalive == 0) {
+        int64_t last_ka;
+        portENTER_CRITICAL(&s_mqtt_state_mux);
+        last_ka = s_last_session_keepalive;
+        if (last_ka == 0) {
             s_last_session_keepalive = now;
-        } else if (now - s_last_session_keepalive >= 15000) {
+        }
+        portEXIT_CRITICAL(&s_mqtt_state_mux);
+        if (last_ka != 0 && (now - last_ka) >= 15000) {
             api_client_send_session_keepalive();
         }
     }
@@ -994,7 +1167,21 @@ void api_client_tick(void) {
 
 void api_client_send_session_start(uint8_t wake_reason) {
     if (!mqtt_connected || mqtt_client == NULL || ota_manager_is_running()) return;
-    s_last_session_keepalive = esp_timer_get_time() / 1000;
+
+    int64_t now_ms = esp_timer_get_time() / 1000;
+    bool skip = false;
+    portENTER_CRITICAL(&s_mqtt_state_mux);
+    if (s_last_session_start_ms != 0 &&
+        (now_ms - s_last_session_start_ms) < SESSION_START_COOLDOWN_MS) {
+        skip = true;
+    } else {
+        s_last_session_start_ms = now_ms;
+        s_last_session_keepalive = now_ms;
+    }
+    portEXIT_CRITICAL(&s_mqtt_state_mux);
+
+    if (skip) return;
+
     // wakeReason: 0x01 = physical button / user wake, 0x02 = timer
     // 100% battery (12V wired terminal), 0x00 = flags
     uint8_t sess_payload[3] = { wake_reason, 100, 0x00 };
@@ -1004,7 +1191,11 @@ void api_client_send_session_start(uint8_t wake_reason) {
 
 void api_client_send_session_keepalive(void) {
     if (!mqtt_connected || mqtt_client == NULL || ota_manager_is_running()) return;
-    s_last_session_keepalive = esp_timer_get_time() / 1000;
+    int64_t now_ms = esp_timer_get_time() / 1000;
+    portENTER_CRITICAL(&s_mqtt_state_mux);
+    s_last_session_keepalive = now_ms;
+    s_last_session_start_ms = now_ms;
+    portEXIT_CRITICAL(&s_mqtt_state_mux);
 
     // 1. CMD_REGISTRATION (0x34) -> onloi/v1/d/{active_id}/lifecycle (retain=false)
     uint8_t reg_payload[3] = { (s_mqtt_cfg.session_epoch >> 8) & 0xFF, s_mqtt_cfg.session_epoch & 0xFF, 0x00 };

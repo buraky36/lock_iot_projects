@@ -61,8 +61,10 @@ static bool keypad_wakeup_pending = false;
 // Blink restore: non-zero while a touch blink is in progress.
 // When elapsed, all keypad LEDs are restored to fully ON.
 static int64_t blink_restore_ms = 0;
+static esp_timer_handle_t s_blink_restore_timer = NULL;
 
 static void set_all_leds(uint16_t mask);
+static void blink_restore_timer_cb(void *arg);
 
 // Mappings for '1' to '#' to index 1-12
 static uint8_t char_to_led_index(char c) {
@@ -95,13 +97,13 @@ static void shift_out_and_latch(uint8_t data, int latch_pin) {
 
 void hal_shift_reg_write(uint8_t reg1_data, uint8_t reg2_data) {
   if (shift_reg_mutex)
-    xSemaphoreTake(shift_reg_mutex, portMAX_DELAY);
+    xSemaphoreTakeRecursive(shift_reg_mutex, portMAX_DELAY);
   current_reg1 = reg1_data;
   current_reg2 = reg2_data;
   shift_out_and_latch(current_reg1, SHIFT_REG_LATCH1_PIN);
   shift_out_and_latch(current_reg2, SHIFT_REG_LATCH2_PIN);
   if (shift_reg_mutex)
-    xSemaphoreGive(shift_reg_mutex);
+    xSemaphoreGiveRecursive(shift_reg_mutex);
 }
 
 void hal_shift_reg_init(void) {
@@ -120,7 +122,14 @@ void hal_shift_reg_init(void) {
   gpio_set_level(SHIFT_REG_LATCH2_PIN, 0);
 
   if (shift_reg_mutex == NULL) {
-    shift_reg_mutex = xSemaphoreCreateMutex();
+    shift_reg_mutex = xSemaphoreCreateRecursiveMutex();
+  }
+  if (s_blink_restore_timer == NULL) {
+    const esp_timer_create_args_t timer_args = {
+        .callback = &blink_restore_timer_cb,
+        .name = "sr_blink_restore",
+    };
+    esp_timer_create(&timer_args, &s_blink_restore_timer);
   }
 
   hal_shift_reg_write(0x00, 0x00);
@@ -130,11 +139,17 @@ static uint32_t anim_duration_ms = 0;
 static int64_t anim_end_time_ms = 0;
 
 void hal_shift_reg_play_anim(shift_reg_anim_t anim, uint32_t arg) {
+  if (shift_reg_mutex)
+    xSemaphoreTakeRecursive(shift_reg_mutex, portMAX_DELAY);
+
   current_anim = anim;
   anim_step = 0;
   next_anim_time_ms = esp_timer_get_time() / 1000;
   blink_restore_ms =
       0; // Clear any pending blink restores to prevent overlapping
+  if (s_blink_restore_timer) {
+    (void)esp_timer_stop(s_blink_restore_timer);
+  }
 
   if (anim == ANIM_KEY_BLINK) {
     anim_key_index = char_to_led_index((char)arg);
@@ -142,9 +157,24 @@ void hal_shift_reg_play_anim(shift_reg_anim_t anim, uint32_t arg) {
     anim_duration_ms = arg;
     anim_end_time_ms = next_anim_time_ms + arg;
   }
+
+  if (shift_reg_mutex)
+    xSemaphoreGiveRecursive(shift_reg_mutex);
+}
+
+shift_reg_anim_t hal_shift_reg_get_anim(void) {
+  if (shift_reg_mutex)
+    xSemaphoreTakeRecursive(shift_reg_mutex, portMAX_DELAY);
+  shift_reg_anim_t anim = current_anim;
+  if (shift_reg_mutex)
+    xSemaphoreGiveRecursive(shift_reg_mutex);
+  return anim;
 }
 
 void hal_shift_reg_tick(void) {
+  if (shift_reg_mutex)
+    xSemaphoreTakeRecursive(shift_reg_mutex, portMAX_DELAY);
+
   int64_t now = esp_timer_get_time() / 1000;
 
   // --- Touch blink restore ---
@@ -163,6 +193,9 @@ void hal_shift_reg_tick(void) {
       // Window expired: turn off all keypad LEDs so idle animation can start.
       keypad_leds_forced_on = false;
       blink_restore_ms = 0;
+      if (s_blink_restore_timer) {
+        (void)esp_timer_stop(s_blink_restore_timer);
+      }
       if (current_anim == ANIM_NONE) {
         set_all_leds(0);
       }
@@ -173,11 +206,17 @@ void hal_shift_reg_tick(void) {
     }
   }
 
-  if (current_anim == ANIM_NONE)
+  if (current_anim == ANIM_NONE) {
+    if (shift_reg_mutex)
+      xSemaphoreGiveRecursive(shift_reg_mutex);
     return;
+  }
 
-  if (now < next_anim_time_ms)
+  if (now < next_anim_time_ms) {
+    if (shift_reg_mutex)
+      xSemaphoreGiveRecursive(shift_reg_mutex);
     return;
+  }
 
   switch (current_anim) {
   case ANIM_KEY_BLINK:
@@ -381,6 +420,31 @@ void hal_shift_reg_tick(void) {
     }
     break;
 
+  case ANIM_WIFI_DISCONNECTED: {
+    // Downward scrolling arrow/chevron ('v') on the 3x4 keypad grid:
+    //   Step 0:   .  2  .         (0x002)
+    //   Step 1:   1  .  3 + . 5 . (0x015)
+    //   Step 2:   4  .  6 + . 8 . (0x0A8)
+    //   Step 3:   7  .  9 + . 0 . (0x540)
+    //   Step 4:   *  .  #         (0xA00)
+    //   Step 5:   all off pause
+    static const uint16_t arrow_frames[6] = {
+        0x0002, 0x0015, 0x00A8, 0x0540, 0x0A00, 0x0000};
+    if (anim_step < 5) {
+      set_all_leds(arrow_frames[anim_step]);
+      next_anim_time_ms = now + 140;
+      anim_step++;
+    } else if (anim_step == 5) {
+      set_all_leds(arrow_frames[5]);
+      next_anim_time_ms = now + 450;
+      anim_step++;
+    } else {
+      anim_step = 0;
+      next_anim_time_ms = now;
+    }
+    break;
+  }
+
   case ANIM_OTA_PROGRESS: {
     // Active digit blinks every 180ms to indicate download activity
     if (now >= next_anim_time_ms) {
@@ -412,6 +476,9 @@ void hal_shift_reg_tick(void) {
     current_anim = ANIM_NONE;
     break;
   }
+
+  if (shift_reg_mutex)
+    xSemaphoreGiveRecursive(shift_reg_mutex);
 }
 
 // Fixed Helpers for specific system bits
@@ -436,7 +503,7 @@ static const led_map_t led_map[12] = {
 
 static void set_all_leds(uint16_t mask) {
   if (shift_reg_mutex)
-    xSemaphoreTake(shift_reg_mutex, portMAX_DELAY);
+    xSemaphoreTakeRecursive(shift_reg_mutex, portMAX_DELAY);
   uint8_t r1 = current_reg1 & MASK_U1_TSM_RST;
   uint8_t r2 = (current_reg2 & MASK_U2_RFID_RST) |
                (current_reg2 & MASK_U2_WIEGAND_EN) |
@@ -456,32 +523,50 @@ static void set_all_leds(uint16_t mask) {
   shift_out_and_latch(current_reg1, SHIFT_REG_LATCH1_PIN);
   shift_out_and_latch(current_reg2, SHIFT_REG_LATCH2_PIN);
   if (shift_reg_mutex)
-    xSemaphoreGive(shift_reg_mutex);
+    xSemaphoreGiveRecursive(shift_reg_mutex);
+}
+
+static void blink_restore_timer_cb(void *arg) {
+  (void)arg;
+  if (shift_reg_mutex)
+    xSemaphoreTakeRecursive(shift_reg_mutex, portMAX_DELAY);
+
+  int64_t now = esp_timer_get_time() / 1000;
+  if (blink_restore_ms > 0 && now >= blink_restore_ms) {
+    blink_restore_ms = 0;
+    if (keypad_leds_forced_on && now < keypad_active_until_ms &&
+        current_anim == ANIM_NONE) {
+      set_all_leds(0xFFF);
+    }
+  }
+
+  if (shift_reg_mutex)
+    xSemaphoreGiveRecursive(shift_reg_mutex);
 }
 
 // Helpers
 static void update_reg1_bit(uint8_t mask, bool state) {
   if (shift_reg_mutex)
-    xSemaphoreTake(shift_reg_mutex, portMAX_DELAY);
+    xSemaphoreTakeRecursive(shift_reg_mutex, portMAX_DELAY);
   if (state)
     current_reg1 |= mask;
   else
     current_reg1 &= ~mask;
   shift_out_and_latch(current_reg1, SHIFT_REG_LATCH1_PIN);
   if (shift_reg_mutex)
-    xSemaphoreGive(shift_reg_mutex);
+    xSemaphoreGiveRecursive(shift_reg_mutex);
 }
 
 static void update_reg2_bit(uint8_t mask, bool state) {
   if (shift_reg_mutex)
-    xSemaphoreTake(shift_reg_mutex, portMAX_DELAY);
+    xSemaphoreTakeRecursive(shift_reg_mutex, portMAX_DELAY);
   if (state)
     current_reg2 |= mask;
   else
     current_reg2 &= ~mask;
   shift_out_and_latch(current_reg2, SHIFT_REG_LATCH2_PIN);
   if (shift_reg_mutex)
-    xSemaphoreGive(shift_reg_mutex);
+    xSemaphoreGiveRecursive(shift_reg_mutex);
 }
 
 void hal_shift_reg_set_rfid_rst(bool state) {
@@ -497,7 +582,12 @@ void hal_shift_reg_set_wiegand_en(bool state) {
   update_reg2_bit(MASK_U2_WIEGAND_EN, state);
 }
 bool hal_shift_reg_get_wiegand_en(void) {
-  return (current_reg2 & MASK_U2_WIEGAND_EN) != 0;
+  if (shift_reg_mutex)
+    xSemaphoreTakeRecursive(shift_reg_mutex, portMAX_DELAY);
+  bool en = (current_reg2 & MASK_U2_WIEGAND_EN) != 0;
+  if (shift_reg_mutex)
+    xSemaphoreGiveRecursive(shift_reg_mutex);
+  return en;
 }
 
 void hal_shift_reg_set_led(uint8_t led_index, bool state) {
@@ -505,7 +595,7 @@ void hal_shift_reg_set_led(uint8_t led_index, bool state) {
     return;
   int i = led_index - 1;
   if (shift_reg_mutex)
-    xSemaphoreTake(shift_reg_mutex, portMAX_DELAY);
+    xSemaphoreTakeRecursive(shift_reg_mutex, portMAX_DELAY);
   if (led_map[i].reg == 1) {
     if (state)
       current_reg1 |= (1 << led_map[i].bit);
@@ -520,28 +610,45 @@ void hal_shift_reg_set_led(uint8_t led_index, bool state) {
     shift_out_and_latch(current_reg2, SHIFT_REG_LATCH2_PIN);
   }
   if (shift_reg_mutex)
-    xSemaphoreGive(shift_reg_mutex);
+    xSemaphoreGiveRecursive(shift_reg_mutex);
 }
 
 // Returns true while the 20-second keypad active window is running.
 bool hal_shift_reg_is_keypad_active(void) {
+  if (shift_reg_mutex)
+    xSemaphoreTakeRecursive(shift_reg_mutex, portMAX_DELAY);
   int64_t now_ms = esp_timer_get_time() / 1000;
-  return now_ms < keypad_active_until_ms;
+  bool active = now_ms < keypad_active_until_ms;
+  if (shift_reg_mutex)
+    xSemaphoreGiveRecursive(shift_reg_mutex);
+  return active;
 }
 
 // Returns true ONCE if the previous touch was a screensaver-wakeup touch
 // (i.e. it arrived while the window was inactive). Clears the flag on read.
 // The caller should discard the associated keypress.
 bool hal_shift_reg_consume_wakeup_touch(void) {
+  if (shift_reg_mutex)
+    xSemaphoreTakeRecursive(shift_reg_mutex, portMAX_DELAY);
+  bool wakeup = false;
   if (keypad_wakeup_pending) {
     keypad_wakeup_pending = false;
-    return true;
+    wakeup = true;
   }
-  return false;
+  if (shift_reg_mutex)
+    xSemaphoreGiveRecursive(shift_reg_mutex);
+  return wakeup;
 }
 
 void hal_shift_reg_set_touch_mask(uint16_t mask) {
-  if (hal_shift_reg_is_blocking_anim_playing()) return;
+  if (shift_reg_mutex)
+    xSemaphoreTakeRecursive(shift_reg_mutex, portMAX_DELAY);
+
+  if (hal_shift_reg_is_blocking_anim_playing()) {
+    if (shift_reg_mutex)
+      xSemaphoreGiveRecursive(shift_reg_mutex);
+    return;
+  }
 
   static uint16_t last_touch_mask = 0;
   static int64_t last_change_time = 0;
@@ -557,14 +664,22 @@ void hal_shift_reg_set_touch_mask(uint16_t mask) {
       if (!in_active_window) {
         // Mark as wakeup so the consumer can discard the associated keypress.
         keypad_wakeup_pending = true;
+        blink_restore_ms = 0;
+        if (s_blink_restore_timer) {
+          (void)esp_timer_stop(s_blink_restore_timer);
+        }
         // Wakeup touch: just light all LEDs (no blink — user just woke the
         // device).
         set_all_leds(0xFFF);
       } else {
         // Normal touch during active window: blink the touched key(s) off
-        // for 120 ms then restore full brightness via the timer.
+        // for 220 ms then restore full brightness via the dedicated esp_timer.
         set_all_leds(0xFFF & ~mask); // Touched keys dim briefly
         blink_restore_ms = now_ms + 220;
+        if (s_blink_restore_timer) {
+          (void)esp_timer_stop(s_blink_restore_timer);
+          esp_timer_start_once(s_blink_restore_timer, 220 * 1000);
+        }
       }
 
       // 2. Refresh (or start) the 20-second activity window.
@@ -596,21 +711,39 @@ void hal_shift_reg_set_touch_mask(uint16_t mask) {
       current_anim == ANIM_NONE) {
     set_all_leds(0xFFF);
   }
+
+  if (shift_reg_mutex)
+    xSemaphoreGiveRecursive(shift_reg_mutex);
 }
 
 bool hal_shift_reg_is_blocking_anim_playing(void) {
-  return (current_anim == ANIM_SUCCESS_TICK || current_anim == ANIM_ERROR_FLASH ||
-          current_anim == ANIM_FACTORY_RESET || current_anim == ANIM_OTA_PROGRESS);
+  if (shift_reg_mutex)
+    xSemaphoreTakeRecursive(shift_reg_mutex, portMAX_DELAY);
+  bool playing = (current_anim == ANIM_SUCCESS_TICK ||
+                  current_anim == ANIM_ERROR_FLASH ||
+                  current_anim == ANIM_FACTORY_RESET ||
+                  current_anim == ANIM_OTA_PROGRESS);
+  if (shift_reg_mutex)
+    xSemaphoreGiveRecursive(shift_reg_mutex);
+  return playing;
 }
 
 void hal_shift_reg_wakeup_keypad(void) {
+  if (shift_reg_mutex)
+    xSemaphoreTakeRecursive(shift_reg_mutex, portMAX_DELAY);
   int64_t now_ms = esp_timer_get_time() / 1000;
   keypad_active_until_ms = now_ms + KEYPAD_ACTIVE_DURATION_MS;
   keypad_leds_forced_on = true;
+  blink_restore_ms = 0;
+  if (s_blink_restore_timer) {
+    (void)esp_timer_stop(s_blink_restore_timer);
+  }
   if (!hal_shift_reg_is_blocking_anim_playing()) {
     current_anim = ANIM_NONE;
     set_all_leds(0xFFF);
   }
+  if (shift_reg_mutex)
+    xSemaphoreGiveRecursive(shift_reg_mutex);
 }
 
 void hal_shift_reg_set_ota_progress(uint8_t pct) {
@@ -618,11 +751,19 @@ void hal_shift_reg_set_ota_progress(uint8_t pct) {
   uint8_t bracket = pct / 10;
   if (bracket > 9) bracket = 9;
 
+  if (shift_reg_mutex)
+    xSemaphoreTakeRecursive(shift_reg_mutex, portMAX_DELAY);
   bool changed_bracket = (current_anim != ANIM_OTA_PROGRESS || bracket != s_ota_bracket);
   s_ota_pct = pct;
   s_ota_bracket = bracket;
   current_anim = ANIM_OTA_PROGRESS;
   keypad_leds_forced_on = false; // Turn off normal 20s backlight window
+  blink_restore_ms = 0;
+  if (s_blink_restore_timer) {
+    (void)esp_timer_stop(s_blink_restore_timer);
+  }
+  if (shift_reg_mutex)
+    xSemaphoreGiveRecursive(shift_reg_mutex);
 
   if (changed_bracket) {
     hal_io_led_set(s_ota_bracket_colors[bracket], LED_MODE_SOLID);
@@ -630,8 +771,12 @@ void hal_shift_reg_set_ota_progress(uint8_t pct) {
 }
 
 void hal_shift_reg_stop_ota_progress(void) {
+  if (shift_reg_mutex)
+    xSemaphoreTakeRecursive(shift_reg_mutex, portMAX_DELAY);
   if (current_anim == ANIM_OTA_PROGRESS) {
     current_anim = ANIM_NONE;
     set_all_leds(0);
   }
+  if (shift_reg_mutex)
+    xSemaphoreGiveRecursive(shift_reg_mutex);
 }

@@ -1,0 +1,46 @@
+Konu: Onloi BLE Alt Cihaz (v2.19) — Tüm Protokol Akışları ve Çift Hedefli (ESP32 & STM32) OTA Protokol Revizyonu
+
+Merhaba arkadaşlar,
+
+Sadece BLE ile çalışan (ESP32 veya ESP32+STM32 barındıran) alt cihazlarımızın hem Gateway üzerinden hem de Gateway olmayan müşterilerde doğrudan Mobil App (BLE) üzerinden tüm v2.19 protokol komutlarını ve OTA güncellemelerini sorunsuz çalıştırabilmesi için protokolde tamamladığımız revizyonları içeren teknik raporu ekte paylaşıyorum.
+
+Protokolde yaptığımız 5 temel değişiklik ve netleştirme özetle şunlardır:
+
+1. BLE Oturum Şifrelemesi (AES-256-GCM) ve SEQ Yönetimi (Bölüm 2 & 3.1)
+
+Alt cihazda AES-GCM nonce değeri o anki BLE bağlantısının connNonce ve SEQ sayacından üretildiği için (nonce = connNonce XOR SEQ), sunucunun BLE bağlantısı kurulmadan önce paketi şifrelemesi mümkün değildir.
+Yeni Kural: Sunucu 
+↔
+↔ Gateway arası (MQTTS) zaten TLS ve AUTH_TAG ile güvenlidir. Sunucu tüm v2.19 komutlarını (0x40, 0x46, 0x33 yanıtı vb.) standart v2.19 frame'i olarak gönderecek; BLE oturumunun sahibi olan Gateway (SESSION_INIT 0x70 yapan taraf) pakete sıradaki SEQ numarasını verip sessionKey ile şifreleyerek alt cihaza yazacaktır. Alt cihazdan gelen şifreli notify paketlerini de yine Gateway çözüp doğrulayarak /notify topic'inden sunucuya iletecektir.
+
+2. Tüm v2.19 Komutlarının, Çok Adımlı Kayıtların ve Yeni Event'lerin GW Üzerinden Taşınması (Bölüm 3.2)
+
+Parmak izi (0x46 
+→
+→ 0x24, 0x25 x3, 0x26) ve NFC kaydı (0x44 
+→
+→ 0x22, 0x23) gibi çok adımlı işlemlerde ve anlık doğrulamalarda (PIN_ENTERED 0x12, NFC_SCANNED 0x13, TIME_SYNC 0x33, OFFLINE_LOG_BATCH 0x35) Gateway BLE bağlantısını hemen kapatmayacak, oturumu açık tutarak tüm ara bildirimleri canlı aktaracaktır.
+v2.19 ile OK0313 için eklenen DOOR_POSITION (0x18), BOLT_STATE (0x19) ve HANDLE_EVENT (0x1A) event'leri de aynı şifreli telemetri akışıyla taşınacaktır.
+Telefonla doğrudan eklenen bir alt cihaz daha sonra Gateway menziline girdiğinde, Gateway'in SESSION_INIT (0x70) yapabilmesi için sunucu alt cihazın localKey bilgisini Gateway'e senkronize edecektir.
+
+3. Alt Cihaz OTA'sında ESP32 ve STM32 Hedef Ayrımı (firmwareTarget Genişletmesi - Bölüm 4.1)
+
+Hem ESP32 hem STM32 barındıran alt cihazlarımızda hangi çipin güncelleneceğini ve versiyonunun sorgulanacağını (0x53, 0x5C, 0x3A, 0x39) ayırt etmek için firmwareTarget kodları genişletilmiştir:
+0x01 = UNIT1_ESP (Cihazın kendi ESP32'si)
+0x02 = UNIT2_STM (Cihazın kendi STM32'si - UART)
+0x03 = UNIT3_BLE_SUB_ESP (BLE Alt Cihazın ESP32'si)
+0x04 = UNIT4_BLE_SUB_STM (BLE Alt Cihazın STM32'si — Alt cihaz ESP'si BLE'den alır, UART ile STM32'ye yazar)
+
+4. Yeni BLE OTA Dosya Aktarım (Chunking) Komutları: 0x78 – 0x7B (Bölüm 4.2)
+
+BLE-only alt cihazlar HTTPS indirme yapamadığından, imajı HTTPS'ten Gateway (Gateway yoksa/offline ise Mobil App) indirip doğrular ve şifreli BLE oturumu üzerinden şu 4 standart komutla alt cihaza aktarır:
+BLE_OTA_START (0x78): unitTarget (0x01=ESP32, 0x02=STM32), boyut, sürüm, CRC32, SHA-256 ve chunkSize bildirir.
+BLE_OTA_CHUNK (0x79): Binary parçaları (offset, dataLen, data) taşır. Hız için Windowed ACK kullanılır (16 pakette bir REQUEST/RESPONSE ile nextExpectedOffset teyidi alınır).
+BLE_OTA_FINISH (0x7A): Alt cihaz SHA-256/CRC32 doğrular; hedef 0x01 ise ESP32'yi reboot eder, hedef 0x02 ise UART üzerinden STM32'yi güncelleyip durumları (0x24, 0x25, 0x06) FIRMWARE_STATUS (0x39) ile bildirir.
+BLE_OTA_ABORT (0x7B): Aktarımı iptal eder ve staging alanı temizler.
+
+5. Tek BLE OTA Kodu Avantajı (Bölüm 1 & 5)
+
+Alt cihaz gömülü yazılımı için güncellemenin veya komutun Gateway'den mi yoksa Mobil App'ten mi geldiği tamamen şeffaftır; her iki taraf da alt cihazla birebir aynı 0x70 oturumu ve 0x78–0x7B OTA komutlarıyla konuşur.
+
+Ekteki PDF'in 5. Bölümünde Sunucu/Mobil App ve Alt Cihaz Gömülü Yazılım ekiplerimiz için yapılacak iş paketleri maddeler halinde listelenmiştir. İnceleyip sorularınız varsa üzerinden geçelim.

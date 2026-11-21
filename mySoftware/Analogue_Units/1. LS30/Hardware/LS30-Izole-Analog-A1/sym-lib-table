@@ -1,0 +1,1 @@
+(sym_lib_table (version 7) (lib (name "LS30_Analog") (type "KiCad") (uri "${KIPRJMOD}/LS30_Analog.kicad_sym") (options "") (descr "LS30 isolated interface symbols")))

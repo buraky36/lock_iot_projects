@@ -1,0 +1,41 @@
+Designator Footprint               Mid X         Mid Y         Ref X         Ref Y         Pad X         Pad Y TB      Rotation Comment        
+
+TER1       Terminal_H5.08x8      30.855mm       3.225mm      13.075mm       3.225mm      13.075mm       3.225mm  T        360.00 Terminal_H5.08x8
+HP1        HeaderAntenk90Pin16      34.525mm      61.295mm          25mm      60.025mm          25mm      60.025mm  T        360.00 DS1015-05_CONFLY
+TRF1       TRF-EI38/13,5       42.8964mm     34.3227mm        42.9mm        34.3mm     55.3964mm     24.3124mm  T        180.00 TRF-2X18-3.2VA 
+FID2       FIDUCIAL1            2.2528mm      2.4378mm        2.25mm       2.425mm      2.2528mm      2.4378mm  T          0.00 FIDUCIAL1      
+FID1       FIDUCIAL1           60.3278mm     63.0628mm      60.325mm       63.05mm     60.3278mm     63.0628mm  T          0.00 FIDUCIAL1      
+R8         CR0805               19.325mm      61.225mm      19.325mm      61.225mm      18.325mm      61.225mm  T        360.00 0R             
+C1         CC0805              11.1083mm     60.1004mm     11.1083mm     60.1004mm     10.1083mm     60.1004mm  T        360.00 47pF           
+C2         CC0805                 11.7mm      56.725mm        11.7mm      56.725mm        11.7mm      57.725mm  T        270.00 470nF          
+C3         CC0805                3.375mm      56.725mm       3.375mm      56.725mm       3.375mm      55.725mm  T         90.00 100nF          
+C4         CAPSMDTANTAL-B         19.8mm       57.15mm        19.8mm       57.15mm        19.8mm       56.05mm  T         90.00 47uF/10V       
+C5         CAPSMD-10x10          7.975mm      48.075mm       7.975mm      51.825mm       7.975mm      51.825mm  T        270.00 470uF/25V      
+C6         CAPSMD-10x10         18.925mm      48.075mm      18.925mm      51.825mm      18.925mm      51.825mm  T        270.00 470uF/25V      
+D1         CD-SMA_DO214          18.55mm       35.65mm       18.55mm       35.65mm        20.6mm       35.65mm  T        180.00 US1M           
+D2         CD-SMA_DO214          6.825mm       35.65mm       6.825mm       35.65mm       8.875mm       35.65mm  T        180.00 US1M           
+D3         CD-SMA_DO214           48.4mm        59.6mm        48.4mm        59.6mm        48.4mm       57.55mm  T         90.00 M7             
+D5         CD-SMA_DO214         55.525mm        59.6mm      55.525mm        59.6mm      55.525mm       57.55mm  T         90.00 M7             
+L1         INDC2.5X3.3          14.625mm        56.3mm      14.625mm        56.3mm      14.625mm       55.05mm  T         90.00 47uH           
+Q1         SOT23_N             18.7035mm      39.425mm       18.75mm      39.425mm        19.8mm      38.475mm  T        180.00 BC817          
+Q2         SOT23_N              8.5285mm      39.425mm       8.575mm      39.425mm       9.625mm      38.475mm  T        180.00 BC817          
+R1         CR0805                4.025mm      60.075mm       4.025mm      60.075mm       5.025mm      60.075mm  T        180.00 120K           
+R2         CR0805               7.5667mm      60.075mm      7.5667mm      60.075mm      8.5667mm      60.075mm  T        180.00 10K            
+R6         CR0805              22.4737mm      40.325mm     22.4737mm      40.325mm     23.4737mm      40.325mm  T        180.00 10K            
+R7         CR0805              12.4487mm      40.325mm     12.4487mm      40.325mm     13.4487mm      40.325mm  T        180.00 10K            
+R9         CR0805               19.325mm        63.5mm      19.325mm        63.5mm      18.325mm        63.5mm  T        360.00 0R             
+RL1        NAIS_JQ1P-XXV       18.5144mm     23.4146mm      18.525mm      23.425mm     14.7044mm     22.1446mm  T        270.00 NAIS_JQ1P-5V   
+RL2        NAIS_JQ1P-XXV        7.0644mm     23.4146mm       7.075mm      23.425mm      3.2544mm     22.1446mm  T        270.00 NAIS_JQ1P-5V   
+VR1        TVR07431             35.785mm         9.9mm      38.325mm         9.9mm      38.325mm         9.9mm  T        180.00 TVR07431       
+VR2        TVR07431              27.04mm       9.925mm        24.5mm       9.925mm        24.5mm       9.925mm  T        360.00 TVR07431       
+VR3        TVR07431              14.31mm         9.9mm       16.85mm         9.9mm       16.85mm         9.9mm  T        180.00 TVR07431       
+VR4        TVR07431              6.425mm        7.79mm       6.425mm        5.25mm       6.425mm        5.25mm  T         90.00 TVR07431       
+VR5        TVR07431             56.265mm       4.025mm      53.725mm       4.025mm      53.725mm       4.025mm  T        360.00 TVR07431       
+U1         TS8_N                 7.475mm      56.725mm       7.475mm      56.725mm       6.165mm        57.7mm  T          0.00 LT3470ETS8     
+R3         CR0805                14.65mm      60.075mm       14.65mm      60.075mm       15.65mm      60.075mm  T        180.00 390K           
+C7         CC0805                 4.65mm      41.325mm        4.65mm      41.325mm        5.65mm      41.325mm  T        180.00 100nF          
+C8         CAPAXIAL/275V/X2        49.9mm        9.65mm        49.9mm        9.65mm       57.52mm        9.65mm  T        180.00 100nF/275V/X2  
+D4         CD-SMA_DO214         52.475mm        59.6mm      52.475mm        59.6mm      52.475mm       57.55mm  T         90.00 M7             
+R4         CR0805               22.475mm      38.125mm      22.475mm      38.125mm      21.475mm      38.125mm  T        360.00 1K             
+R5         CR0805                12.45mm      38.125mm       12.45mm      38.125mm       11.45mm      38.125mm  T        360.00 1K             
+

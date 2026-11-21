@@ -4,22 +4,59 @@
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/semphr.h"
 
 #include "led_strip.h"
 #include "driver/ledc.h"
 
-static led_color_t current_led_color = LED_COLOR_OFF;
-static led_mode_t current_led_mode = LED_MODE_SOLID;
+static volatile led_color_t current_led_color = LED_COLOR_OFF;
+static volatile led_mode_t current_led_mode = LED_MODE_SOLID;
 
 static bool buzzer_active = false;
 static uint32_t buzzer_freq = 0;
 static uint32_t buzzer_sequence_count = 0;
 static uint32_t buzzer_duration = 0;
 static uint32_t buzzer_interval = 0;
-static int64_t buzzer_next_event_ms = 0;
-static bool sound_enabled = true;
+static volatile bool sound_enabled = true;
+static SemaphoreHandle_t s_buzzer_mutex = NULL;
+static esp_timer_handle_t s_buzzer_timer = NULL;
 
 static led_strip_handle_t led_strip;
+
+static void buzzer_apply_pwm(bool on, uint32_t freq_hz) {
+    if (on) {
+        ledc_set_freq(LEDC_LOW_SPEED_MODE, LEDC_TIMER_0, freq_hz);
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 512); // 50% duty
+    } else {
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 0);
+    }
+    ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
+}
+
+static void buzzer_timer_cb(void *arg) {
+    (void)arg;
+    if (s_buzzer_mutex) xSemaphoreTake(s_buzzer_mutex, portMAX_DELAY);
+    if (buzzer_sequence_count > 0) {
+        buzzer_sequence_count--;
+        if (buzzer_active) {
+            buzzer_apply_pwm(false, buzzer_freq);
+            buzzer_active = false;
+            if (buzzer_sequence_count > 0 && s_buzzer_timer) {
+                esp_timer_start_once(s_buzzer_timer, (uint64_t)buzzer_interval * 1000ULL);
+            }
+        } else {
+            buzzer_apply_pwm(true, buzzer_freq);
+            buzzer_active = true;
+            if (s_buzzer_timer) {
+                esp_timer_start_once(s_buzzer_timer, (uint64_t)buzzer_duration * 1000ULL);
+            }
+        }
+    } else if (buzzer_active) {
+        buzzer_apply_pwm(false, buzzer_freq);
+        buzzer_active = false;
+    }
+    if (s_buzzer_mutex) xSemaphoreGive(s_buzzer_mutex);
+}
 
 #define RGB_MAX 40 // Adjustable brightness (0-255). 40 is about 15% brightness, ideal for indoor keypads.
 
@@ -114,6 +151,17 @@ void hal_io_init(void) {
         .hpoint         = 0
     };
     ledc_channel_config(&ledc_channel);
+
+    if (s_buzzer_mutex == NULL) {
+        s_buzzer_mutex = xSemaphoreCreateMutex();
+    }
+    if (s_buzzer_timer == NULL) {
+        const esp_timer_create_args_t buzzer_timer_args = {
+            .callback = &buzzer_timer_cb,
+            .name = "buzzer_tmr"
+        };
+        ESP_ERROR_CHECK(esp_timer_create(&buzzer_timer_args, &s_buzzer_timer));
+    }
 }
 
 void hal_io_tick(void) {
@@ -137,28 +185,6 @@ void hal_io_tick(void) {
             apply_led_color(LED_COLOR_OFF);
         }
     }
-    
-    // Buzzer logic
-    if (buzzer_sequence_count > 0 && now >= buzzer_next_event_ms) {
-        buzzer_sequence_count--;
-        if (buzzer_active) {
-            ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 0);
-            ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
-
-            buzzer_active = false;
-            buzzer_next_event_ms = now + buzzer_interval;
-        } else {
-            ledc_set_freq(LEDC_LOW_SPEED_MODE, LEDC_TIMER_0, buzzer_freq);
-            ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 512); // 50% duty
-            ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
-            buzzer_active = true;
-            buzzer_next_event_ms = now + buzzer_duration;
-        }
-    } else if (buzzer_sequence_count == 0 && buzzer_active) {
-        buzzer_active = false;
-        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 0);
-        ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
-    }
 }
 
 void hal_io_relay_set(bool state) {
@@ -166,17 +192,25 @@ void hal_io_relay_set(bool state) {
 }
 
 void hal_io_buzzer_beep(uint32_t freq_hz, uint32_t duration_ms, uint32_t count) {
-    if (count == 0 || !sound_enabled) return;
+    if (count == 0 || duration_ms == 0 || !sound_enabled) return;
+
+    if (s_buzzer_mutex) xSemaphoreTake(s_buzzer_mutex, portMAX_DELAY);
+    if (s_buzzer_timer) {
+        esp_timer_stop(s_buzzer_timer);
+    }
+
     buzzer_freq = freq_hz;
     buzzer_duration = duration_ms;
     buzzer_interval = duration_ms;
     buzzer_sequence_count = count * 2 - 1; // Transitions (ON OFF ON OFF ON)
-    buzzer_next_event_ms = (esp_timer_get_time() / 1000) + buzzer_duration;
-    
-    ledc_set_freq(LEDC_LOW_SPEED_MODE, LEDC_TIMER_0, buzzer_freq);
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 512);
-    ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
+
+    buzzer_apply_pwm(true, buzzer_freq);
     buzzer_active = true;
+
+    if (s_buzzer_timer) {
+        esp_timer_start_once(s_buzzer_timer, (uint64_t)buzzer_duration * 1000ULL);
+    }
+    if (s_buzzer_mutex) xSemaphoreGive(s_buzzer_mutex);
 }
 
 void hal_io_buzzer_intro_sweep(void) {
@@ -236,4 +270,16 @@ void hal_io_led_set(led_color_t color, led_mode_t mode) {
 
 void hal_io_set_sound_enabled(bool enabled) {
     sound_enabled = enabled;
+    if (!enabled) {
+        if (s_buzzer_mutex) xSemaphoreTake(s_buzzer_mutex, portMAX_DELAY);
+        if (s_buzzer_timer) {
+            esp_timer_stop(s_buzzer_timer);
+        }
+        buzzer_sequence_count = 0;
+        if (buzzer_active) {
+            buzzer_apply_pwm(false, buzzer_freq);
+            buzzer_active = false;
+        }
+        if (s_buzzer_mutex) xSemaphoreGive(s_buzzer_mutex);
+    }
 }

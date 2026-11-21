@@ -490,10 +490,8 @@ static void ble_app_on_sync(void) {
 
 static void ble_host_task(void *param) {
     ESP_LOGI(TAG, "BLE Host Task Started");
+    /* This function will return only when nimble_port_stop() is executed */
     nimble_port_run();
-    nimble_port_deinit();
-    s_ble_initialized = false;
-    ESP_LOGI(TAG, "BLE Host Task Stopped and NimBLE RAM freed");
     nimble_port_freertos_deinit();
 }
 
@@ -597,10 +595,25 @@ void ble_prov_stop(void) {
         return;
     }
     ESP_LOGI(TAG, "Device is online. Terminating BLE setup client, stopping advertising & freeing BLE RAM...");
-    if (conn_handle != BLE_HS_CONN_HANDLE_NONE) {
-        ble_gap_terminate(conn_handle, BLE_ERR_REM_USER_CONN_TERM);
+    s_pending_scan_response = false;
+
+    /* nimble_port_stop() stops advertising and gracefully disconnects active clients via ble_hs_stop() */
+    int rc = nimble_port_stop();
+    if (rc == 0) {
+        esp_err_t deinit_err = nimble_port_deinit();
+        s_ble_initialized = false;
         conn_handle = BLE_HS_CONN_HANDLE_NONE;
+        if (deinit_err == ESP_OK) {
+            esp_err_t mem_err = esp_bt_controller_mem_release(ESP_BT_MODE_BTDM);
+            if (mem_err != ESP_OK) {
+                ESP_LOGW(TAG, "esp_bt_controller_mem_release failed: %s", esp_err_to_name(mem_err));
+            }
+        } else {
+            ESP_LOGE(TAG, "nimble_port_deinit failed: %s", esp_err_to_name(deinit_err));
+        }
+        ESP_LOGI(TAG, "BLE Host Task Stopped, NimBLE & BT Controller RAM freed (free heap=%lu)",
+                 (unsigned long)esp_get_free_heap_size());
+    } else {
+        ESP_LOGW(TAG, "nimble_port_stop failed: rc=%d", rc);
     }
-    ble_gap_adv_stop();
-    nimble_port_stop();
 }

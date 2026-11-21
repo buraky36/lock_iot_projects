@@ -1,0 +1,13 @@
+# burakyalim.com — Temel Apache / cPanel Yapilandirmasi
+
+DirectoryIndex index.html
+Options -Indexes
+
+# ONEMLI: HTTPS yonlendirmesini buradan acmak yerine
+# once cPanel -> SSL/TLS Status icinden AutoSSL sertifikasinin yesil oldugunu dogrulayin,
+# ardindan cPanel -> Domains menusunden "Force HTTPS Redirect" secenegini aktif edin.
+#
+# Eger elle acmaniz gerekirse sadece SSL aktif olduktan sonra asagidaki 3 satirin basindaki '#' isaretini kaldirin:
+# RewriteEngine On
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
