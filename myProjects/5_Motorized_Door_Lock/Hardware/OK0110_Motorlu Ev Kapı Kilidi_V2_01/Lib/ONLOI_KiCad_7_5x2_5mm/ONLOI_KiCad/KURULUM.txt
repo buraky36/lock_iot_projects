@@ -1,0 +1,59 @@
+ONLOI — KiCad logo kütüphanesi
+=============================
+
+Görünür footprint ölçüsü: 7,500000 × 2,500000 mm.
+Baskı katmanı: F.SilkS (ön yüz serigrafi).
+Sembol ve footprint adı: ONLOI_7_5x2_5mm
+Kütüphane adı: ONLOI_Logos
+
+DOSYALAR
+- ONLOI_Logos.kicad_sym: şematik sembol kütüphanesi.
+- ONLOI_Logos.pretty/: footprint kütüphanesi klasörü.
+- ONLOI_Smooth_7_5x2_5mm.svg: düzgün geometrilerle yeniden çizilmiş vektör logo.
+- ONLOI_Preview.png: footprint geometrisinden üretilmiş büyütülmüş önizleme.
+- build_logo.py: kütüphaneleri tekrar oluşturabilen Python 3 kaynak kodu.
+
+KURULUM
+1. ZIP dosyasını kalıcı bir klasöre çıkartın.
+2. KiCad > Preferences / Tercihler > Manage Footprint Libraries /
+   Footprint Kütüphanelerini Yönet menüsünü açın.
+   "Add existing library / Mevcut kütüphane ekle" ile ONLOI_Logos.pretty
+   KLASÖRÜNÜ seçin. Kütüphane takma adı ONLOI_Logos olmalıdır.
+   Burada tek bir .kicad_mod dosyasını değil, .pretty klasörünü seçin.
+3. Preferences / Tercihler > Manage Symbol Libraries /
+   Sembol Kütüphanelerini Yönet menüsünde ONLOI_Logos.kicad_sym DOSYASINI ekleyin.
+4. Şematikte A tuşuyla ONLOI_7_5x2_5mm sembolünü ekleyin.
+   Footprint alanı önceden ONLOI_Logos:ONLOI_7_5x2_5mm olarak atanmıştır.
+   F8 / Update PCB from Schematic ile PCB'ye aktarabilirsiniz.
+   Referans alanı gizlidir; gerektiğinde normal sembol numaralandırması yapın.
+5. Yalnızca PCB'ye eklemek için PCB Editor'de A tuşuyla footprint'i seçebilirsiniz.
+   Şematikten bağımsız kullanımda, footprint özelliklerinden
+   "Not in schematic / Şematikte yok" seçeneğini açmanız uygun olur.
+
+ÇİZİM VE KONTROL
+- Kaynak 178 × 65 piksel tek renkli BMP görüntüsüdür. Düşük çözünürlüklü
+  kenarlar geometrik olarak yorumlanıp yeniden çizilmiştir; bu dosya
+  şirketin özgün vektör tasarım dosyası değildir.
+- Eğri kısımlar düzgün daire/elips geometrilerinden, düz kenarlar düz
+  çizgilerden oluşturulmuştur. Görüntünün piksel basamakları kopyalanmamıştır.
+- SVG analitik eğriler içerir. KiCad dolgularında 0,5 derecelik örnekleme
+  kullanılır; en büyük dairede kiriş yaklaşım hatası yaklaşık 0,000012 mm'dir.
+- Halka parçaları birleşim çizgisi oluşmaması için hafifçe örtüşür.
+- Beyaz arka plan basılmaz; yalnızca logonun koyu alanları serigrafidir.
+  PCB üretimindeki gerçek renk seçtiğiniz serigrafi mürekkebine bağlıdır.
+- Pad, delik, bakır veya lehim maskesi geometrisi yoktur.
+- Referans/değer yazıları gizlidir ve F.Fab katmanındadır.
+- Sembol BOM dışında tutulur; PCB'ye aktarım açıktır. Footprint BOM ve
+  komponent yerleştirme dosyaları dışında tutulur.
+- Footprint'in görünür sınırları: X = -3,75...+3,75 mm;
+  Y = -1,25...+1,25 mm. Yerleştirme noktası logonun merkezidir.
+- Sembol çizgisinde kullanılan 0,001 mm kontur yalnızca şematik görünümüne
+  aittir; PCB serigrafisinin belirtilen ölçülerini etkilemez.
+- Dosya sözdizimi, ölçüler, katmanlar ve sembol/footprint bağlantısı kontrol
+  edildi. Önizleme, yazılmış footprint dosyasındaki koordinatlardan üretildi.
+- KiCad 6 biçimi kullanıldı. Bu ortamda KiCad kurulu olmadığından KiCad
+  uygulaması içinde açma ve Gerber dışa aktarma testi yapılamadı.
+
+Biçim referansları:
+https://dev-docs.kicad.org/en/file-formats/sexpr-intro/
+https://dev-docs.kicad.org/en/file-formats/sexpr-symbol-lib/

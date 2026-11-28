@@ -330,52 +330,6 @@ bool hal_wiegand_read_string(char *out_str, size_t max_len, uint16_t *bit_len_ou
     out_str[max_len - 1] = '\0';
     size_t c_idx = strlen(out_str);
 
-    // Dynamic QR Glitch Corrector (recovers bit-6 noise: s -> 3, X -> ,, p -> 0, @ -> ' ')
-    // Format: <id>,<YYYY-MM-DD HH:MM:SS.mmm>,QR
-    if (c_idx >= 30 && strcmp(out_str + c_idx - 3, ",QR") == 0) {
-        char orig[128];
-        strncpy(orig, out_str, sizeof(orig) - 1);
-        orig[sizeof(orig) - 1] = '\0';
-        bool modified = false;
-
-        // 1. Sanitize ID part (indices 0..10): should be digits '0'..'9'
-        // If characters in 0x70..0x79 ('p'..'y') appear due to bit-6 noise, map to '0'..'9' (c -= 0x40)
-        for (size_t i = 0; i < 11 && i < c_idx; i++) {
-            uint8_t ch = (uint8_t)out_str[i];
-            if (ch >= 0x70 && ch <= 0x79) {
-                out_str[i] = (char)(ch - 0x40);
-                modified = true;
-            }
-        }
-
-        // 2. Comma separator after ID: index 11 (or before date)
-        if (c_idx > 11) {
-            if (out_str[11] == 'X' || out_str[11] == 'l' || out_str[11] == 0x58 || out_str[11] == 0x6C) {
-                out_str[11] = ',';
-                modified = true;
-            }
-        }
-
-        // 3. Date & time part: index 12 to c_idx - 3
-        // Format: YYYY-MM-DD HH:MM:SS.mmm
-        for (size_t i = 12; i < c_idx - 3; i++) {
-            uint8_t ch = (uint8_t)out_str[i];
-            // Space between date and time: '@' (0x40) or '`' (0x60) -> ' ' (0x20)
-            if (ch == '@' || ch == '`') {
-                out_str[i] = ' ';
-                modified = true;
-            } else if (ch >= 0x70 && ch <= 0x79) {
-                // Digits turned into 'p'..'y'
-                out_str[i] = (char)(ch - 0x40);
-                modified = true;
-            }
-        }
-
-        if (modified) {
-            ESP_LOGW(TAG, "Wiegand QR bit-glitch corrected: '%s' -> '%s'", orig, out_str);
-        }
-    }
-    
     wg_available = false;
     return (c_idx > 0);
 }

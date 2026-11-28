@@ -545,7 +545,7 @@ void app_state_machine_tick(void) {
                   : ((active_hw_version == HW_VERSION_PIN_QR)
                          ? ANIM_IDLE_SNAKE
                          : ((active_hw_version == HW_VERSION_RFID_ONLY)
-                                ? ANIM_IDLE_PING_PONG
+                                ? ANIM_NONE /* OE0112: bosta LED animasyonu yok */
                                 : ANIM_IDLE_WAVE));
 
     if (wifi_lost != s_prev_wifi_lost) {

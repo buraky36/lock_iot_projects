@@ -17,7 +17,7 @@ import subprocess
 import sys
 import zipfile
 
-VERSION = "V2.1.1"
+VERSION = "V2.1.3"
 
 VARIANTS = [
     {
@@ -128,8 +128,8 @@ def archive_old_outputs(root_dir, current_version):
 
         for item in os.listdir(folder_path):
             item_path = os.path.join(folder_path, item)
-            # Only move folders that are versions and not current version
-            if os.path.isdir(item_path) and item != current_version:
+            # Only move folders that are versions and not current version (keep V2.1.2 test build alongside V2.1.3 release build)
+            if os.path.isdir(item_path) and item not in (current_version, "V2.1.2"):
                 target_dest = os.path.join(target_model_arch, item)
                 if os.path.exists(target_dest):
                     shutil.rmtree(target_dest)
@@ -196,9 +196,10 @@ def migrate_legacy_releases(root_dir):
 
 def main():
     root_dir = os.path.dirname(os.path.abspath(__file__))
-    pio_exe = r"C:\Users\gentek-ideapad\.platformio\penv\Scripts\pio.exe"
-    python_exe = r"C:\Users\gentek-ideapad\.platformio\penv\Scripts\python.exe"
-    esptool_py = r"C:\Users\gentek-ideapad\.platformio\packages\tool-esptoolpy\esptool.py"
+    home_pio = os.path.join(os.path.expanduser("~"), ".platformio")
+    pio_exe = os.path.join(home_pio, "penv", "Scripts", "pio.exe")
+    python_exe = os.path.join(home_pio, "penv", "Scripts", "python.exe")
+    esptool_py = os.path.join(home_pio, "packages", "tool-esptoolpy", "esptool.py")
 
     if not os.path.exists(pio_exe):
         pio_exe = "pio"

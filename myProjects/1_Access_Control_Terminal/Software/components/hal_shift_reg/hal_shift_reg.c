@@ -144,6 +144,9 @@ void hal_shift_reg_play_anim(shift_reg_anim_t anim, uint32_t arg) {
 
   current_anim = anim;
   anim_step = 0;
+  if (anim == ANIM_NONE && active_hw_version == HW_VERSION_RFID_ONLY) {
+    set_all_leds(0); // OE0112: animasyon durunca LED'leri sondur
+  }
   next_anim_time_ms = esp_timer_get_time() / 1000;
   blink_restore_ms =
       0; // Clear any pending blink restores to prevent overlapping
@@ -729,6 +732,9 @@ bool hal_shift_reg_is_blocking_anim_playing(void) {
 }
 
 void hal_shift_reg_wakeup_keypad(void) {
+  if (active_hw_version == HW_VERSION_RFID_ONLY) {
+    return; // OE0112: kart okutunca tum LED'ler yanmasin
+  }
   if (shift_reg_mutex)
     xSemaphoreTakeRecursive(shift_reg_mutex, portMAX_DELAY);
   int64_t now_ms = esp_timer_get_time() / 1000;

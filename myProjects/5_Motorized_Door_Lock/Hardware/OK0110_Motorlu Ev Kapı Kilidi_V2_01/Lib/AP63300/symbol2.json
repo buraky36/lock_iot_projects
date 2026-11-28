@@ -1,0 +1,45 @@
+{
+  "devices": {},
+  "symbols": {
+    "45c132e4d45f44ff97098925330fc1cb": {
+      "uuid": "45c132e4d45f44ff97098925330fc1cb",
+      "path": "0819f05c4eef4c71ace90d822a990e87",
+      "ticket": 1,
+      "updateTime": 1682403244000,
+      "createTime": 1649827474000,
+      "title": "ap63300wu-7",
+      "description": "",
+      "display_title": "AP63300WU-7",
+      "creator": {
+        "uuid": "0819f05c4eef4c71ace90d822a990e87",
+        "nickname": "LCSC",
+        "username": "LCSC"
+      },
+      "modifier": {
+        "uuid": "0819f05c4eef4c71ace90d822a990e87",
+        "nickname": "LCSC",
+        "username": "LCSC"
+      },
+      "owner": {
+        "uuid": "0819f05c4eef4c71ace90d822a990e87",
+        "nickname": "LCSC",
+        "username": "LCSC"
+      },
+      "tags": {
+        "parent_tag": {
+          "uuid": "e3e2721ea423447fa2934046ab28fc95",
+          "name": "Power Management (PMIC)",
+          "name_cn": "电源管理"
+        },
+        "child_tag": {
+          "uuid": "98de9c443da149dea948aae566560b73",
+          "name": "DC-DC Converters",
+          "name_cn": "DC-DC电源芯片"
+        }
+      },
+      "docType": 2
+    }
+  },
+  "footprints": {},
+  "panelLibs": {}
+}

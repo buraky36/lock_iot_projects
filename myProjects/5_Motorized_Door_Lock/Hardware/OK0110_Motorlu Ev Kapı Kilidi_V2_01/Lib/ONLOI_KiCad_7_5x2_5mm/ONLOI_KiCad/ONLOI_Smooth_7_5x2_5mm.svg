@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="7.5mm" height="2.5mm" viewBox="11 3 159 53"><g fill="black">
+<path fill-rule="evenodd" d="M64 29.5 A26.5 26.5 0 1 1 11 29.5 A26.5 26.5 0 1 1 64 29.5 Z M58.5 29.5 A21 21 0 1 0 16.5 29.5 A21 21 0 1 0 58.5 29.5 Z"/>
+<rect x="35" y="12" width="5" height="22"/>
+<path d="M70 55.5 V40 A17 17 0 0 1 104 40 V55.5 H99 V40 A12 12.5 0 0 0 75 40 V55.5 Z"/>
+<rect x="114" y="3" width="5" height="52"/>
+<path fill-rule="evenodd" d="M158 39.5 A16.5 16 0 1 1 125 39.5 A16.5 16 0 1 1 158 39.5 Z M153 39.5 A11.5 11 0 1 0 130 39.5 A11.5 11 0 1 0 153 39.5 Z"/>
+<rect x="166" y="24" width="4" height="31"/>
+<ellipse cx="168" cy="11.5" rx="2" ry="3.5"/>
+</g></svg>
